@@ -1,0 +1,85 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   craft-type.css — SITE-WIDE type re-skin (Newsreader serif + Hanken Grotesk),
+   taken from the "Femi9 Home v2" reference.
+
+   The storefront has no single content wrapper — the store layout renders the
+   background, nav, page, and footer as siblings under <body>, and each page has
+   its own root (.figma-landing / .blog / .pdp-page / …). So the reliable lever is
+   the GLOBAL font tokens: base.css drives every heading from var(--display) and
+   body from var(--font-body). Re-point those two tokens and the whole app flips.
+   The ADMIN panel (.adm shell) resets them back so that internal tool is untouched.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Flip the app's display + body faces via the shared tokens. */
+:root {
+  --display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+}
+body {
+  font-family: var(--font-body);
+}
+
+/* 2. Admin keeps its original faces (dense internal tool). .adm is the admin
+      shell root; setting font-family here (not just the token) makes descendants
+      inherit the sans face, and the token reset restores its headings. */
+.adm {
+  --display: 'Instrument Sans', 'Urbanist', system-ui, sans-serif;
+  --font-body: 'Urbanist', system-ui, sans-serif;
+  font-family: var(--font-body);
+}
+
+/* 3. Display headlines → Newsreader. Several storefront places hard-code a sans
+      face (app.css `.display`; blog/product headings, some with !important) and so
+      bypass the token — repaint them. These are storefront-only classes. */
+.display,
+h2.display,
+.blog-hero-title,
+.blog-latest-head h2,
+.blog-news h2,
+.article-body h2,
+.article-related h2,
+.pdp-info h1,
+.pdp-title,
+.pdp-sec-title,
+.pdp-rating-big {
+  font-family: 'Newsreader', Georgia, serif !important;
+}
+.display {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+/* Blog/article hard-code sans on `.blog .display` / `.blog .article-title` at
+   specificity (0,2,0) !important, which out-ranked the plain overrides above.
+   Match that specificity (and load later) so the serif wins. */
+.blog .display,
+.blog .article-title,
+.article .display,
+.article .article-title {
+  font-family: 'Newsreader', Georgia, serif !important;
+}
+.blog-hero-sub {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+}
+/* keep the admin panel's own `.display`, if any, on its sans face */
+.adm .display {
+  font-family: var(--display) !important;
+}
+
+/* 4. Sub / card titles stay sans, so the serif stays reserved for true display. */
+h3,
+h4 {
+  font-family: var(--font-body);
+}
+.bcard-body h3 {
+  font-family: var(--font-body) !important;
+}
+
+/* 5. Eyebrows — gold, UPPERCASE, wide tracking, heavy (the reference `.ey`). */
+.eyebrow,
+.fl-kicker {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #d8a22f;
+}

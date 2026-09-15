@@ -1,0 +1,132 @@
+/* craft-cart.css — de-slab polish overrides for the cart.
+   Loaded LAST (after CartDrawer.css and craft.css), so plain selectors win.
+   Keep the layout; add depth, soft geometry, softened seams, one restrained motion.
+
+   Real selectors (verified against CartDrawer.tsx + CartDrawer.css):
+   .drawer · .drawer-head · .drawer-close · .cart-empty__icon · .ci · .ci-img ·
+   .qty button · .ship-bar · .drawer-foot · .row.total · .btn-primary ·
+   .cart-empty .btn.
+
+   The drawer keeps its OWN palette (--cd-* : navy #120f2e, gold #e7bb4f,
+   lilac #edeaff, surface #faf9ff); craft.css supplies only the colourless
+   primitives — radii, layered navy-tinted elevation, one easing family, the
+   soft hairline. The de-slab here is carried by geometry, elevation and
+   softened seams — NOT by decorative gradients. The item cards and the footer
+   sit on the drawer's own lilac-tinted #faf9ff surface (a flat brand tone, not
+   an invented wash), so cards read as gently raised tiles off the white body
+   while the 13–14px grey secondary copy keeps its ≥4.5:1 contrast. */
+
+/* ── SIGNATURE ────────────────────────────────────────────────────────────────
+   The drawer stops being a flat sheet stuck to the viewport edge: its two
+   page-facing corners are softened and the single hard drop shadow becomes a
+   layered, navy-tinted one that spills left, so it reads as a soft panel
+   floating over the storefront. overflow:hidden clips the rounded corners over
+   the raised footer; the body still scrolls on its own. ── */
+.drawer {
+  border-top-left-radius: var(--cr-r-lg);
+  border-bottom-left-radius: var(--cr-r-lg);
+  overflow: hidden;
+  box-shadow:
+    -1px 0 0 var(--cr-hairline),
+    -10px 0 26px -14px rgba(52, 32, 78, 0.14),
+    -34px 0 72px -30px rgba(52, 32, 78, 0.3);
+}
+
+/* Head: the hard divider becomes a soft hairline. */
+.drawer-head {
+  border-bottom: 1px solid var(--cr-hairline);
+}
+
+/* Lift the two flat lilac discs (close + empty state) off the panel with the
+   same whisper of elevation. Static — the close keeps its own playful rotate. */
+.drawer-close,
+.cart-empty__icon {
+  box-shadow: var(--cr-shadow-xs);
+}
+
+/* ── Line items: the edge-to-edge, hard-divider list becomes softly framed tiles
+   that breathe. A hairline frame, a faint lift and the drawer's own lilac-tinted
+   surface replace the 1px seams — no gradient, no hover animation: a cart row is
+   not a button, and one flat brand tone reads cleaner than a phantom wash. ── */
+.ci {
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--cr-hairline);
+  border-radius: var(--cr-r-md);
+  background: #faf9ff;
+  box-shadow: var(--cr-shadow-xs);
+}
+.ci:last-child {
+  margin-bottom: 0;
+}
+
+/* Product chip: a clean white tile with a soft rim so the photo pops off the
+   lilac-tinted card instead of being pasted flat into the row. */
+.ci-img {
+  border-color: var(--cr-hairline);
+  background: #fff;
+}
+
+/* Quantity stepper: a single tactile press on the +/- — the drawer's one
+   restrained micro-interaction beyond the panel and the CTA. */
+.qty button {
+  transition:
+    background var(--cr-dur) var(--cr-ease),
+    transform var(--cr-dur) var(--cr-ease);
+}
+.qty button:active {
+  transform: scale(0.92);
+}
+
+/* Free-shipping meter: a hair of inset depth carves the flat track into a channel
+   so the gold fill reads as light sitting in it, not a painted-on bar. */
+.ship-bar {
+  box-shadow: inset 0 1px 2px rgba(52, 32, 78, 0.09);
+}
+
+/* ── Footer: the hard top seam was a slab tell. Drop the hard line; the drawer's
+   own #faf9ff surface plus a soft upward shadow let the summary read as a raised
+   tray the list scrolls beneath, instead of butting into it at a seam. ── */
+.drawer-foot {
+  border-top: 0;
+  box-shadow: 0 -9px 24px -18px rgba(52, 32, 78, 0.17);
+}
+.drawer-foot .row.total {
+  border-top: 1px solid var(--cr-hairline);
+}
+
+/* ── Primary CTA: the flat box-shadow:none gold button was the biggest slab in
+   the footer. Give it real elevation from the SAME navy-tinted craft vocabulary
+   as everything else — not a gold glow — and let the base translateY carry the
+   hover. Covers checkout and the empty-state "Shop pads"; the ghost button stays
+   flat as the quiet secondary, so the hierarchy reads. ── */
+.drawer-foot .btn-primary,
+.cart-empty .btn {
+  box-shadow: var(--cr-shadow-sm);
+  transition:
+    transform var(--cr-dur) var(--cr-ease),
+    box-shadow var(--cr-dur) var(--cr-ease),
+    background var(--cr-dur) var(--cr-ease),
+    color var(--cr-dur) var(--cr-ease),
+    border-color var(--cr-dur) var(--cr-ease);
+}
+.drawer-foot .btn-primary:hover,
+.cart-empty .btn:hover {
+  box-shadow: var(--cr-shadow-md);
+}
+
+/* On a full-viewport phone drawer the panel IS the screen — drop the page-facing
+   corners back to square (no gap for them to round against). */
+@media (max-width: 620px) {
+  .drawer {
+    border-radius: 0;
+  }
+}
+
+/* The +/- press is the only motion this file adds that the base reduced-motion
+   block doesn't already cover — the CTA hovers reuse the base's own transform. */
+@media (prefers-reduced-motion: reduce) {
+  .qty button:active {
+    transform: none;
+  }
+}

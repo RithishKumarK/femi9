@@ -1,0 +1,121 @@
+/**
+ * Product-detail additions owned by the ProductDetail screen.
+ */
+
+button.pdp-share-link { padding: 0; font: inherit; cursor: pointer; }
+button.pdp-share-link:focus-visible { outline: 2px solid rgba(86,49,132,.45); outline-offset: 2px; }
+.pdp-write-review { margin-top:14px; align-self:flex-start; }
+.pdp-reviews-cta { margin-top:clamp(20px,3vw,28px); display:flex; justify-content:center; }
+.pdp-reviews-empty { display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; padding:clamp(28px,5vw,48px) 20px; background:var(--surface); border:1px solid var(--line-soft); border-radius:var(--r-card); }
+.pdp-reviews-empty p { margin:0; max-width:38ch; color:var(--muted); font-size:.92rem; line-height:1.55; }
+button.related-add-btn-pill { cursor:pointer; font:inherit; }
+button.related-add-btn-pill:disabled { opacity:.5; cursor:not-allowed; }
+
+@media (pointer: coarse) {
+  .pdp-share-link { width:44px; height:44px; }
+  .pdp-share-link svg { width:18px; height:18px; }
+  .pdp-share-links { gap:12px; }
+}
+
+@media (max-width:768px) {
+  .pdp-modal { align-items:end; padding:0; }
+  .pdp-modal-card { width:100%; border-radius:18px 18px 0 0; max-height:min(88dvh,100%); padding-right:18px; padding-left:18px; padding-bottom:calc(20px + env(safe-area-inset-bottom)); }
+  .pdp-image-modal-card { max-height:min(88dvh,100%); margin:auto; }
+  .pdp-image-modal-card img,.pdp-image-modal-card svg { max-height:calc(88dvh - 24px); }
+}
+
+/* ================================================================
+   APPLE-INSPIRED PRODUCT CONFIGURATOR
+   Scoped to .pdp-page so the rest of the Femi9 storefront is untouched.
+   Behaviour/state remains in ProductDetail.tsx; this sheet only changes
+   presentation, spacing and responsive layout.
+   ================================================================ */
+
+.pdp-page .pdp-main-content { background:#fff; }
+.pdp-page .pdp-main-content > .wrap { max-width:1280px; padding-inline:clamp(20px,4vw,48px); }
+.pdp-page .crumbs { margin-bottom:20px; }
+
+/* Grid columns and the gallery stage live in pdp-configurator.css. */
+.pdp-page .pdp-gallery-layout { min-width:0; }
+.pdp-page .pdp-stage-column { top:calc(var(--nav-h) + 20px); gap:16px; }
+.pdp-page .pdp-thumb-rail { gap:10px; padding:2px 0 4px; }
+.pdp-page .pdp-thumb { width:72px; height:72px; border:2px solid transparent; border-radius:14px; background:#f5f5f7; box-shadow:none; }
+.pdp-page .pdp-thumb.active { border-color:#3c2a5e; box-shadow:0 0 0 1px #3c2a5e; }
+
+/* Right side reads as a clean configuration panel. */
+.pdp-page .pdp-right-col {
+  max-width:620px !important;
+  gap:22px !important;
+  min-width:0;
+  padding-bottom:48px;
+}
+.pdp-page .pdp-eyebrow { font-size:12px; letter-spacing:.12em; font-weight:700; color:#777; }
+.pdp-page .pdp-title { margin:0 !important; font-size:clamp(34px,3.4vw,52px) !important; line-height:1.02 !important; letter-spacing:-.025em; color:#211437 !important; }
+.pdp-page .pdp-rating-row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:14px; }
+.pdp-page .pdp-desc-text { max-width:58ch; margin:0 !important; font-size:17px !important; line-height:1.6 !important; color:#5f566b !important; }
+.pdp-page .pdp-price-block { margin-top:2px; }
+.pdp-page .pdp-price-line { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.pdp-page .pdp-now-price { font-size:34px !important; font-weight:700; }
+.pdp-page .pdp-tax-note { display:block; margin-top:4px; color:#777; font-size:12px; }
+
+/* Conversational section headings. */
+.pdp-page .pdp-label { margin-bottom:10px; font-size:17px; font-weight:700; letter-spacing:-.01em; color:#211437; }
+.pdp-page .pdp-label-note { font-weight:500; color:#777; }
+.pdp-page .pdp-block { margin:0 !important; }
+
+/* Size and pack pickers are sliding segmented tracks — see pdp-configurator.css. */
+
+/* Purchase choices use the same card language, with a strong selected state. */
+.pdp-page .sub-options { display:grid; gap:10px; }
+.pdp-page .sub-row {
+  width:100%; min-height:76px; padding:16px 18px !important;
+  border:2px solid #d2d2d7 !important; border-radius:18px !important;
+  background:#fff !important; box-shadow:none !important;
+  display:flex; align-items:center; gap:14px; text-align:left;
+  transition:border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.pdp-page .sub-row.active { border-color:#3c2a5e !important; background:#faf8ff !important; box-shadow:0 0 0 1px #3c2a5e !important; }
+.pdp-page .sub-row-content { flex:1; min-width:0; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.pdp-page .sub-row-content b { font-size:16px; color:#211437; }
+.pdp-page .sub-row-content span { font-size:13px; color:#777; text-align:right; }
+.pdp-page .sub-radio-dot { flex:none; width:20px; height:20px; border:1.5px solid #777; border-radius:50%; background:#fff; }
+.pdp-page .sub-row.active .sub-radio-dot { border:6px solid #3c2a5e; }
+
+/* CTA row: quantity stays compact; Add to bag gets the visual priority. */
+.pdp-page .cta-row { display:grid; grid-template-columns:116px minmax(0,1fr); gap:12px; align-items:stretch; }
+.pdp-page .qty-stepper { min-height:58px; border:1.5px solid #d2d2d7; border-radius:16px; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; overflow:hidden; background:#fff; }
+.pdp-page .qty-stepper button { border:0; background:transparent; font-size:18px; cursor:pointer; color:#3c2a5e; }
+.pdp-page .qty-stepper span { text-align:center; font-weight:700; }
+.pdp-page .add-to-bag-btn { min-height:58px; border:0; border-radius:16px !important; background:#f5bf3b !important; color:#211437 !important; font-size:16px; font-weight:700; box-shadow:0 8px 20px rgba(60,42,94,.12); }
+.pdp-page .add-to-bag-btn:hover { transform:translateY(-1px); box-shadow:0 12px 26px rgba(60,42,94,.16); }
+
+/* Trust panel is deliberately quiet so it doesn't compete with the purchase. */
+.pdp-page .pdp-benefit-badges { background:#f5f5f7; border:1px solid #e5e5ea; border-radius:20px; box-shadow:none; }
+.pdp-page .benefit-circle { box-shadow:none; }
+
+/* Tablet/mobile: stack exactly once; remove sticky gallery and keep controls usable. */
+@media (max-width:920px) {
+  .pdp-page .pdp-grid { grid-template-columns:1fr !important; gap:28px !important; }
+  .pdp-page .pdp-stage-column { position:static !important; }
+  .pdp-page .pdp-right-col { max-width:none !important; }
+  .pdp-page .pdp-right-col::before { display:none; }
+}
+
+@media (max-width:620px) {
+  .pdp-page .pdp-main-content > .wrap { padding-inline:16px; }
+  .pdp-page .crumbs { margin-bottom:14px; }
+  .pdp-page .pdp-grid { gap:24px !important; }
+  .pdp-page .pdp-hero-stage { border-radius:24px !important; padding:22px !important; }
+  .pdp-page .pdp-title { font-size:36px !important; }
+  .pdp-page .pdp-desc-text { font-size:16px !important; }
+  .pdp-page .pdp-size-chip,.pdp-page .size-card,.pdp-page .pack-card,.pdp-page .sub-row { min-height:68px; border-radius:16px !important; }
+  .pdp-page .sub-row-content { align-items:flex-start; flex-direction:column; gap:4px; }
+  .pdp-page .sub-row-content span { text-align:left; }
+  .pdp-page .cta-row { grid-template-columns:96px minmax(0,1fr); }
+  .pdp-page .add-to-bag-btn { font-size:15px; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  button.pdp-share-link,.pdp-page .pdp-size-chip,.pdp-page .size-card,.pdp-page .pack-card,.pdp-page .sub-row,.pdp-page .add-to-bag-btn,.pdp-page .related-add-btn-pill { transition:none !important; }
+  .pdp-page .pdp-size-chip:hover,.pdp-page .size-card:hover,.pdp-page .pack-card:hover,.pdp-page .add-to-bag-btn:hover { transform:none !important; }
+}

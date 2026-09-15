@@ -1,0 +1,1565 @@
+/* =============================================================================
+   Femi9 — Super Admin design system.
+   The whole admin (shell + login) lives inside .adm / .adm-auth so these styles
+   never leak into the storefront, and the storefront's global CSS can't bleed
+   into the console. Every class in the module CLASS CONTRACT is defined here so
+   feature modules only ever COMPOSE these — they never author new component CSS.
+
+   Type: Urbanist for all UI (with tabular figures for data); Newsreader (serif)
+   is reserved as the editorial signature — big KPI numbers + page/section titles
+   only, so the serif stays special.
+   ============================================================================= */
+
+.adm,
+.adm-auth {
+  /* Brand palette (organic period-care — warm plum + forest/gold accents). */
+  --plum: #5a4b8a;
+  --plum2: #7a68b8;
+  --forest: #3f6b4f;
+  --gold: #c79a3a;
+  --ink: #241d33;
+  --muted: #6b6480;
+  --line: #e7e3f0;
+  --surface: #ffffff;
+  --canvas: #f7f5fb;
+  --pink: #c05a86;
+  --plum-tint: #efeafb;
+  --forest-tint: #e8f0ea;
+  --amber-tint: #fdf3ea;
+  --red: #c0492f;
+  --red-tint: #fbeae6;
+
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 1px 2px rgba(36, 29, 51, 0.06);
+  --shadow-md: 0 8px 26px rgba(36, 29, 51, 0.1);
+
+  --sidebar-w: 248px;
+  --topbar-h: 60px;
+
+  --sans: "Urbanist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+}
+
+/* Local reset — the console owns its own box model / typographic baseline so it
+   is insulated from whatever the storefront sheets set on generic elements. */
+.adm *,
+.adm *::before,
+.adm *::after,
+.adm-auth *,
+.adm-auth *::before,
+.adm-auth *::after {
+  box-sizing: border-box;
+}
+
+.adm,
+.adm-auth {
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Force lock root viewport when admin console is mounted to prevent Lenis / global CSS bleed */
+html:has(.adm),
+body:has(.adm) {
+  height: 100% !important;
+  height: 100dvh !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Numeric data reads as columns, so lock to tabular figures wherever numbers
+   line up (stat values, numeric table cells). */
+.adm-stat-value,
+.adm-td-num,
+.adm-table {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Layout shell
+   ----------------------------------------------------------------------------- */
+.adm {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100vh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  background: var(--canvas);
+}
+
+.adm-sidebar {
+  height: 100% !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  min-height: 0 !important; /* Prevents CSS Grid item expansion */
+  box-sizing: border-box;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 12px 14px;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  z-index: 50;
+}
+
+/* Completely hide native browser scrollbar buttons (arrows ▲/▼) */
+.adm-sidebar::-webkit-scrollbar-button,
+.adm-nav::-webkit-scrollbar-button,
+.adm-main::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.adm-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 4px 10px;
+  flex: none;
+}
+
+.adm-brand-mark {
+  height: 22px;
+  width: auto;
+  display: block;
+}
+
+/* "Ops" pill sits beside the wordmark so the console reads as a distinct
+   surface of the Femi9 brand rather than a bolt-on. */
+.adm-brand-badge {
+  font-family: var(--serif);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--plum);
+  background: var(--plum-tint);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.adm-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding-right: 4px;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90, 75, 138, 0.25) transparent;
+}
+
+/* Sleek, subtle 4px scrollbar thumb matching top SaaS tools (Linear/Vercel) */
+.adm-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.adm-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.adm-nav::-webkit-scrollbar-thumb {
+  background: rgba(90, 75, 138, 0.2);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.adm-nav:hover::-webkit-scrollbar-thumb {
+  background: rgba(90, 75, 138, 0.5);
+}
+
+.adm-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.adm-nav-eyebrow {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 10px 4px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.adm-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7.5px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a4266;
+  text-decoration: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a7296;
+  transition: color 0.15s ease, transform 0.15s ease;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.adm-nav-label {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.adm-nav-link:hover {
+  background: #f2edf8;
+  color: var(--plum);
+  transform: translateX(2px);
+}
+
+.adm-nav-link:hover .adm-nav-icon {
+  color: var(--plum);
+  transform: scale(1.1);
+}
+
+.adm-nav-link:active {
+  transform: scale(0.98);
+}
+
+/* HIGH-CONTRAST DISTINCT ACTIVE STATE */
+.adm-nav-link.is-active {
+  background: var(--plum);
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(90, 75, 138, 0.24);
+}
+
+.adm-nav-link.is-active .adm-nav-icon {
+  color: #ffffff !important;
+}
+
+.adm-nav-link.is-active::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 15%;
+  bottom: 15%;
+  width: 3.5px;
+  background: var(--gold);
+  border-radius: 0 3px 3px 0;
+}
+
+.adm-sidebar-foot {
+  flex: none;
+  margin-top: auto;
+  padding: 12px 14px;
+  background: #f8f6fc;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adm-who {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  padding: 0 2px;
+}
+
+.adm-who-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.adm-who-role {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.adm-foot-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.adm-foot-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 4px 6px;
+  transition: color 0.15s ease;
+}
+
+.adm-foot-link:hover {
+  color: var(--plum);
+}
+
+.adm-main {
+  height: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0; /* CRITICAL: Prevents CSS Grid item expansion */
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  min-width: 0; /* lets wide tables scroll instead of stretching the page. */
+  display: flex;
+  flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90, 75, 138, 0.2) transparent;
+}
+
+.adm-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 28px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(1.4) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.adm-topbar-title {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.adm-content {
+  padding: 28px;
+  flex: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Cards + stat tiles
+   ----------------------------------------------------------------------------- */
+.adm-grid {
+  display: grid;
+  /* min() floor: identical to a bare 220px track wherever the container is
+     wider than 220px, but on a 360px phone it can never exceed the container
+     and push the page into horizontal scroll. */
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 16px;
+}
+
+.adm-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 20px;
+}
+
+.adm-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.adm-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.adm-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.adm-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The KPI number — Newsreader, large, the editorial focal point of a tile. */
+.adm-stat-value {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.adm-stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.adm-stat-delta.up {
+  color: var(--forest);
+}
+
+.adm-stat-delta.down {
+  color: var(--red);
+}
+
+.adm-stat-delta.up::before {
+  content: "▲";
+  font-size: 8px;
+}
+
+.adm-stat-delta.down::before {
+  content: "▼";
+  font-size: 8px;
+}
+
+/* Fallback readout for a chart whose values live only in a hover tooltip.
+   Hidden wherever hovering works; the mobile block switches it on. */
+.adm-chart-values {
+  display: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Data table — hairline grid, sticky header, right-aligned numerics
+   ----------------------------------------------------------------------------- */
+.adm-table-wrap {
+  overflow-x: auto; /* wide tables scroll inside here; the page never does. */
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.adm-table thead th {
+  position: sticky;
+  top: 0; /* pins to the scroll region (page or a max-height'd wrap). */
+  z-index: 1;
+  background: var(--canvas);
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+/* Numeric-column headers must right-align to sit over their right-aligned
+   cells. This needs higher specificity than `.adm-table thead th` above, whose
+   `text-align:left` would otherwise win over `.adm-td-num`. */
+.adm-table thead th.adm-td-num {
+  text-align: right;
+}
+
+.adm-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  vertical-align: middle;
+}
+
+.adm-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.adm-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.adm-table tbody tr:hover {
+  background: var(--plum-tint);
+}
+
+/* Right-align (and tabular) numeric columns — header and body together. */
+.adm-td-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.adm-cell-muted {
+  color: var(--muted);
+}
+
+/* An expanded editing panel living inside a colSpan cell. It carries the cell's
+   padding so the cell itself can be padding:0 — which lets the panel be pinned
+   to the viewport instead of the (much wider) table on narrow screens. */
+.adm-td-panel {
+  padding: 16px;
+}
+
+/* -----------------------------------------------------------------------------
+   Forms
+   ----------------------------------------------------------------------------- */
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.adm-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.adm-input,
+.adm-select,
+.adm-textarea {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  appearance: none;
+}
+
+.adm-textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Native select chevron (SVG data-URI keeps the sheet self-contained). */
+.adm-select {
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6480' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+}
+
+.adm-input::placeholder,
+.adm-textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.adm-input:focus,
+.adm-select:focus,
+.adm-textarea:focus {
+  outline: none;
+  border-color: var(--plum2);
+  box-shadow: 0 0 0 3px rgba(122, 104, 184, 0.2);
+}
+
+.adm-input:disabled,
+.adm-select:disabled,
+.adm-textarea:disabled {
+  background: var(--canvas);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.adm-help {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.adm-error {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--red);
+}
+
+/* Horizontal grouping of fields/controls. */
+.adm-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.adm-row > .adm-field {
+  flex: 1 1 180px;
+  margin-bottom: 0;
+}
+
+.adm-fieldset {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin: 0 0 16px;
+}
+
+.adm-fieldset > legend {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 6px;
+}
+
+/* -----------------------------------------------------------------------------
+   Buttons
+   ----------------------------------------------------------------------------- */
+.adm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+.adm-btn:active {
+  transform: translateY(0.5px);
+}
+
+.adm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.adm-btn--primary {
+  background: var(--plum);
+  border-color: var(--plum);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(90, 75, 138, 0.25);
+}
+
+.adm-btn--primary:hover:not(:disabled) {
+  background: #4d4078;
+  border-color: #4d4078;
+}
+
+.adm-btn--secondary {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.adm-btn--secondary:hover:not(:disabled) {
+  border-color: var(--plum2);
+  color: var(--plum);
+}
+
+.adm-btn--danger {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--red);
+}
+
+.adm-btn--danger:hover:not(:disabled) {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.adm-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.adm-btn--ghost:hover:not(:disabled) {
+  background: var(--canvas);
+  color: var(--plum);
+}
+
+.adm-btn--sm {
+  padding: 6px 11px;
+  font-size: 12px;
+  border-radius: 7px;
+}
+
+/* A row of sibling actions (often a destructive one beside a constructive one).
+   Owns the gap so the mobile block can open it up without touching desktop. */
+.adm-btn-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Inline −/value/+ stepper (inventory stock). Classed rather than inline-styled
+   so the touch sizes below can be scoped to a media query. */
+.adm-stock-editor {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.adm-stepper-btn {
+  padding: 6px 10px;
+}
+
+/* Must follow .adm-input (same specificity) to win the width/padding. */
+.adm-stepper-input {
+  width: 68px;
+  padding: 6px 8px;
+}
+
+/* -----------------------------------------------------------------------------
+   Badges + chips
+   ----------------------------------------------------------------------------- */
+.adm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--canvas);
+  color: var(--muted);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.adm-badge--green {
+  background: var(--forest-tint);
+  color: var(--forest);
+}
+
+.adm-badge--amber {
+  background: var(--amber-tint);
+  color: #a9781f;
+}
+
+.adm-badge--red {
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.adm-badge--gray {
+  background: var(--canvas);
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+.adm-badge--plum {
+  background: var(--plum-tint);
+  color: var(--plum);
+}
+
+/* Small removable/selectable pill for filters etc. */
+.adm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+/* Chips double as filter toggles on the list consoles, so the selected one has
+   to read at a glance beside four unselected siblings. */
+button.adm-chip,
+a.adm-chip {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.adm-chip.is-active {
+  border-color: var(--plum);
+  background: var(--plum-tint);
+  color: var(--plum);
+  font-weight: 600;
+}
+
+/* A group of filter chips reads as ONE item inside .adm-toolbar's
+   space-between, instead of each chip being spread across the row. */
+.adm-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* The "×" that detaches a chip's value. The painted glyph stays small; on touch
+   the hit box grows around it via negative margins so the chip does not resize.
+   Scoped to `pointer: coarse` so mouse users keep the compact desktop chip. */
+.adm-chip-x {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+}
+
+@media (pointer: coarse) {
+  .adm-chip-x {
+    font-size: 18px;
+    padding: 8px;
+    margin: -8px -8px -8px 0;
+    min-width: 34px;
+    min-height: 34px;
+  }
+}
+
+/* A row in the state multi-select — the label IS the target, so it carries the
+   height rather than the 16px checkbox inside it. */
+.adm-state-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media (pointer: coarse) {
+  .adm-state-option {
+    padding: 11px 8px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Utility: toolbar, pager, empty state, toast
+   ----------------------------------------------------------------------------- */
+.adm-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.adm-pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.adm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 56px 24px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+
+.adm-empty-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.adm-toast {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 60;
+  max-width: 360px;
+  padding: 12px 16px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* -----------------------------------------------------------------------------
+   Login screen
+   ----------------------------------------------------------------------------- */
+.adm-auth {
+  min-height: 100vh;
+  min-height: 100dvh; /* no vertical jitter as the mobile URL bar collapses. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  /* Soft lavender wash with a plum halo — warm and unmistakably Femi9. */
+  background:
+    radial-gradient(60% 55% at 50% 0%, rgba(122, 104, 184, 0.16), transparent 70%),
+    var(--canvas);
+}
+
+.adm-auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  padding: 34px 32px 30px;
+}
+
+.adm-auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.adm-auth-mark {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+
+.adm-auth-eyebrow {
+  font-family: var(--serif);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--plum);
+  background: var(--plum-tint);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.adm-auth-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+
+.adm-auth-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 22px;
+}
+
+.adm-auth-error {
+  background: var(--red-tint);
+  border: 1px solid rgba(192, 73, 47, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  margin-bottom: 16px;
+}
+
+.adm-auth-submit {
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+/* -----------------------------------------------------------------------------
+   Accessibility: always-visible keyboard focus
+   ----------------------------------------------------------------------------- */
+.adm a:focus-visible,
+.adm button:focus-visible,
+.adm-nav-link:focus-visible,
+.adm-btn:focus-visible,
+.adm-chip:focus-visible,
+.adm-foot-link:focus-visible,
+.adm-auth a:focus-visible,
+.adm-auth button:focus-visible {
+  outline: 2px solid var(--plum2);
+  outline-offset: 2px;
+}
+
+/* Inputs express focus through the ring; add an outline for high-contrast /
+   forced-colors users who don't render box-shadows. */
+.adm-input:focus-visible,
+.adm-select:focus-visible,
+.adm-textarea:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* Desktop defaults for mobile elements */
+.adm-sidebar-header {
+  display: block;
+}
+
+.adm-close-btn {
+  display: none;
+}
+
+.adm-menu-toggle {
+  display: none;
+}
+
+.adm-topbar-brand {
+  display: none;
+}
+
+.adm-scrim {
+  display: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Mobile & Tablet Drawer (≤ 900px):
+   Replaces cramped horizontal scrolling with a modern Hamburger Menu (☰)
+   that opens a smooth slide-out Drawer navigation with backdrop blur.
+   ----------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  /* Block, not a 1-column grid: a grid item's sticky containing block is its own
+     auto-height grid area (zero travel), so `position:sticky` on the sidebar was
+     inert. Under `display:block` it resolves against the viewport and the strip
+     actually stays put. `.adm-main { min-width: 0 }` still applies. */
+  .adm {
+    display: block;
+  }
+
+  .adm-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 18, 48, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 90;
+    animation: admFadeIn 0.2s ease-out;
+  }
+
+  @keyframes admFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .adm-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    max-width: 88vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    background: var(--surface);
+    box-shadow: 16px 0 48px rgba(0, 0, 0, 0.28);
+    z-index: 100;
+    transform: translateX(-105%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 16px 14px 24px;
+    border-right: 1px solid var(--line);
+    border-bottom: none;
+  }
+
+  .adm-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .adm-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .adm-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #f8f6fc;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .adm-close-btn:hover {
+    background: var(--plum-tint);
+    color: var(--plum);
+  }
+
+  .adm-nav {
+    flex-direction: column;
+    gap: 4px;
+    flex: none;
+    overflow: visible;
+  }
+
+  .adm-nav-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+
+  .adm-nav-eyebrow {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 10px 4px;
+    margin: 0;
+  }
+
+  .adm-nav-link {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .adm-sidebar-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    background: #f8f6fc;
+    border-radius: 10px;
+  }
+
+  .adm-who {
+    display: flex;
+  }
+
+  .adm-foot-actions {
+    gap: 12px;
+  }
+
+  .adm-foot-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .adm-topbar {
+    padding: 0 16px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .adm-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--plum);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .adm-menu-toggle:hover {
+    background: var(--plum-tint);
+    border-color: var(--plum);
+  }
+
+  .adm-topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .adm-topbar-title {
+    font-size: 1.15rem;
+    margin: 0;
+  }
+
+  .adm-content {
+    padding: 16px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Mobile optimization (< 768px): collapse toolbars, stack action buttons,
+   reflow all card grids to single column, and ensure 44px touch tap targets.
+   ----------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .adm-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .adm-nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .adm-foot-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .adm-close-btn,
+  .adm-menu-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .adm-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+    padding: 0 14px;
+  }
+
+  .adm-topbar-title {
+    white-space: nowrap;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .adm-sidebar {
+    width: 285px;
+    padding: 14px 12px 20px;
+  }
+
+  .adm-content {
+    padding: 14px;
+  }
+
+  .adm-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .adm-btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .adm-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+  }
+
+  /* --- Typography: desktop density is unreadable at 360-414px --------------- */
+  .adm,
+  .adm-auth {
+    font-size: 15px;
+  }
+
+  /* The login card's 32px side padding leaves ~248px of usable width at 360px. */
+  .adm-auth {
+    padding: 16px;
+  }
+
+  .adm-auth-card {
+    padding: 26px 20px 24px;
+  }
+
+  /* (.adm-stat-delta is in the class contract but no page composes it today, so
+     it is deliberately not listed here — a mobile rule matching nothing is what
+     made this sheet read as though mobile was already covered.) */
+  .adm-help,
+  .adm-cell-muted,
+  .adm-error {
+    font-size: 14px;
+  }
+
+  .adm-badge,
+  .adm-stat-label,
+  .adm-table thead th {
+    font-size: 12px;
+  }
+
+  .adm-label {
+    font-size: 13px;
+  }
+
+  .adm-table {
+    font-size: 14px;
+  }
+
+  /* --- Form controls: <16px makes iOS Safari zoom on focus and never restore  */
+  .adm-input,
+  .adm-select,
+  .adm-textarea {
+    font-size: 16px;
+    padding: 11px 12px;
+  }
+
+  .adm-select {
+    padding-right: 36px;
+  }
+
+  /* --- Touch targets ------------------------------------------------------- */
+  .adm-btn {
+    min-height: 44px;
+    padding: 12px 18px;
+  }
+
+  .adm-btn--sm {
+    min-height: 40px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  /* In-table actions sit next to destructive siblings — give them the full box. */
+  .adm-table td .adm-btn--sm {
+    min-height: 44px;
+  }
+
+  button.adm-chip,
+  a.adm-chip {
+    min-height: 40px;
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  .adm-chip-group {
+    gap: 10px;
+  }
+
+  /* The pager is a nowrap row of [caption][Previous][Next] — at 360px the two
+     44px buttons and the caption cannot share one line. */
+  .adm-pager {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    font-size: 13px;
+  }
+
+  /* Neighbouring Approve/Suspend/Delete targets must not abut on touch. */
+  .adm-btn-cluster {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Chart values a hover tooltip would otherwise keep out of reach on touch. */
+  .adm-chart-values {
+    display: block;
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+
+  .adm-chart-values li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .adm-chart-values li > :last-child {
+    margin-left: auto;
+  }
+
+  /* --- Toast: 360px + a 22px offset cannot fit a 360px viewport ------------- */
+  .adm-toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
+    text-align: center;
+  }
+
+  /* --- Tables --------------------------------------------------------------
+     A bounded height gives the sticky `thead th` real scroll travel (with no
+     max-height the wrap is a scroll container whose height IS its content, so
+     the header never had anything to stick to), and the layered gradients are
+     the affordance that says "this scrolls sideways". */
+  .adm-table-wrap {
+    max-height: 72vh;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background:
+      linear-gradient(90deg, var(--surface) 30%, rgba(255, 255, 255, 0)) left / 24px 100% no-repeat,
+      linear-gradient(270deg, var(--surface) 30%, rgba(255, 255, 255, 0)) right / 24px 100% no-repeat,
+      radial-gradient(farthest-side at 0 50%, rgba(36, 29, 51, 0.14), transparent) left / 10px 100%
+        no-repeat,
+      radial-gradient(farthest-side at 100% 50%, rgba(36, 29, 51, 0.14), transparent) right / 10px
+        100% no-repeat,
+      var(--surface);
+    background-attachment: local, local, scroll, scroll, local;
+  }
+
+  /* A stacked table has no sideways scroll to advertise and no header to pin,
+     so it keeps the plain surface and grows with the page. */
+  .adm-table-wrap:has(.adm-table--stack) {
+    max-height: none;
+    background: var(--surface);
+  }
+
+  /* Stacked rows — opt-in per table (`.adm-table adm-table--stack`) for the
+     consoles whose right-hand columns hold the controls. Each cell becomes a
+     labelled block, so nothing lives 600px off-screen inside the scroller. */
+  .adm-table--stack,
+  .adm-table--stack tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .adm-table--stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .adm-table--stack tbody tr {
+    display: block;
+    border-bottom: 1px solid var(--line);
+    padding: 10px 4px;
+  }
+
+  .adm-table--stack tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .adm-table--stack tbody td {
+    display: block;
+    border: 0;
+    padding: 4px 12px;
+    text-align: left;
+  }
+
+  .adm-table--stack tbody td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Group/section cells (colSpan banners) carry no label — don't reserve a line. */
+  .adm-table--stack tbody td:not([data-label])::before {
+    content: none;
+  }
+
+  /* An expanded panel inside a colSpan cell is pinned to the viewport width so
+     it stays readable however far the table itself is scrolled sideways. */
+  .adm-td-panel {
+    position: sticky;
+    left: 0;
+    width: calc(100vw - 36px); /* .adm-content padding is 18px a side here. */
+    box-sizing: border-box;
+  }
+
+  /* !important because the affected fields carry inline `flex` basis values
+     from TSX, which CSS cannot otherwise reach. */
+  .adm-td-panel .adm-row > .adm-field {
+    flex: 1 1 100% !important;
+  }
+
+  /* Stock stepper: real 44px targets, left-aligned now the cell is a block.
+     Declared after .adm-btn--sm / .adm-input above so it wins on equal
+     specificity. */
+  .adm-stock-editor {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .adm-stepper-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+    font-size: 18px;
+  }
+
+  .adm-stepper-input {
+    width: 84px;
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Respect reduced-motion preferences
+   ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .adm *,
+  .adm-auth * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

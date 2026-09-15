@@ -1,0 +1,531 @@
+/* ===== DASHBOARD SCREEN (/dashboard) — T4 owns this file. Prefix: .dash-*
+   app.css already defines .dash-grid, so every name here is two-segment
+   (.dash-cal-*, .dash-ring, .dash-log-*) and cannot collide with it.
+
+   This file is LAYOUT ONLY. Every surface, card, form control, chip, status
+   pill, empty state and confirm row comes from the `.m-*` kit in member.css,
+   and no `.m-*` rule is declared here. No design token is redefined; every
+   colour is read from base.css / app.css.
+
+   The reduced-motion block lives once, in member.css, scoped to `.m-area` —
+   which every element below renders inside — so it is not repeated here.
+   ===== */
+
+/* --------------------------------------------------------------------------
+   1. PHASE PALETTE
+   The five cycle phases are the one place this product needs colour outside
+   the brand's lavender/plum/gold. These are the SAME five hexes the landing
+   tracker (cycle-tracker.css) and the chart theme already use, declared here
+   as locally-scoped variables so there is exactly one phase palette in the
+   product and nothing lands in :root.
+
+   Colour is never the only signal: every phase also carries a distinct MARKER
+   SHAPE (§4) and a text label in the cell's aria-label, the selected-day
+   detail line and the legend.
+   -------------------------------------------------------------------------- */
+.dash-cal,
+.dash-upcoming {
+  --ph-period: #c85c79;
+  --ph-predicted: #e4a9b8;
+  --ph-fertile: #7fd0c8;
+  --ph-ovulation: #0e9e94;
+  --ph-pms: #e7b85c;
+  --ph-symptom: var(--forest-2);
+}
+
+/* --------------------------------------------------------------------------
+   2. HERO + ONBOARDING
+   -------------------------------------------------------------------------- */
+.dash-hero,
+.dash-onboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+}
+.dash-hero__copy,
+.dash-onboard__copy { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.dash-hero__copy .m-body,
+.dash-onboard__copy .m-body { max-width: 54ch; }
+
+.dash-hero__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+
+.dash-onboard__list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.dash-onboard__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: .92rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.dash-onboard__list svg { width: 18px; height: 18px; flex: none; margin-top: 2px; color: var(--forest-2); }
+
+/* No `display: none` below 780px any more — hiding it in CSS still downloaded
+   the 2.5 MB source on every phone. UserDashboard gates the element out of the
+   JSX at the same width instead (useMediaGate). */
+.dash-onboard__art {
+  width: min(260px, 34vw);
+  height: auto;
+  justify-self: end;
+  border-radius: var(--tile-r);
+  background: var(--lilac-tint);
+}
+
+@media (max-width: 780px) {
+  .dash-hero,
+  .dash-onboard { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* --------------------------------------------------------------------------
+   3. PREDICTION RING
+   -------------------------------------------------------------------------- */
+.dash-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  padding-bottom: 26px;   /* room for the confidence caption below the ring */
+}
+.dash-ring svg { display: block; }
+.dash-ring__label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+  pointer-events: none;
+}
+.dash-ring__label b {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+.dash-ring__label small { font-size: .78rem; color: var(--muted); }
+.dash-ring__conf { position: absolute; bottom: 0; }
+
+/* --------------------------------------------------------------------------
+   4. CALENDAR
+   -------------------------------------------------------------------------- */
+.dash-cal { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.dash-cal__head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.dash-cal__title { flex: 1 1 auto; text-align: center; min-width: 8ch; }
+.dash-cal__nav { flex: none; }
+/* One glyph, rotated, rather than a second differently-weighted SVG. */
+.dash-cal__nav--prev svg { transform: rotate(180deg); }
+.dash-cal__today { flex: none; }
+
+.dash-cal__weekdays,
+.dash-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(4px, .8vw, 7px);
+}
+.dash-cal__weekdays {
+  padding-bottom: 2px;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Leading blanks before the 1st. They hold a column so the month starts on the
+   right weekday; the row height comes from the day buttons beside them. */
+.dash-cal__pad { display: block; }
+
+.dash-cal__day {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 2px;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .2s var(--ease), border-color .2s var(--ease);
+}
+.dash-cal__num { font-size: .88rem; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
+.dash-cal__day:hover { background: var(--butter-soft); }
+.dash-cal__day:focus-visible { outline: 2px solid rgba(86, 49, 132, .45); outline-offset: 2px; }
+/* Today is an underline, not a colour — it must survive on top of any phase. */
+.dash-cal__day.is-today .dash-cal__num {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+.dash-cal__day.is-selected { border-color: var(--navy); }
+
+/* The phase marker. Each phase gets a DIFFERENT SHAPE as well as a different
+   hue, so the calendar still reads under colour blindness or in greyscale. */
+.dash-cal__mark { width: 15px; height: 4px; border-radius: 2px; }
+.dash-cal__symp {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ph-symptom);
+}
+
+/* period — solid fill, solid bar */
+.dash-cal__day[data-phase='period'] { background: color-mix(in srgb, var(--ph-period) 22%, transparent); }
+.dash-cal__day[data-phase='period'] .dash-cal__mark { background: var(--ph-period); }
+
+/* predicted — dashed outline, hollow bar */
+.dash-cal__day[data-phase='predicted'] { border-style: dashed; border-color: var(--ph-period); }
+.dash-cal__day[data-phase='predicted'] .dash-cal__mark {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ph-predicted);
+}
+
+/* fertile — soft fill, dotted bar */
+.dash-cal__day[data-phase='fertile'] { background: color-mix(in srgb, var(--ph-fertile) 26%, transparent); }
+.dash-cal__day[data-phase='fertile'] .dash-cal__mark {
+  background: radial-gradient(circle, var(--ph-ovulation) 55%, transparent 56%) 0 0 / 5px 4px repeat-x;
+}
+
+/* ovulation — solid fill, diamond */
+.dash-cal__day[data-phase='ovulation'] { background: color-mix(in srgb, var(--ph-ovulation) 20%, transparent); }
+.dash-cal__day[data-phase='ovulation'] .dash-cal__mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--ph-ovulation);
+  transform: rotate(45deg);
+}
+
+/* pms — warm fill, dashed bar */
+.dash-cal__day[data-phase='pms'] { background: color-mix(in srgb, var(--ph-pms) 30%, transparent); }
+.dash-cal__day[data-phase='pms'] .dash-cal__mark {
+  background: linear-gradient(90deg, var(--ph-pms) 0 4px, transparent 4px 7px) 0 0 / 7px 4px repeat-x;
+}
+
+/* Selected-day detail. Reachable by tap AND keyboard — the old calendar put
+   this information behind :hover only, which does not exist on a phone. */
+.dash-cal__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: var(--cream-2);
+  font-size: .86rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.dash-cal__detail b { font-size: .92rem; color: var(--navy); }
+
+.dash-cal__legend { display: grid; gap: 10px; }
+.dash-cal__legend li { display: flex; align-items: flex-start; gap: 10px; }
+.dash-cal__legend b { display: block; font-size: .86rem; font-weight: 600; color: var(--navy); }
+.dash-cal__legend small { display: block; font-size: .8rem; line-height: 1.45; color: var(--muted); }
+
+/* The legend swatch mirrors the cell treatment, marker shape included. */
+.dash-cal__swatch {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  position: relative;
+}
+.dash-cal__swatch::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+}
+.dash-cal__legend li[data-phase='period'] .dash-cal__swatch { background: color-mix(in srgb, var(--ph-period) 22%, transparent); }
+.dash-cal__legend li[data-phase='period'] .dash-cal__swatch::after { background: var(--ph-period); }
+.dash-cal__legend li[data-phase='predicted'] .dash-cal__swatch { border-style: dashed; border-color: var(--ph-period); }
+.dash-cal__legend li[data-phase='predicted'] .dash-cal__swatch::after { box-shadow: inset 0 0 0 1.5px var(--ph-predicted); }
+.dash-cal__legend li[data-phase='fertile'] .dash-cal__swatch { background: color-mix(in srgb, var(--ph-fertile) 26%, transparent); }
+.dash-cal__legend li[data-phase='fertile'] .dash-cal__swatch::after {
+  background: radial-gradient(circle, var(--ph-ovulation) 55%, transparent 56%) 0 0 / 5px 4px repeat-x;
+}
+.dash-cal__legend li[data-phase='ovulation'] .dash-cal__swatch { background: color-mix(in srgb, var(--ph-ovulation) 20%, transparent); }
+.dash-cal__legend li[data-phase='ovulation'] .dash-cal__swatch::after {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--ph-ovulation);
+  transform: translateX(-50%) rotate(45deg);
+}
+.dash-cal__legend li[data-phase='pms'] .dash-cal__swatch { background: color-mix(in srgb, var(--ph-pms) 30%, transparent); }
+.dash-cal__legend li[data-phase='pms'] .dash-cal__swatch::after {
+  background: linear-gradient(90deg, var(--ph-pms) 0 4px, transparent 4px 7px) 0 0 / 7px 4px repeat-x;
+}
+.dash-cal__legend li[data-phase='symptom'] .dash-cal__swatch { background: var(--cream-2); }
+.dash-cal__legend li[data-phase='symptom'] .dash-cal__swatch::after {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  bottom: 9px;
+  background: var(--ph-symptom);
+}
+
+/* Seven columns inside a 286px card give a 37px cell at 360px, and `aspect-ratio: 1`
+   then caps the HEIGHT at that width too — so the day button, the primary control
+   on this screen, is 37×37. Trade the square for a real minimum height at the two
+   narrow widths; `aspect-ratio: auto` is load-bearing, min-height alone cannot
+   beat the ratio. */
+@media (max-width: 420px) {
+  .dash-cal__weekdays,
+  .dash-cal__grid { gap: 3px; }
+  .dash-cal__day {
+    aspect-ratio: auto;
+    min-height: 44px;
+    border-radius: 10px;
+    padding: 4px 1px;
+  }
+  .dash-cal__num { font-size: .8rem; }
+  .dash-cal__mark { width: 12px; }
+}
+
+/* --------------------------------------------------------------------------
+   5. UPCOMING
+   -------------------------------------------------------------------------- */
+.dash-upcoming { display: flex; flex-direction: column; }
+.dash-upcoming__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 13px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.dash-upcoming__item:first-child { border-top: 0; padding-top: 0; }
+.dash-upcoming__marker {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 3px;
+}
+.dash-upcoming__item[data-phase='pms'] .dash-upcoming__marker { background: var(--ph-pms); }
+.dash-upcoming__item[data-phase='predicted'] .dash-upcoming__marker { background: var(--ph-predicted); }
+.dash-upcoming__item[data-phase='fertile'] .dash-upcoming__marker { background: var(--ph-fertile); }
+.dash-upcoming__item[data-phase='ovulation'] .dash-upcoming__marker {
+  background: var(--ph-ovulation);
+  transform: rotate(45deg);
+}
+.dash-upcoming__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+/* --------------------------------------------------------------------------
+   6. PLAN + INSIGHTS
+   -------------------------------------------------------------------------- */
+.dash-plan { display: flex; flex-direction: column; gap: 14px; }
+.dash-plan__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.dash-plan__item:last-of-type { border-bottom: 0; padding-bottom: 0; }
+/* Not a data row — the "Manage subscriptions" link that closes the list. Given a
+   display so it is not a list-item, like every other <li> in this area. */
+.dash-plan__more { display: flex; }
+
+.dash-insights { display: flex; flex-direction: column; gap: 14px; }
+.dash-insight { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+.dash-insight > span:last-child { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.dash-insight__icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: var(--butter-soft);
+  color: var(--forest-2);
+}
+.dash-insight__icon svg { width: 17px; height: 17px; }
+/* Tone shifts the icon tile only, and only between the three sanctioned status
+   fills — the card itself stays --surface, never a coloured panel. */
+.dash-insight[data-tone='good'] .dash-insight__icon { background: #e1f0e7; color: #3d8b5c; }
+.dash-insight[data-tone='warning'] .dash-insight__icon { background: #fbf0da; color: #b8863a; }
+
+/* --------------------------------------------------------------------------
+   7. TREND — labelled bars, so the number is readable without reading a pixel
+   height off an axis.
+   -------------------------------------------------------------------------- */
+.dash-trend { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* The bar row only. The summary sentence is a SIBLING of this grid, never a
+   child of it: `grid-column: 1 / -1` resolves against the EXPLICIT grid, and
+   every track here is implicit (grid-auto-flow), so `-1` collapsed to `span 1`
+   and squeezed the sentence into one ~42px bar column — where it painted
+   outside the card at 360-560px. */
+.dash-trend__bars {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  align-items: end;
+  gap: 10px;
+  min-height: 180px;
+  padding-top: 8px;
+}
+.dash-trend__item {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  justify-items: center;
+  gap: 6px;
+  height: 100%;
+  min-width: 0;
+}
+.dash-trend__bar {
+  width: min(100%, 44px);
+  min-height: 6px;
+  align-self: end;
+  border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, var(--lilac), var(--forest-2));
+}
+.dash-trend__value { font-size: .92rem; font-weight: 600; color: var(--navy); }
+.dash-trend__label { font-size: .75rem; color: var(--muted); }
+/* Full-width sentence under the whole chart. `anywhere` because a 360px card
+   cannot break "measured" any other way. */
+.dash-trend__summary { overflow-wrap: anywhere; }
+
+/* --------------------------------------------------------------------------
+   8. LOGGED HISTORY
+   -------------------------------------------------------------------------- */
+.dash-log { display: flex; flex-direction: column; }
+.dash-log__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 13px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.dash-log:first-of-type > .dash-log__item:first-child { border-top: 0; padding-top: 0; }
+.dash-log__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.dash-log__actions { display: flex; align-items: center; gap: 8px; flex: none; }
+/* A user's own words — quoted, italic, and allowed to wrap anywhere so a long
+   unbroken string cannot push the card sideways at 360px. */
+.dash-log__note { font-style: italic; overflow-wrap: anywhere; }
+/* The inline edit form takes the whole row rather than squeezing beside it. */
+.dash-log__edit { width: 100%; }
+
+.dash-dots { display: inline-flex; gap: 4px; }
+.dash-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cream-2);
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+.dash-dots span.on { background: var(--forest-2); box-shadow: none; }
+
+/* --------------------------------------------------------------------------
+   9. FORMS — chips, per-symptom intensity, inline messages
+   -------------------------------------------------------------------------- */
+.dash-fieldset { display: grid; gap: 10px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.dash-fieldset legend { padding: 0; }
+
+.dash-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+/* .chip-opt is `flex:1 1 0` for the size selector on a PDP; in a free-form tag
+   cloud that stretches a lone chip across the row, so opt out of the grow. */
+.dash-chips .chip-opt { flex: 0 1 auto; min-width: 0; padding: 8px 14px; font-size: .88rem; }
+
+.dash-levels { display: flex; flex-direction: column; gap: 10px; }
+/* Mild / Moderate / Severe. app.css's bare `.seg button` computes to ~30px,
+   which is the smallest control in the member area and sits on the dashboard's
+   main logging form. Grown here on touch only, so the desktop segmented
+   control keeps its compact rhythm. */
+@media (pointer: coarse) {
+  .dash-levels .seg { padding: 4px; }
+  .dash-levels .seg button {
+    min-height: 44px;
+    min-width: 68px;
+    padding: 9px 14px;
+    font-size: .85rem;
+  }
+  .dash-chips .chip-opt { min-height: 44px; padding: 11px 14px; }
+}
+.dash-levels__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.dash-levels__name { font-size: .9rem; font-weight: 600; color: var(--navy); }
+
+.dash-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: .86rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.dash-msg svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.dash-msg--ok { color: var(--forest-2); }
+.dash-msg--err { color: #b03b57; }
+
+/* --------------------------------------------------------------------------
+   10. CONSENT + PRIVACY
+   -------------------------------------------------------------------------- */
+.dash-consent { gap: 12px; }
+.dash-consent .m-body { max-width: 62ch; }
+.dash-consent__list { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.dash-consent__list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  font-size: .9rem;
+  line-height: 1.55;
+  color: var(--ink);
+  max-width: 68ch;
+}
+.dash-consent__list svg { width: 18px; height: 18px; margin-top: 3px; color: var(--forest-2); }
+.dash-consent__list b { color: var(--navy); }
+
+.dash-privacy .m-confirm { width: 100%; }
+.dash-import { border-color: var(--line); }
+
+/* --------------------------------------------------------------------------
+   11. NARROW SCREENS — everything must survive 360px without side-scrolling.
+   -------------------------------------------------------------------------- */
+@media (max-width: 560px) {
+  .dash-log__item { align-items: flex-start; }
+  .dash-log__actions { width: 100%; justify-content: flex-end; }
+  /* The name and its three-option scale each take a full row rather than
+     fighting over one — at 360px the scale had ~150px to hold three buttons. */
+  .dash-levels__row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .dash-levels .seg { display: flex; width: 100%; }
+  .dash-levels .seg button { flex: 1 1 0; }
+  .dash-trend__bars { min-height: 150px; gap: 6px; }
+  .dash-trend__bar { width: min(100%, 30px); }
+  .dash-ring { padding-bottom: 30px; }
+
+  /* Type floor — these render identically at 360px and 1512px otherwise. */
+  .dash-cal__weekdays { font-size: .78rem; letter-spacing: .03em; }
+  .dash-trend__label { font-size: .82rem; }
+}

@@ -1,0 +1,163 @@
+/* ===== BASE: tokens, reset, buttons, utilities ===== */
+/* ============================================================
+   Femi9 - organic period care  ·  LAVENDER EDITION
+   Palette: premium pastels — lavender / plum-purple + golden-gold accent
+   Type: Urbanist (matches femi9.in)  ·  single soft light theme
+   ============================================================ */
+
+:root{
+  --display:    "Instrument Sans", "Urbanist", system-ui, sans-serif;
+  --font-body:  "Urbanist", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* surfaces (soft lavender + pale gold) */
+  --cream:      #FBF9FF;
+  --cream-2:    #F2ECFB;
+  /* Card/panel surface. Sits a touch above --cream so elevation still reads,
+     but tinted toward warm off-white rather than pure #fff. */
+  --surface:    #FDFCFA;
+  --butter:     #FBEFC8;
+  --butter-soft:#FCF6E1;
+  --sage-tint:  #EDE7F9;   /* repurposed → lavender tint */
+  --lilac-tint: #F2ECF9;
+
+  /* brand accent (locked: every CTA is this golden yellow) */
+  --yellow:     #F0C14E;
+  --yellow-deep:#D8A22F;
+
+  /* supporting brand colors (section tints / dark panel only) */
+  --sage:       #B79BD8;   /* repurposed → soft lavender-purple */
+  --lilac:      #C9AEE4;
+  --forest:     #3A2158;   /* deep plum (dark panels) */
+  --forest-2:   #563184;   /* plum-2 */
+
+  /* ink (plum) */
+  --navy:       #34204E;
+  --ink:        #4B3E63;
+  --muted:      #877D9E;
+  --line:       rgba(52,32,78,.13);
+  --line-soft:  rgba(52,32,78,.07);
+
+  /* shape scale */
+  --r-card: 16px;
+  --r-img:  16px;
+  --panel-r: 16px;
+  --r-chip: 999px;
+
+  --shadow-sm: 0 8px 24px rgba(61,44,92,0.06);
+  --shadow:    0 8px 24px rgba(61,44,92,0.06);
+  --shadow-yel:0 20px 44px -20px rgba(216,162,47,.5);
+
+  --maxw: 1200px;
+  --ease: cubic-bezier(.16,1,.3,1);
+
+  /* Height of the sticky header (.nav-in in Nav.css). Anchor offsets read this
+     instead of each re-deriving a magic number — the old ScrollManager used 70
+     against a 76px bar and undershot by 6px on every hash link. */
+  --nav-h: 76px;
+  /* Height of whatever fixed bar is pinned to the bottom of the CURRENT route
+     (PDP buy bar, cart drawer foot, member sheet foot). 0 by default; the sheet
+     that owns a bottom bar re-declares it inside its own mobile media query so
+     toasts and page-end padding can clear it. Consumed by app.css / CartDrawer.css. */
+  --bottom-bar-h: 0px;
+}
+
+/* ---------- reset-ish ---------- */
+*{box-sizing:border-box}
+html{
+  scroll-behavior:smooth;
+  overflow-x:clip;
+  /* Native hash landings (a pasted /#why URL, a same-page anchor) put the target
+     flush with the top of the viewport, i.e. underneath the sticky header. Inset
+     the scrollport instead of duplicating the offset in every caller. */
+  scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top) + 8px);
+}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:var(--cream);
+  color:var(--ink);
+  font-weight:400;
+  font-size:clamp(15px,1.05vw,17px);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  /* Must be `clip`, not `hidden`. `hidden` makes body a scroll container, which
+     silently breaks `position:sticky` for descendants - that would kill the
+     pinned scrub in <pad-exploder>. `clip` blocks horizontal scroll the same
+     way without creating one. */
+  overflow-x:clip;
+}
+/* `overflow: clip` only landed in Safari 16. On iOS 15 and below BOTH the html
+   and body declarations above are dropped as invalid and the site has no
+   horizontal-overflow protection at all, which exposes every fixed-px width
+   inherited from the 1512px artboard. Fall back to `hidden` only where `clip`
+   is genuinely unsupported — accepting the sticky-positioning tradeoff on
+   browsers that could not do the right thing anyway. */
+@supports not (overflow-x: clip){
+  html,body{overflow-x:hidden}
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+h1,h2,h3,h4,.display{font-family:var(--display);color:var(--navy);font-weight:600;line-height:1.05;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0}
+
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(18px,4vw,40px)}
+.section{padding-block:clamp(64px,9vw,120px)}
+
+/* eyebrow (rationed) */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.5em;
+  font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--forest-2);
+}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--yellow);border-radius:2px}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.55em;
+  padding:.85em 1.5em;border-radius:var(--r-chip);
+  font-weight:500;font-size:.98rem;white-space:nowrap;
+  transition:transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+}
+.btn svg{width:1.15em;height:1.15em}
+.btn-primary{background:var(--yellow);color:var(--navy);box-shadow:var(--shadow-yel)}
+.btn-primary:hover{background:var(--yellow-deep);transform:translateY(-2px)}
+.btn-primary:active{transform:translateY(0) scale(.98)}
+.btn-dark{background:var(--forest);color:#fff9ea}
+.btn-dark:hover{background:#2a1746;transform:translateY(-2px)}
+.btn-dark:active{transform:translateY(0) scale(.98)}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--line)}
+.btn-ghost:hover{border-color:var(--navy);transform:translateY(-2px)}
+.btn-ghost:active{transform:translateY(0) scale(.98)}
+.btn-on-forest{background:transparent;color:#fff9ea;border:1.5px solid rgba(255,255,255,.32)}
+.btn-on-forest:hover{border-color:#fff9ea;transform:translateY(-2px)}
+.btn-on-yellow{background:transparent;color:var(--navy);border:1.5px solid rgba(11,42,91,.4)}
+.btn-on-yellow:hover{border-color:var(--navy);transform:translateY(-2px)}
+
+/* ===== REVEAL ANIMATION ===== */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}
+.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
+
+@keyframes floatUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+/* The staggered hero entrance that used to live here keyed off `.hero-copy` and
+   `.hero-art`, neither of which exists in any JSX any more — the landing hero is
+   `.fl-hero__*` in figma-landing.css. Rules that set `opacity:0` on a class that
+   no longer renders are worse than dead: they blank the section the moment
+   anyone reuses the name. Removed. `floatUp` is kept, it is still referenced. */
+
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  *{animation:none !important}
+}
+
+/* Last-resort horizontal-overflow net for the two element types that cannot be
+   made to reflow. This is deliberately narrow — a blanket `*{max-width:100%}`
+   hides layout defects instead of surfacing them, which is how this codebase
+   came to read as though mobile was handled. */
+@media (max-width:560px){
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  pre,code{overflow-x:auto}
+}

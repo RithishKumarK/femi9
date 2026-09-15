@@ -1,0 +1,74 @@
+/* ===== HERO BANNER (rotating hero + promo slides) ===== */
+.hbanner { position: relative; overflow: hidden; touch-action: pan-y; }
+.hbanner-track { display: flex; transition: transform .7s var(--ease); will-change: transform; }
+.hbanner-slide { flex: 0 0 100%; min-width: 0; display: flex; }
+.hbanner-slide > * { width: 100%; }
+
+/* promo slides match the hero's height so the track never jumps */
+.hbanner-promo {
+  width: 100%; display: flex; align-items: center;
+  min-height: calc(100dvh - 70px); padding-block: clamp(40px, 6vw, 64px);
+  position: relative; overflow: hidden;
+}
+.promo-panty {
+  background:
+    radial-gradient(52vw 46vw at 82% 14%, rgba(201, 174, 228, .5), transparent 62%),
+    radial-gradient(46vw 44vw at 8% 88%, rgba(240, 193, 78, .22), transparent 64%);
+}
+.promo-sub {
+  background:
+    radial-gradient(52vw 46vw at 84% 82%, rgba(240, 193, 78, .32), transparent 62%),
+    radial-gradient(48vw 44vw at 10% 12%, rgba(201, 174, 228, .42), transparent 64%);
+}
+.hbanner-promo-in {
+  display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 5vw, 72px);
+  align-items: center; position: relative; z-index: 1;
+}
+.hbanner-promo-copy { max-width: 560px; }
+.hbanner-promo-copy .eyebrow { margin-bottom: 4px; }
+.hbanner-promo-copy h2 {
+  font-size: clamp(2.3rem, 5.4vw, 4.2rem); line-height: 1.03; color: var(--navy);
+  letter-spacing: -.02em; margin-top: 16px;
+}
+.hbanner-promo-copy p {
+  margin-top: 20px; font-size: clamp(1.02rem, 1.4vw, 1.2rem); line-height: 1.6;
+  color: var(--ink); max-width: 46ch;
+}
+.hbanner-promo-copy .hero-actions { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 14px; }
+
+.hbanner-promo-art { position: relative; justify-self: center; width: 100%; max-width: 460px; }
+.promo-frame {
+  position: relative; border-radius: 34px; overflow: hidden; box-shadow: var(--shadow);
+  aspect-ratio: 4 / 5; background: linear-gradient(160deg, #F3ECFB, #E3D2F3);
+}
+.promo-frame--sub { background: linear-gradient(160deg, #FBF3E0, #EFDFB4); }
+.promo-frame svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* dots + next control */
+.hbanner-dots {
+  position: absolute; bottom: clamp(16px, 2.6vw, 30px); left: 50%; transform: translateX(-50%);
+  z-index: 4; display: flex; align-items: center; gap: 10px;
+}
+.hbanner-dot {
+  width: 9px; height: 9px; border-radius: 999px; background: rgba(52, 32, 78, .26);
+  border: none; padding: 0; cursor: pointer; transition: width .35s var(--ease), background .3s;
+}
+.hbanner-dot.on { width: 28px; background: var(--forest-2); }
+.hbanner-next {
+  width: 38px; height: 38px; border-radius: 50%; margin-left: 4px;
+  background: rgba(255, 255, 255, .82); border: 1px solid var(--line-soft); color: var(--navy);
+  display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow-sm);
+  transition: background .2s, transform .2s;
+}
+.hbanner-next:hover { background: var(--surface); transform: scale(1.08); }
+.hbanner-next svg { width: 18px; height: 18px; }
+
+@media (max-width: 860px) {
+  .hbanner-promo-in { grid-template-columns: 1fr; text-align: center; }
+  .hbanner-promo-copy { max-width: none; margin-inline: auto; }
+  .hbanner-promo-copy .hero-actions { justify-content: center; }
+  .hbanner-promo-art { order: -1; max-width: 300px; margin-inline: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hbanner-track { transition: none; }
+}

@@ -1,0 +1,199 @@
+/* ===== CART DRAWER =====
+   Styled to the landing page (.figma-landing) system: Inter for body copy,
+   Instrument Sans for headings, navy #120f2e ink, gold #e7bb4f CTA, lilac
+   #edeaff surfaces and 35px pill buttons. The drawer renders outside
+   .figma-landing (it lives in the app shell), so the tokens are restated here. */
+.drawer{
+  --cd-navy:#120f2e;
+  --cd-deep:#272355;
+  --cd-purple:#4a4286;
+  --cd-gold:#e7bb4f;
+  --cd-gold-hi:#f0c34e;
+  --cd-lilac:#edeaff;
+  --cd-lilac-2:#e3dcff;
+  --cd-copy:#747176;
+  --cd-line:#eceafa;
+}
+
+.overlay{position:fixed;inset:0;background:rgba(18,15,46,.45);opacity:0;visibility:hidden;
+  transition:opacity .3s;z-index:80;backdrop-filter:blur(3px)}
+.overlay.open{opacity:1;visibility:visible}
+/* `visibility:hidden` when closed (delayed until the slide-out finishes) so the
+   drawer's ~10 controls leave the tab order instead of sitting off-screen but
+   still focusable. CartDrawer.tsx also sets `inert`; this is the CSS half. */
+.drawer{position:fixed;top:0;right:0;height:100dvh;width:min(440px,94vw);background:#fff;
+  z-index:90;transform:translateX(100%);visibility:hidden;
+  transition:transform .4s var(--ease),visibility 0s linear .4s;
+  display:flex;flex-direction:column;font-family:"Inter",system-ui,sans-serif;color:var(--cd-navy);
+  box-shadow:-24px 0 70px -34px rgba(18,15,46,.55)}
+.drawer.open{transform:translateX(0);visibility:visible;
+  transition:transform .4s var(--ease),visibility 0s}
+
+/* ---- head ---- */
+.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:24px;border-bottom:1px solid var(--cd-line)}
+.drawer-head h3{margin:0;font-family:"Instrument Sans",sans-serif;font-size:24px;font-weight:600;
+  line-height:1.15;letter-spacing:.01em;color:var(--cd-navy)}
+.drawer-head p{margin:4px 0 0;font-size:13px;color:var(--cd-copy)}
+.drawer-close{width:40px;height:40px;flex:0 0 40px;border-radius:50%;border:0;
+  background:var(--cd-lilac);color:var(--cd-deep);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .25s ease,transform .25s ease}
+.drawer-close:hover{background:var(--cd-lilac-2);transform:rotate(90deg)}
+.drawer-close svg{width:18px;height:18px}
+
+/* ---- body ---- */
+/* overscroll-behavior:contain stops a flick that reaches the end of the list
+   from chaining into the storefront behind the drawer (iOS Safari ignores
+   body{overflow:hidden}; the JS lock in CartDrawer.tsx is the other half). */
+.drawer-body{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding:6px 24px 20px}
+.cart-empty{text-align:center;color:var(--cd-copy);padding:64px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:10px}
+.cart-empty__icon{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;
+  background:var(--cd-lilac);margin-bottom:6px}
+.cart-empty svg{width:34px;height:34px;color:var(--cd-purple)}
+.cart-empty h4{margin:0;font-family:"Instrument Sans",sans-serif;font-size:19px;font-weight:600;color:var(--cd-navy)}
+.cart-empty p{font-size:14px;line-height:1.5}
+.cart-empty .btn{margin-top:14px}
+
+.ci{display:flex;gap:16px;padding:20px 0;border-bottom:1px solid var(--cd-line)}
+.ci:last-child{border-bottom:0}
+.ci-img{width:78px;height:78px;flex-shrink:0;padding:6px;border-radius:14px;
+  border:1px solid var(--cd-line);background:#faf9ff;overflow:hidden}
+.ci-img img{width:100%;height:100%;object-fit:contain}
+.ci-info{flex:1;min-width:0;display:flex;flex-direction:column}
+.ci-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ci-info b{font-family:"Instrument Sans",sans-serif;font-size:16px;font-weight:600;
+  line-height:1.25;color:var(--cd-navy)}
+.ci-price{flex-shrink:0;font-family:"Instrument Sans",sans-serif;font-size:16px;font-weight:600;color:var(--cd-navy)}
+.ci-info small{margin-top:4px;font-size:13px;color:var(--cd-copy)}
+.ci-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.qty{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid #e8e3f4;
+  border-radius:999px;background:#fff}
+.qty button{width:30px;height:30px;border:0;border-radius:50%;background:var(--cd-lilac);color:var(--cd-deep);
+  display:inline-flex;align-items:center;justify-content:center;font-size:1rem;line-height:1;
+  position:relative;transition:background .2s ease}
+.qty button:hover{background:var(--cd-lilac-2)}
+.qty span{min-width:28px;text-align:center;font-size:14px;font-weight:600;color:var(--cd-navy)}
+.ci-remove{padding:0;border:0;background:none;font-family:inherit;font-size:13px;color:var(--cd-copy);
+  transition:color .2s ease}
+.ci-remove:hover{color:var(--cd-purple);text-decoration:underline}
+
+/* ---- touch sizing ----
+   Scoped to coarse pointers so the desktop drawer is pixel-identical, and so
+   touch tablets (768x1024) are covered as well as phones. The +/- steppers and
+   Remove are the only quantity/removal affordances in the drawer — there is no
+   swipe-to-delete — and they shipped at 30x30 and ~52x16. */
+@media (pointer: coarse){
+  /* The painted pill grows a little; the tappable box grows to 44x44 via a
+     transparent ::after so the row rhythm is untouched. The wider gap stops a
+     fingertip spanning both buttons and decrementing when she meant to add. */
+  .qty{gap:6px;padding:5px}
+  .qty button{width:34px;height:34px}
+  .qty button::after{content:"";position:absolute;top:50%;left:50%;
+    transform:translate(-50%,-50%);width:44px;height:44px}
+
+  /* The negative margin absorbs the extra height so `.ci-bottom`'s 14px rhythm
+     is unchanged; the always-on underline replaces a :hover affordance that
+     never fires on touch, where this rendered as plain grey body text. */
+  .ci-remove{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;margin:-12px -4px;
+    font-size:14px;text-decoration:underline;text-underline-offset:3px}
+  .ci-remove:hover,.ci-remove:focus-visible{color:var(--cd-purple)}
+}
+
+/* ---- foot ---- */
+.drawer-foot{padding:22px 24px calc(22px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--cd-line);background:#faf9ff}
+.ship-meter{margin-bottom:18px}
+.drawer-foot .ship-hint{margin:0 0 8px;font-size:13px;color:var(--cd-deep)}
+.drawer-foot .ship-hint b{font-weight:600}
+.ship-bar{height:6px;border-radius:999px;background:var(--cd-lilac);overflow:hidden}
+.ship-bar span{display:block;height:100%;border-radius:999px;
+  background:linear-gradient(90deg,var(--cd-gold),var(--cd-gold-hi));transition:width .4s var(--ease)}
+.drawer-foot .row{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;
+  font-size:14px;color:var(--cd-copy)}
+.drawer-foot .row.total{margin-top:14px;padding-top:14px;margin-bottom:18px;
+  border-top:1px solid var(--cd-line);
+  font-family:"Instrument Sans",sans-serif;font-size:20px;font-weight:600;color:var(--cd-navy)}
+.drawer-foot .btn{width:100%;min-height:54px;padding:14px 24px;border-radius:35px;
+  font-family:inherit;font-size:16px;font-weight:600;
+  transition:transform .3s ease,background .3s ease,color .3s ease,border-color .3s ease}
+.drawer-foot .btn-primary{background:var(--cd-gold);color:#171717;box-shadow:none}
+.drawer-foot .btn-primary:hover{background:var(--cd-gold-hi);transform:translateY(-2px)}
+.drawer-foot .btn-ghost{margin-top:10px;background:#fff;color:var(--cd-navy);border:1px solid var(--cd-navy)}
+.drawer-foot .btn-ghost:hover{background:var(--cd-navy);color:#fff;border-color:var(--cd-navy);transform:translateY(-2px)}
+.cart-empty .btn{min-height:50px;padding:12px 28px;border-radius:35px;font-size:15px;font-weight:600;
+  background:var(--cd-gold);color:#171717;box-shadow:none}
+.cart-empty .btn:hover{background:var(--cd-gold-hi);transform:translateY(-2px)}
+
+@media(max-width:620px){
+  .drawer{width:100vw;
+    /* Below 620px the drawer is the whole viewport, so `--cd-copy` is read at
+       arm's length against white: #747176 fails 4.5:1 at 14px, #615e66 passes. */
+    --cd-copy:#615e66}
+  /* max() so a landscape notch cannot eat the drawer's left edge once
+     viewport-fit=cover lands; identical to 20px on every other device. */
+  .drawer-head,.drawer-body,.drawer-foot{
+    padding-inline:max(20px,env(safe-area-inset-left)) max(20px,env(safe-area-inset-right))}
+  .drawer-head h3{font-size:22px}
+  /* 13px secondary copy: the item count, the variant label (which pack size she
+     is actually buying) and the free-shipping progress line. */
+  .drawer-head p,
+  .ci-info small,
+  .drawer-foot .ship-hint{font-size:14px;line-height:1.45}
+  .drawer-foot .row{font-size:15px}
+}
+
+/* The close button is the ONLY dismiss control on a phone: at <=620px the
+   drawer is `width:100vw`, so no part of the overlay is reachable, and there is
+   no swipe-to-close. 40px was under the floor. */
+@media (pointer: coarse),(max-width:620px){
+  .drawer-close{width:44px;height:44px;flex:0 0 44px}
+  .drawer-close svg{width:20px;height:20px}
+}
+@media (pointer: coarse){
+  /* A tapped button keeps :hover on mobile Safari, leaving the close icon
+     stuck at 90deg. Press feedback instead. */
+  .drawer-close:hover{transform:none}
+  .drawer-close:active{background:var(--cd-lilac-2)}
+}
+@media(prefers-reduced-motion:reduce){
+  .drawer-close:hover,.drawer-foot .btn:hover,.cart-empty .btn:hover{transform:none}
+  .ship-bar span{transition:none}
+}
+
+/* ---- toast ----
+   Centred by an auto margin inside a left/right inset rather than by
+   `left:50%`. With `left:50%; right:auto; width:auto` a fixed box shrink-to-fits
+   against (viewport − left), i.e. 180px on a 360px phone — "Ultra Comfort
+   Overnight Pads added to bag" wrapped into a five-line sliver. The inset pair
+   plus `width:max-content` gives the same centre and the same width on desktop,
+   but lets the box use the full width on a phone.
+
+   `--bottom-bar-h` is a shared token: 0px by default, and the height of the PDP
+   buy bar inside its own mobile media query, so the toast lifts clear of that
+   fixed bar instead of landing on top of it at z-index 100. The `0px` fallback
+   means this is correct whether or not the token is declared.
+
+   `pointer-events:none` because the same action that fires the toast opens the
+   cart drawer — for 2200ms it otherwise sat over the drawer's footer CTA and
+   swallowed the tap. */
+.toast{position:fixed;left:16px;right:16px;
+  bottom:calc(26px + var(--bottom-bar-h,0px) + env(safe-area-inset-bottom));
+  margin-inline:auto;width:max-content;max-width:min(420px,calc(100vw - 32px));
+  transform:translateY(20px);
+  background:var(--forest);color:#fff;padding:13px 22px;border-radius:var(--r-chip);
+  font-size:.92rem;font-weight:400;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:var(--shadow);opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .35s var(--ease),transform .35s var(--ease),visibility 0s linear .35s;z-index:100}
+.toast svg{flex:0 0 19px;width:19px;height:19px;color:var(--yellow)}
+.toast.show{opacity:1;visibility:visible;transform:none;
+  transition:opacity .35s var(--ease),transform .35s var(--ease),visibility 0s}
+/* Only a phone-width toast actually wraps ("Ultra Comfort Overnight Pads added
+   to bag" is two lines at 328px), so tighten and centre the wrap there rather
+   than changing the single-line desktop pill. */
+@media(max-width:620px){
+  .toast{line-height:1.35;text-align:center}
+}

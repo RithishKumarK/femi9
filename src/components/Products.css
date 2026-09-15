@@ -1,0 +1,263 @@
+/* ===== PRODUCTS ===== */
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:44px}
+.sec-head h2{font-size:clamp(2rem,4vw,3.1rem);font-weight:700;max-width:16ch}
+.sec-head p{color:var(--muted);max-width:40ch}
+.ship-note{display:inline-flex;align-items:center;gap:8px;font-size:.86rem;color:var(--forest-2);font-weight:400}
+.ship-note svg{width:17px;height:17px}
+
+.grid-products{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{
+  background: #FDFCFA;border-radius:16px;overflow:hidden;
+  border:1px solid rgba(52, 32, 78, 0.08);
+  display:flex;flex-direction:column;
+  box-shadow: 0 8px 24px rgba(61,44,92,0.06);
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 12px 28px rgba(61,44,92,0.1)}
+/* Positioning context shared by the media link and the reveal-on-hover CTA that
+   sits over it. Not `overflow:hidden` — the CTA is inset well inside the photo,
+   and clipping here would fight the media's own rounded top corners. */
+.card-media-wrap{position:relative;display:block}
+/* `display:block` is load-bearing, not tidiness. This is an <a>, so it is inline
+   by default. It used to be a direct child of `.card` (a flex container), which
+   blockified it for free — but it now sits inside `.card-media-wrap`, a plain
+   block, so nothing blockifies it any more. Left inline, the containing block it
+   offers an absolutely positioned child is the degenerate box of its inline
+   fragments, so `.card-media__image--inside` resolved to width:0 and the whole
+   media area went white on hover with the pack image already faded out. */
+.card-media{position:relative;display:block;aspect-ratio:3/4;background:linear-gradient(160deg,#FFF7DE,#FFEcB8);overflow:hidden;border-radius:16px 16px 0 0;}
+.card-media img{width:100%;height:100%;object-fit:contain;object-position:center;transition:opacity .38s ease,transform .5s var(--ease)}
+.card-media .card-media__image--pack{position:relative;z-index:0;opacity:1}
+.card-media .card-media__image--inside{position:absolute;inset:0;z-index:1;object-fit:cover;opacity:0;transform:scale(1.025)}
+.card:hover .card-media__image--pack,.card:focus-within .card-media__image--pack{opacity:0;transform:scale(.985)}
+.card:hover .card-media__image--inside,.card:focus-within .card-media__image--inside{opacity:1;transform:scale(1)}
+/* ── Reveal-on-hover "Add to cart" ──────────────────────────────────────────
+   Rests just above the photo's lower edge and rises into place with the second
+   image. Hidden with opacity + translate rather than display:none so it can
+   transition at all, and `visibility` rather than pointer-events alone so it is
+   skipped by sequential focus until the card is actually focused — otherwise
+   every card in the grid would take an invisible extra tab stop.
+   z-index 3 clears the .tag (2) and both media images (0/1). */
+.card-quick-add{
+  position:absolute;left:50%;bottom:18px;z-index:3;
+  transform:translate(-50%,10px);
+  min-width:190px;max-width:calc(100% - 32px);min-height:46px;
+  padding:12px 26px;border:none;border-radius:12px;
+  background:#fff;color:var(--navy);
+  font:inherit;font-size:.92rem;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(52,32,78,.16);
+  opacity:0;visibility:hidden;
+  transition:opacity .28s var(--ease),transform .28s var(--ease),
+    visibility .28s var(--ease),background-color .2s ease-out;
+}
+.card:hover .card-quick-add,
+.card:focus-within .card-quick-add{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.card-quick-add:hover{background:#FBF6EF}
+.card-quick-add:active{transform:translate(-50%,0) scale(.98)}
+
+/* The card lifts 6px on hover and the CTA fades in underneath it. Without this
+   the button inherits no motion of its own on a pointer that never leaves the
+   card, so it would pop rather than arrive. */
+@media(prefers-reduced-motion:reduce){
+  .card-quick-add{transition:opacity .01s linear,visibility .01s linear;transform:translate(-50%,0)}
+  .card:hover .card-quick-add,
+  .card:focus-within .card-quick-add{transform:translate(-50%,0)}
+}
+
+/* ── Added-to-bag confirmation ──────────────────────────────────────────────
+   Keyframes live in craft.css; these two buttons opt in. `position:relative`
+   so the ring has something to anchor to, and the ring is drawn on ::after so
+   no extra element is needed in the markup.
+   The class is removed again ~820ms later by useAddPulse, which is also what
+   lets a second click replay it. */
+.add.is-added,
+.card-quick-add.is-added{animation:cr-add-pop .42s var(--ease)}
+/* Only `.add` needs this. `.card-quick-add` is already absolutely positioned
+   above, and absolute is itself a containing block for the ::after ring — listing
+   it here set `position:relative` from a LATER rule of equal specificity, which
+   beat that `position:absolute` and dropped the hover button into normal flow,
+   where it overlapped the card body text. */
+.add{position:relative}
+.add.is-added::after,
+.card-quick-add.is-added::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  border:2px solid currentColor;
+  animation:cr-add-ring .62s var(--ease) forwards;
+  /* The ring is pure decoration expanding past the button's own edge; without
+     this it would swallow the click that spawned it. */
+  pointer-events:none;
+}
+/* The overlay's ring reads against the photo behind it, not the white pill. */
+.card-quick-add.is-added::after{border-color:var(--navy)}
+
+/* ── Which add control a card shows ─────────────────────────────────────────
+   Only cards marked `--quick` (the /shop grid) trade their foot button for
+   the hover overlay. The home page passes no flag, so it keeps the permanent
+   Buy Now it has always had and never renders an overlay at all.
+
+   The swap is done here rather than in JS on purpose — see ProductCard.tsx.
+   A `matchMedia` check only resolves after mount, which would paint Buy Now and
+   then yank it, jumping the height of every card in the grid. */
+@media(hover:hover) and (pointer:fine){
+  .card-foot--quick .add{display:none}
+  /* Nothing left beside the price, so stop distributing space and let the foot
+     collapse to the price block's own height. */
+  .card-foot--quick{justify-content:flex-start;padding-top:12px}
+}
+
+/* Touch keeps Buy Now and never gets the overlay: :hover never fires here, and
+   a hidden button over the photo would otherwise be a target a tap could find
+   while remaining invisible. Mirrors how the hover photo is handled above. */
+@media(hover:none){
+  .card-quick-add{display:none}
+}
+
+.tag{position:absolute;top:12px;left:12px;z-index:2;background:var(--forest-2);color:#fff;
+  font-size:.7rem;font-weight:600;letter-spacing:.04em;padding:5px 11px;border-radius:8px}
+.tag.pink{background:var(--lilac);color:#3a2350}
+.card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card-flow{font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:#563184;font-weight:500}
+.card h3{font-size:1.12rem;font-weight:600;line-height:1.2}
+.card-desc{font-size:.86rem;color:var(--muted);margin-top:2px;line-height:1.55}
+.card-opts{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:9px}
+.card-opts-label{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-right:1px}
+.opt-chip{font-size:.78rem;font-weight:600;color:var(--forest-2);background:var(--sage-tint);border-radius:8px;padding:3px 9px;line-height:1.35}
+.card-opts-suffix{font-size:.74rem;color:var(--muted);margin-left:-1px}
+.card:hover .panty-art{transform:scale(1.03);transition:transform .5s var(--ease)}
+.panty-art{transition:transform .5s var(--ease)}
+.card-foot{margin-top:auto;padding-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.price{display:flex;flex-direction:column;line-height:1}
+.price b{font-size:1.3rem;font-weight:600;color:var(--navy)}
+.price span{font-size:.74rem;color:var(--muted);margin-top:3px}
+.add{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:100px;min-height:40px;padding:10px 20px;border-radius:35px;
+  background:#12123A;color:#ffffff;font-size:.88rem;font-weight:500;
+  border:none;cursor:pointer;transition:background-color .3s ease-out,transform .3s ease-out;
+  flex-shrink:0;text-decoration:none;
+}
+.add:hover,.add:focus-visible{background:#494286;transform:translateY(-2px)}
+/* Touch never fires the :hover lift above, so :active carries the same colour
+   change — it is the only press feedback a phone gets on the primary
+   conversion control. */
+.add:active{background:#494286;transform:translateY(0) scale(.98)}
+.add:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+@media(max-width:1180px){
+  .grid-products{grid-template-columns:repeat(2,1fr);gap:20px}
+}
+@media(max-width:620px){
+  /* Authoritative single-column collapse. responsive.css used to force a 2-up
+     grid here, which clipped the card foot; that rule is being removed. */
+  .grid-products{grid-template-columns:1fr;gap:16px}
+
+  /* The foot is price + Buy Now, stacked so the CTA gets a full-width row
+     instead of whatever the price leaves.
+
+     Do NOT reintroduce `flex-wrap: wrap` with a percentage flex-basis here.
+     figma-landing-responsive.css already sets `flex-direction: column` on this
+     foot at <=900px, and in a COLUMN container `flex-basis: 100%` resolves
+     against the height — an item that cannot fit wraps into a second COLUMN
+     beside the price and shoots off the card, where `.card{overflow:hidden}`
+     silently amputates it. Column + nowrap is the whole fix; `.add` gets its
+     full width from that same sheet's `width: 100%`. */
+  .card-foot{flex-wrap:nowrap;row-gap:12px}
+  .add{flex:0 0 auto;min-width:0;min-height:48px}
+
+  /* Body copy floor. This is the SKU-comparison text (flow, description and
+     the "10 pads · 290mm" unit line) and it was rendering at 11.8-13.8px. */
+  .card-desc{font-size:.9rem;line-height:1.5}
+  .card-flow{font-size:.8rem}
+  .price span{font-size:.8rem}
+
+  /* Absorbs the .card-body padding responsive.css used to set at 560px. The
+     heading/price shrink that lived beside it is dropped: at one card per row
+     there is width for the full type scale. */
+  .card-body{padding:16px 16px 18px}
+}
+
+/* 40px is 4px short of the touch minimum on the card's Buy Now. Raised only for
+   coarse pointers so the desktop card foot keeps its exact current height. */
+@media(pointer:coarse){
+  .add{min-height:44px}
+
+  /* The product name is the card's primary link — tapping it opens the PDP —
+     but it wraps only its <h3>, so its box was the 28px text line. Pad it to 44
+     and pull the padding straight back out with a matching negative margin, so
+     the hit area grows into the space the flex gap already leaves while the copy
+     stays exactly where it was. Deliberately NOT an ::after overlay: that grows
+     the clickable region without growing the element's box, which means neither
+     the mobile-quality gate nor a browser a11y audit can see the target size. */
+  .card-body>a{display:block;padding-block:8px;margin-block:-8px}
+}
+
+/* The "inside the pack" photo is reachable only on :hover / :focus-within, and
+   tapping the card navigates away in the same gesture — so on touch it is a
+   second full-size download that can never be displayed. ProductCard.tsx also
+   gates it out of the markup entirely; this is the belt-and-braces half, and it
+   keeps the pack shot from being faded out by the sticky-hover state iOS leaves
+   behind after a tap. */
+@media(hover:none){
+  .card-media .card-media__image--inside{display:none}
+  .card:hover .card-media__image--pack,
+  .card:focus-within .card-media__image--pack{opacity:1;transform:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .card-media img{transition:none}
+  /* The pulse is confirmation, so it is not simply deleted here: the ring is
+     dropped (it is the part that actually travels) and the button holds a
+     static tint for the same duration, so the press is still answered. */
+  .add.is-added,.card-quick-add.is-added{animation:none}
+  .add.is-added::after,.card-quick-add.is-added::after{animation:none;opacity:.4;transform:none}
+}
+
+/* ===== Touch targets =====
+   The card title is a link wrapping an <h3> and measured 35px tall — the second
+   most-used way into a PDP after the image. Give the anchor the block box its
+   heading already occupies plus a thumb-sized floor. */
+@media (max-width: 900px), (pointer: coarse) {
+  .card-body > a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ===== Landing-page featured rail =====
+   `.grid-products` is FOUR columns and is shared with /shop. The homepage rail
+   is the console's featured set — up to five products, and however many fewer
+   the admin actually flagged (see listFeaturedProducts in
+   @femi9/core/services/products). So the column count is driven by `data-cols`,
+   the real card count: three featured products get three even columns, not
+   three cards and two holes.
+
+   Every rule below carries the attribute selector, in every breakpoint. That is
+   deliberate and not decorative: `.grid-products` is ALSO re-declared at <=900px
+   in styles/figma-landing-responsive.css, which the layout imports after this
+   file, so a plain `.grid-products--featured` would lose the cascade there on
+   source order. Two selectors beat one at any position. If you add a breakpoint,
+   keep the `[data-cols]` on it. */
+.grid-products--featured[data-cols]{grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
+/* A single featured product must not stretch to the full shell — a lone card
+   1500px wide reads as a broken layout, not as an emphasis. */
+.grid-products--featured[data-cols="1"]{grid-template-columns:minmax(0,340px)}
+.grid-products--featured[data-cols="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-products--featured[data-cols="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-products--featured[data-cols="4"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+@media(max-width:1180px){
+  /* Five 1fr tracks below ~1180px puts the card body under 190px and wraps the
+     price away from the Buy button. Three, so five cards break 3 + 2. */
+  .grid-products--featured[data-cols]{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  .grid-products--featured[data-cols="1"]{grid-template-columns:minmax(0,340px)}
+  .grid-products--featured[data-cols="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:900px){
+  .grid-products--featured[data-cols]{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .grid-products--featured[data-cols="1"]{grid-template-columns:minmax(0,340px)}
+}
+@media(max-width:620px){
+  .grid-products--featured[data-cols]{grid-template-columns:minmax(0,1fr);gap:16px}
+}

@@ -1,0 +1,74 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   motion.css — the Lumi9 scroll, site-wide.
+
+   Two rules and one safety property. The safety property is the important one:
+
+     EVERY selector here keys off `[data-reveal]`, an attribute that ONLY
+     JavaScript sets. Nothing the server renders is hidden by this sheet. If
+     the bundle fails to load, an observer is unavailable, or the effect never
+     runs, the page is simply visible — which is the correct failure mode for
+     an entrance animation and the reason this is an attribute rather than the
+     `.reveal` class that base.css already ships.
+
+   base.css's `.reveal` / `.reveal.in` pair is left alone. Nothing in the app
+   adds `.in`, so those rules are inert; they are not this system.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Lumi9's reveal curve — a long, soft settle rather than a snap. */
+  --ease-reveal: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-reveal: 0.7s;
+}
+
+/* ── The reveal ─────────────────────────────────────────────────────────────
+   28px of lift and a fade, over 0.7s. Matches Lumi9 exactly, including the
+   0.12 intersection threshold set in lib/motion.ts. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    transform var(--dur-reveal) var(--ease-reveal);
+}
+
+[data-reveal][data-shown='true'] {
+  opacity: 1;
+  /* `none`, not translateY(0) — a lingering transform keeps the element a
+     containing block for anything fixed or sticky inside it. */
+  transform: none;
+}
+
+/* Reduced motion: the tag is still applied (so the JS path is identical), the
+   travel is not. `observeReveal` also shows these immediately, so this is the
+   belt to that braces. */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0s !important;
+  }
+}
+
+/* ── Parallax ───────────────────────────────────────────────────────────────
+   The transform itself is written by the rAF loop in lib/motion.ts; this only
+   asks the compositor for a layer up front so the first frame does not judder.
+   Decorative only — `data-parallax` never goes on anything a shopper reads. */
+[data-parallax] {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-parallax] {
+    will-change: auto;
+    transform: none !important;
+  }
+}
+
+/* Print has no scroll and therefore no entrance. */
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

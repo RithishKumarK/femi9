@@ -1,0 +1,218 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   pdp-motion.css — interaction motion on the product page.
+
+   Three things live here: the specification accordions open and close instead
+   of snapping, the "frequently bought together" cards reveal their add button
+   on hover, and every add-to-bag control confirms the press.
+
+   Loaded last among the PDP sheets, so it wins over app.css's flat rules
+   without needing !important anywhere.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. ACCORDIONS — Product Information / Specifications / Shipping
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* A <details> collapses to `height: auto`, and `auto` is not an animatable
+   value — which is exactly why these three panels used to snap open. Opting the
+   subtree into `interpolate-size` makes auto interpolable, so ::details-content
+   can be transitioned honestly rather than faked with a hardcoded max-height
+   that clips long spec lists the moment a product gains a row.
+
+   Scoped to .pdp-page, not :root: this changes how EVERY height/width
+   transition to a keyword resolves inside its subtree, and that is not a
+   site-wide behaviour change worth making as a side effect of animating an
+   accordion. */
+.pdp-page {
+  interpolate-size: allow-keywords;
+}
+
+.pdp-page .pdp-accordion-item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  /* content-visibility is transitioned with allow-discrete so the panel's
+     contents stay hidden from find-in-page and the a11y tree until the open
+     animation actually begins, then flip at the far end of the close. */
+  content-visibility: hidden;
+  transition:
+    block-size 340ms var(--cr-ease),
+    content-visibility 340ms var(--cr-ease) allow-discrete;
+}
+
+.pdp-page .pdp-accordion-item[open]::details-content {
+  block-size: auto;
+  content-visibility: visible;
+}
+
+/* Browsers without ::details-content / interpolate-size get no height easing —
+   the panel still opens, it just opens instantly. This fade runs everywhere, so
+   even there the change reads as a transition rather than a jump. It is a
+   separate animation on the BODY precisely so it does not depend on the
+   progressive-enhancement above. */
+.pdp-page .pdp-accordion-item[open] .pdp-accordion-body {
+  animation: pdp-acc-body-in 320ms var(--cr-ease) both;
+}
+
+@keyframes pdp-acc-body-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── The +/- marker ─────────────────────────────────────────────────────────
+   app.css swapped `content: "+"` for `content: "\2212"`, and `content` cannot
+   be transitioned — the glyph just changed. This draws the plus from two
+   gradient bars in a single box instead, so collapsing the vertical bar to zero
+   height MORPHS a plus into a minus, and the whole marker can rotate while it
+   does. Same two characters' worth of meaning, now animatable. */
+.pdp-page .pdp-accordion-summary::after {
+  content: '';
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  background:
+    linear-gradient(currentColor, currentColor) center / 13px 1.6px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 1.6px 13px no-repeat;
+  color: var(--text-soft, #877d9e);
+  transition: transform 340ms var(--cr-ease), background-size 340ms var(--cr-ease);
+}
+
+.pdp-page .pdp-accordion-item[open] .pdp-accordion-summary::after {
+  /* Overrides app.css's `content: "\2212"`, which would otherwise put the glyph
+     back and paint it on top of the bars. */
+  content: '';
+  transform: rotate(180deg);
+  background-size: 13px 1.6px, 1.6px 0;
+}
+
+/* The row is the control, so it gets the affordance — not just the glyph. */
+.pdp-page .pdp-accordion-summary {
+  transition: color 200ms var(--cr-ease);
+}
+
+.pdp-page .pdp-accordion-summary:hover {
+  color: var(--forest-2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. FREQUENTLY BOUGHT TOGETHER — reveal the add button on hover
+   Mirrors the catalog grid exactly (see Products.css) so the two card types
+   behave identically: hover-capable pointers get the reveal, touch keeps a
+   permanently reachable control.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.pdp-page .related-img-wrap {
+  position: relative;
+  display: block;
+}
+
+.pdp-page .related-quick-add {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 3;
+  transform: translate(-50%, 10px);
+  min-width: 62%;
+  max-width: calc(100% - 28px);
+  min-height: 44px;
+  padding: 11px 22px;
+  border: none;
+  border-radius: var(--cr-r-sm);
+  background: #fff;
+  color: var(--navy);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(52, 32, 78, 0.18);
+  opacity: 0;
+  /* visibility, not just opacity: it keeps the hidden button out of sequential
+     focus until the card is actually focused, so a four-card strip does not add
+     four invisible tab stops. */
+  visibility: hidden;
+  transition:
+    opacity 260ms var(--cr-ease),
+    transform 260ms var(--cr-ease),
+    visibility 260ms var(--cr-ease),
+    background-color 200ms ease-out;
+}
+
+.pdp-page .related-card:hover .related-quick-add,
+.pdp-page .related-card:focus-within .related-quick-add {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.pdp-page .related-quick-add:hover {
+  background: var(--cr-wash-cream, #fbf6ef);
+}
+
+.pdp-page .related-quick-add:active {
+  transform: translate(-50%, 0) scale(0.98);
+}
+
+/* Touch: :hover never fires, so the reveal can never happen. Hide it outright
+   rather than leaving an invisible tap target sitting over the photo — the
+   card's own link then owns the whole image, as it did before. */
+@media (hover: none) {
+  .pdp-page .related-quick-add {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. ADD-TO-BAG CONFIRMATION — keyframes from craft.css
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Only the CTA needs this. `.related-quick-add` is already absolutely positioned
+   in section 2, and absolute is itself a containing block for the ::after ring —
+   naming it here would set `position: relative` from a LATER rule of equal
+   specificity, beating that `position: absolute` and dropping the hover button
+   into normal flow. That is exactly the bug this file caused on the catalog
+   card; see the matching note in Products.css. */
+.pdp-page .add-to-bag-btn {
+  position: relative;
+}
+
+.pdp-page .add-to-bag-btn.is-added,
+.pdp-page .related-quick-add.is-added {
+  animation: cr-add-pop 0.42s var(--cr-ease);
+}
+
+.pdp-page .add-to-bag-btn.is-added::after,
+.pdp-page .related-quick-add.is-added::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid currentColor;
+  animation: cr-add-ring 0.62s var(--cr-ease) forwards;
+  /* Decoration that expands past the button's edge; without this it would eat
+     the very click that spawned it. */
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp-page .pdp-accordion-item::details-content,
+  .pdp-page .pdp-accordion-summary::after,
+  .pdp-page .related-quick-add {
+    transition: none;
+  }
+
+  .pdp-page .pdp-accordion-item[open] .pdp-accordion-body {
+    animation: none;
+  }
+
+  /* Confirmation is kept, motion is not: the ring holds still and simply fades
+     rather than travelling outward. */
+  .pdp-page .add-to-bag-btn.is-added,
+  .pdp-page .related-quick-add.is-added {
+    animation: none;
+  }
+
+  .pdp-page .add-to-bag-btn.is-added::after,
+  .pdp-page .related-quick-add.is-added::after {
+    animation: none;
+    opacity: 0.4;
+    transform: none;
+  }
+}

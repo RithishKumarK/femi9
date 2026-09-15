@@ -1,0 +1,245 @@
+/* craft-footer.css — de-slab polish overrides for the footer.
+   Loaded after Footer.css / app.css so these plain selectors win on source order.
+   Uses tokens from craft.css. Layout untouched — only depth, one soft signature
+   transition, and two quiet FUNCTIONAL lifts (newsletter + socials) are added.
+   Real selectors confirmed against src/components/Footer.css:
+   .footer / .footer-topcurve (new div) / .nl-form / .nl-submit /
+   .footer-social a / .footer-bottom.
+
+   Restraint (Chanel's rule): the boldness lives in ONE place — the taped seam.
+   The three link columns are left deliberately quiet. The first pass's gold
+   heading-rules and per-link slide were cut: they de-slabbed nothing, scattered
+   the gold accent, and added a second motion direction — the classic tells. */
+
+/* ── 1. DEPTH ──────────────────────────────────────────────────────────────
+   The footer was one flat #35234e rectangle — the biggest slab on the site.
+   Swap the solid fill for the shared directional navy wash and let a faint
+   lilac light fall from where the section above meets it, so the mass reads as
+   a lit surface. The wash bottom stays fully opaque navy — brand unchanged. */
+.footer {
+  background:
+    radial-gradient(135% 92% at 50% -16%, rgba(201, 174, 228, 0.13), transparent 58%),
+    var(--cr-wash-navy);
+}
+
+/* ── 2. SIGNATURE — a strip of tape across the seam ────────────────────────
+   The footer meets the page along a straight seam, and one long strip of
+   translucent lilac tape runs across it: the top half lies on the page, the
+   bottom half on the plum panel, so the tape's translucency shows in the two
+   tones it takes on. Torn ends, a lit top edge, faint fibres and a hair of tilt
+   make it read as tape pressed on by hand rather than a drawn rule.
+
+   The footer clips its own overflow (the watermark depends on it), so the tape
+   cannot hang above the footer's box. Instead .footer-topcurve paints a thin
+   band of PAGE colour across the top of the footer - moving the visible seam a
+   few pixels down - and the tape is laid across that seam:
+     ::before  the page-coloured band; its straight lower edge is the seam
+     ::after   the tape
+     filter    one soft shadow for both, where they lie over the panel
+   All of it sits inside the footer's top padding, above the content. */
+.footer-topcurve {
+  --footer-seam: clamp(22px, 2.4vw, 34px);
+  --footer-tape-h: clamp(26px, 2.6vw, 38px);
+  --footer-tape-end-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 40' preserveAspectRatio='none'%3E%3Cpolygon points='14 0 5 0 8 4 2 8 6 12 1 17 5 21 0 26 4 30 1 35 6 40 14 40'/%3E%3C/svg%3E");
+  --footer-tape-end-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 40' preserveAspectRatio='none'%3E%3Cpolygon points='0 0 9 0 6 4 12 8 8 13 13 17 9 22 14 27 10 31 13 36 8 40 0 40'/%3E%3C/svg%3E");
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: calc(var(--footer-seam) + var(--footer-tape-h));
+  z-index: 1;
+  pointer-events: none;
+  background: none;
+  filter: drop-shadow(0 6px 10px rgba(16, 6, 34, 0.28));
+}
+
+/* The page surface. Its colour is set per page in craft-home.css. */
+.footer-topcurve::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--footer-seam);
+  background: var(--footer-edge-fill, #ffffff);
+}
+
+/* The tape: lit top edge and a slightly deeper lower edge, faint fibres, and a
+   translucent lilac body; torn at both ends by the mask. */
+.footer-topcurve::after {
+  content: '';
+  position: absolute;
+  left: clamp(10px, 2.2vw, 36px);
+  right: clamp(10px, 2.2vw, 36px);
+  top: calc(var(--footer-seam) - var(--footer-tape-h) / 2);
+  height: var(--footer-tape-h);
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.4) 0,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0) 78%,
+      rgba(52, 32, 78, 0.14) 100%),
+    repeating-linear-gradient(90deg,
+      rgba(255, 255, 255, 0.05) 0 2px,
+      rgba(255, 255, 255, 0) 2px 7px),
+    linear-gradient(90deg,
+      rgba(216, 198, 238, 0.8),
+      rgba(201, 174, 228, 0.68) 50%,
+      rgba(214, 194, 238, 0.76));
+  -webkit-mask:
+    var(--footer-tape-end-left) left center / 14px 100% no-repeat,
+    linear-gradient(#000, #000) center / calc(100% - 26px) 100% no-repeat,
+    var(--footer-tape-end-right) right center / 14px 100% no-repeat;
+  mask:
+    var(--footer-tape-end-left) left center / 14px 100% no-repeat,
+    linear-gradient(#000, #000) center / calc(100% - 26px) 100% no-repeat,
+    var(--footer-tape-end-right) right center / 14px 100% no-repeat;
+  transform: rotate(-0.4deg);
+  transform-origin: 0 50%;
+}
+
+/* Phone: a narrower strip and a thinner band, so the seam spends little height. */
+@media (max-width: 640px) {
+  .footer-topcurve {
+    --footer-seam: 20px;
+    --footer-tape-h: 24px;
+    filter: drop-shadow(0 4px 8px rgba(16, 6, 34, 0.24));
+  }
+}
+
+/* ── 2b. ORGANIC TEXTURE ───────────────────────────────────────────────────
+   A few large, slow tonal shapes under the existing watermark: lavender at
+   3-3.5% and one deeper plum band grounding the bottom at 9%. Kept this low on
+   purpose - any stronger and the band edges draw lines through the link
+   columns. No filter, so it costs nothing to scroll past. */
+.footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 600' preserveAspectRatio='none'%3E%3Cpath fill='%23c9aee4' fill-opacity='.035' d='M-40 470C200 380 420 450 650 370C880 290 1040 330 1200 250C1320 190 1410 200 1480 160V640H-40Z'/%3E%3Cpath fill='%23170a2b' fill-opacity='.09' d='M-40 560C250 490 520 570 770 500C990 440 1190 480 1480 390V640H-40Z'/%3E%3Cpath fill='%23ffffff' fill-opacity='.02' d='M1480 40C1360 110 1250 90 1140 160C1040 225 1080 300 1190 318C1310 338 1410 270 1480 290Z'/%3E%3Cpath fill='%23c9aee4' fill-opacity='.03' d='M-40 150C90 120 190 180 222 268C252 352 158 402 -40 386Z'/%3E%3C/svg%3E") 50% 100% / 100% 100% no-repeat;
+}
+
+/* ── 2c. ENTRANCE — the tape is laid across, once ─────────────────────────
+   Footer.tsx marks the edge "pending" only when the footer starts off-screen,
+   and "in" the first time it scrolls into view: the strip then unrolls from
+   left to right. The resting state is the default, so no script, or reduced
+   motion, simply shows the tape already in place. */
+.footer-topcurve[data-edge='pending']::after {
+  clip-path: inset(0 100% 0 0);
+}
+
+.footer-topcurve[data-edge='in']::after {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1.2s var(--cr-ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-topcurve[data-edge]::after {
+    clip-path: none;
+    transition: none;
+  }
+}
+
+/* ── 3. NEWSLETTER (functional lift) ───────────────────────────────────────
+   Raise the bare underline field off the flat fill into a soft translucent
+   capsule with a gold focus glow, and give SUBSCRIBE a quiet gold pill so it
+   stops reading as bare text on the slab. */
+.nl-form {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--cr-r-sm);
+  background: rgba(255, 255, 255, 0.055);
+  /* Extra right/vertical padding so the SUBSCRIBE pill sits INSIDE the capsule
+     with clear margin — it used to touch/poke the rounded edge. */
+  padding: 6px 7px 6px 18px;
+  /* A navy-tinted drop shadow is invisible on a navy mass, so depth here is a
+     single lit top edge (inset highlight) rather than an elevation token — the
+     one "lit surface" technique this pass reuses for both lifted controls. */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color var(--cr-dur) var(--cr-ease),
+              background var(--cr-dur) var(--cr-ease),
+              box-shadow var(--cr-dur) var(--cr-ease);
+}
+.nl-form:focus-within {
+  border-color: rgba(240, 193, 78, 0.5);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07),
+              0 0 0 3px rgba(240, 193, 78, 0.13);
+}
+
+.nl-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Height kept below the capsule's inner box so it never touches the edge. */
+  padding: 9px 20px;
+  border-radius: var(--cr-r-xs);
+  /* A SOLID gold pill — a real, confident CTA that matches the site's other gold
+     buttons, instead of a washed-out translucent box that read as a stray slab. */
+  background: var(--yellow, #f0c14e);
+  color: #34204e; /* navy text on gold — high contrast, brand-consistent */
+  font-weight: 700;
+  box-shadow: 0 6px 16px -6px rgba(240, 193, 78, 0.45);
+  transition: background var(--cr-dur) var(--cr-ease),
+              transform var(--cr-dur) var(--cr-ease),
+              box-shadow var(--cr-dur) var(--cr-ease);
+}
+.nl-submit:hover {
+  background: #ffcf5f;
+  color: #34204e;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -8px rgba(240, 193, 78, 0.6);
+}
+/* Preserve the 44px mobile tap target after the padding override above. */
+@media (max-width: 900px), (pointer: coarse) {
+  .nl-submit { min-height: 44px; }
+}
+
+/* ── 4. SOCIAL BUTTONS (functional lift) ───────────────────────────────────
+   A faint resting fill so they are not bare rings on the flat mass, then a calm
+   gold-tinted lift on hover. Deliberately NO box-shadow: a navy-tinted
+   elevation token is invisible on a navy surface, so the readable cue is the
+   fill + translate alone. One easing, shared with the rest of the pass. */
+.footer-social a {
+  background: rgba(255, 255, 255, 0.05);
+  /* Same lit top edge as the newsletter capsule — one shared "bevel" so the two
+     lifted controls read as one vocabulary, not two effects. Kept out of the
+     transition so it stays constant through the hover lift. */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: background var(--cr-dur) var(--cr-ease),
+              border-color var(--cr-dur) var(--cr-ease),
+              transform var(--cr-dur) var(--cr-ease);
+}
+.footer-social a:hover {
+  background: rgba(240, 193, 78, 0.16);
+  border-color: rgba(240, 193, 78, 0.55);
+  transform: translateY(-3px);
+}
+
+/* ── 5. BOTTOM BAR ─────────────────────────────────────────────────────────
+   Replace the hard full-width rule with a hairline that fades out at both ends,
+   so the divider stops reading as another slab edge. */
+.footer-bottom {
+  border-top: 0;
+}
+.footer-bottom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.18) 22%,
+    rgba(255, 255, 255, 0.18) 78%,
+    rgba(255, 255, 255, 0));
+}
+
+/* ── Accessibility floor: honour reduced-motion for the one transform hover. ─ */
+@media (prefers-reduced-motion: reduce) {
+  .footer-social a:hover {
+    transform: none;
+  }
+}

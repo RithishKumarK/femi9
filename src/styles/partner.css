@@ -1,0 +1,1026 @@
+/* ============================================================
+   PARTNER — "Become a Femi9 Partner" (Opportunities)
+   Reuses base tokens + helpers (.wrap .section .eyebrow .btn .display).
+   Everything here is scoped under .partner / .pt- to avoid collisions.
+   ============================================================ */
+
+/* Body / UI / labels / small sub-headings + eyebrow → Hanken Grotesk. */
+.partner,
+.partner h3,
+.partner h4,
+.partner .eyebrow,
+.pt-hero-sub,
+.pt-stat-l,
+.pt-head p,
+.pt-step-t,
+.pt-step-d {
+  font-family: "Hanken Grotesk", system-ui, sans-serif !important;
+}
+
+/* Display / headings + the big stat & step numerals → Newsreader serif, matching
+   the site-wide re-skin (home hero, /about, /products). Listed AFTER the Hanken
+   block so `.display` wins over the h3/h4 reset for the statements that opt into
+   it (the bento feature title, the success message, the closing line). This whole
+   set used to be forced to Instrument Sans !important, which is why Opportunities
+   read sans while every other page read serif. */
+.partner h1,
+.partner h2,
+.partner .display,
+.pt-hero-title,
+.pt-head h2,
+.pt-voices-title,
+.pt-stat-n {
+  font-family: "Newsreader", Georgia, "Times New Roman", serif !important;
+}
+
+.partner { position: relative; }
+
+/* ---------- 1 · HERO ---------- */
+.pt-hero {
+  position: relative;
+  overflow: clip;               /* contain the ambient glow — no page overflow */
+  padding-block: clamp(56px, 9vw, 120px) clamp(40px, 6vw, 76px);
+}
+.pt-hero-glow {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 120%;
+  pointer-events: none;
+  z-index: 0;
+  /* Was a lavender (top-right) + gold (bottom-left) radial wash — the gold was the
+     yellow "tail" on this page. Removed for the clean uniform-white hero that
+     matches /blog, /products and the home page. */
+  background: none;
+}
+.pt-hero-inner { position: relative; z-index: 1; max-width: 840px; }
+.pt-hero-inner .eyebrow { margin-bottom: 18px; }
+
+.pt-hero-title {
+  font-size: clamp(2.5rem, 6.4vw, 4.7rem);
+  line-height: 1.02;
+  color: var(--navy);
+  max-width: 15ch;
+}
+.pt-hero-sub {
+  margin-top: clamp(16px, 2vw, 24px);
+  font-size: clamp(1.06rem, 1.55vw, 1.28rem);
+  line-height: 1.55;
+  color: var(--ink);
+  max-width: 55ch;
+}
+.pt-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: clamp(24px, 3vw, 34px);
+}
+.pt-hero-cta .btn { min-height: 48px; }
+.pt-hero-note {
+  margin-top: 18px;
+  font-size: .9rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ---------- 2 · STATS BAND ---------- */
+.pt-stats-wrap { padding-block: clamp(8px, 2vw, 20px); }
+.pt-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(14px, 2.4vw, 30px);
+  background: #ffffff;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(24px, 3.4vw, 42px) clamp(20px, 3vw, 40px);
+  box-shadow: var(--shadow-sm);
+}
+.pt-stat { text-align: left; }
+.pt-stat-n {
+  font-size: clamp(1.7rem, 3.4vw, 2.9rem);
+  line-height: 1;
+  color: var(--navy);
+  font-weight: 600;
+}
+.pt-stat-l {
+  margin-top: 8px;
+  font-size: clamp(.82rem, 1vw, .95rem);
+  line-height: 1.4;
+  color: var(--ink);
+  max-width: 22ch;
+}
+
+/* ---------- shared section head ---------- */
+.pt-head { max-width: 640px; margin-bottom: clamp(30px, 4vw, 52px); }
+.pt-head h2 { font-size: clamp(1.9rem, 4vw, 3rem); color: var(--navy); }
+.pt-head p {
+  margin-top: 14px;
+  font-size: clamp(1rem, 1.3vw, 1.14rem);
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+/* ---------- 3 · HOW IT WORKS ---------- */
+.pt-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(16px, 2vw, 26px);
+}
+.pt-step {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(22px, 2.4vw, 30px);
+  box-shadow: var(--shadow-sm);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.pt-step:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.pt-step-n {
+  display: block;
+  font-size: clamp(2.2rem, 3vw, 2.8rem);
+  line-height: 1;
+  color: var(--yellow-deep);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.pt-step-t {
+  font-size: 1.16rem;
+  color: var(--navy);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.pt-step-d {
+  font-size: .96rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* ---------- 4 · WHY PARTNER (bento) ----------
+   A mixed bento: tall and square tiles in the brand purple stack a large line
+   icon over centred copy; wide tiles in deep plum put the icon beside the copy.
+   Placement comes from DOM order (BENEFITS in Partner.tsx) plus spans, packed
+   with `grid-auto-flow: dense`, so on desktop the grid reads:
+     [ feature ][ flexible income ········ ]
+     [ feature ][ work from home ][ trust  ]
+     [ training & support ······ ][ invest ] */
+.pt-why-head {
+  max-width: 820px;
+  margin-inline: auto;
+  text-align: center;
+}
+.pt-why-head h2 {
+  font-size: clamp(2.3rem, 5.2vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+}
+.pt-why-accent { color: var(--forest-2, #563184); }
+
+.pt-why-grid {
+  --why-purple: var(--fl-purple, #4a4286);
+  --why-deep: var(--fl-deep, #272355);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(clamp(190px, 17vw, 240px), auto);
+  grid-auto-flow: row dense;
+  gap: clamp(14px, 1.8vw, 22px);
+}
+
+.pt-feature,
+.pt-benefit {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  border-radius: clamp(18px, 2vw, 26px);
+  color: #fff;
+  box-shadow: var(--shadow);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.pt-feature:hover,
+.pt-benefit:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px -22px rgba(39, 35, 85, .55);
+}
+
+.pt-feature-ic,
+.pt-benefit-ic {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  color: #fff;
+}
+
+/* Tall purple tile, first column, two rows. */
+.pt-feature {
+  grid-column: 1;
+  grid-row: span 2;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: clamp(28px, 3vw, 40px) clamp(22px, 2.4vw, 32px);
+  text-align: center;
+  background: var(--why-purple);
+}
+.pt-feature::before {
+  content: "";
+  position: absolute;
+  inset: auto -20% -30% auto;
+  width: 60%;
+  height: 70%;
+  background: radial-gradient(circle at 70% 70%, rgba(240, 193, 78, .28), transparent 62%);
+  pointer-events: none;
+}
+.pt-feature-ic svg { width: clamp(64px, 6vw, 84px); height: clamp(64px, 6vw, 84px); }
+.pt-feature-t {
+  position: relative;
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  color: #fff;
+  line-height: 1.1;
+}
+.pt-feature-d {
+  position: relative;
+  font-size: clamp(.95rem, 1.1vw, 1.05rem);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .86);
+  max-width: 34ch;
+}
+.pt-feature-tag {
+  position: relative;
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  gap: .5em;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 8px 14px;
+  border-radius: var(--r-chip);
+  color: var(--navy);
+  background: var(--yellow);
+}
+
+.pt-benefit { padding: clamp(22px, 2.4vw, 32px); }
+.pt-benefit-ic svg { width: clamp(52px, 4.6vw, 64px); height: clamp(52px, 4.6vw, 64px); }
+.pt-benefit-t {
+  font-size: clamp(1.1rem, 1.35vw, 1.3rem);
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.pt-benefit-d {
+  font-size: clamp(.9rem, 1vw, .98rem);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .84);
+}
+
+/* Wide deep-plum tile: icon beside the copy. */
+.pt-benefit--wide {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(18px, 2.4vw, 32px);
+  background: var(--why-deep);
+}
+.pt-benefit--wide .pt-benefit-body { max-width: 46ch; }
+
+/* Square purple tile: icon over centred copy. */
+.pt-benefit--square {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  background: var(--why-purple);
+}
+
+/* ---------- 5 · VOICES (plum panel) ---------- */
+.pt-voices {
+  background: var(--forest);
+  color: #fff9ea;
+  border-radius: var(--r-card);
+  padding: clamp(30px, 5vw, 64px);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.pt-voices::before {
+  content: "";
+  position: absolute;
+  inset: -30% -10% auto auto;
+  width: 50%;
+  height: 80%;
+  background: radial-gradient(circle at 80% 20%, rgba(201, 174, 228, .26), transparent 60%);
+  pointer-events: none;
+}
+.pt-voices-head { position: relative; max-width: 640px; margin-bottom: clamp(26px, 3.4vw, 44px); }
+.pt-voices-eyebrow {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 14px;
+}
+.pt-voices-title {
+  font-size: clamp(1.7rem, 3.4vw, 2.7rem);
+  color: #fff;
+  line-height: 1.08;
+}
+.pt-voices-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(18px, 2.4vw, 34px);
+}
+.pt-voice {
+  margin: 0;
+  padding: clamp(22px, 2.6vw, 32px);
+  border-radius: var(--r-img);
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .14);
+}
+.pt-voice blockquote {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(1.16rem, 1.8vw, 1.5rem);
+  line-height: 1.36;
+  color: #fff;
+  text-wrap: pretty;
+}
+.pt-voice blockquote::before { content: "\201C"; }
+.pt-voice blockquote::after { content: "\201D"; }
+.pt-voice figcaption {
+  margin-top: 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pt-voice-name { font-weight: 600; color: #fff; }
+.pt-voice-place {
+  font-size: .88rem;
+  color: var(--yellow);
+  font-weight: 500;
+}
+.pt-voice-place::before { content: "· "; }
+
+/* ---------- 6 · APPLICATION FORM ---------- */
+.pt-apply-grid {
+  display: grid;
+  grid-template-columns: .92fr 1.08fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+}
+.pt-apply-intro h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); color: var(--navy); }
+.pt-apply-intro p {
+  margin-top: 16px;
+  font-size: clamp(1rem, 1.25vw, 1.12rem);
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 46ch;
+}
+.pt-apply-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.pt-apply-list li {
+  position: relative;
+  padding-left: 30px;
+  font-size: .98rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.pt-apply-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2334204E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.2 4.2L19 7'/%3E%3C/svg%3E") center / 12px no-repeat,
+    var(--yellow);
+}
+
+/* form card */
+.pt-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 1.8vw, 20px);
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(22px, 3vw, 38px);
+  box-shadow: var(--shadow);
+}
+.pt-field { display: flex; flex-direction: column; gap: 8px; }
+.pt-field--full { grid-column: 1 / -1; }
+.pt-field label {
+  font-size: .86rem;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: .01em;
+}
+.pt-field input,
+.pt-field select,
+.pt-field textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 15px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: var(--cream);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+}
+.pt-field textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+.pt-field select { cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B3E63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 15px center; background-size: 18px;
+  padding-right: 42px;
+}
+.pt-field input::placeholder,
+.pt-field textarea::placeholder { color: var(--muted); }
+.pt-field input:focus,
+.pt-field select:focus,
+.pt-field textarea:focus {
+  outline: none;
+  border-color: var(--yellow-deep);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(240, 193, 78, .28);
+}
+.pt-field input[aria-invalid="true"] { border-color: #c0392b; }
+
+/* phone with +91 prefix */
+.pt-phone {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream);
+  overflow: hidden;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+}
+.pt-phone:focus-within {
+  border-color: var(--yellow-deep);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(240, 193, 78, .28);
+}
+.pt-phone-cc {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px 0 15px;
+  font-weight: 600;
+  color: var(--navy);
+  border-right: 1.5px solid var(--line);
+  background: var(--cream-2);
+}
+.pt-phone input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+.pt-phone input:focus { box-shadow: none; background: transparent; }
+
+.pt-err { font-size: .82rem; color: #c0392b; font-weight: 500; }
+
+.pt-form-foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.pt-submit { min-height: 48px; }
+.pt-form-note { font-size: .86rem; color: var(--muted); }
+
+/* success state (replaces the form) */
+.pt-success {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(30px, 4vw, 48px);
+  box-shadow: var(--shadow);
+}
+.pt-success-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.pt-success-ic svg { width: 28px; height: 28px; }
+.pt-success h3 { font-size: clamp(1.5rem, 2.6vw, 2rem); color: var(--navy); }
+.pt-success p { font-size: 1.06rem; line-height: 1.55; color: var(--ink); max-width: 44ch; }
+.pt-success-sub { color: var(--muted); font-size: .96rem; }
+
+/* ---------- 7 · CLOSING ---------- */
+.pt-close {
+  padding-block: clamp(40px, 6vw, 80px) clamp(64px, 9vw, 120px);
+  text-align: center;
+}
+.pt-close p {
+  max-width: 26ch;
+  margin-inline: auto;
+  font-size: clamp(1.4rem, 3.2vw, 2.3rem);
+  line-height: 1.22;
+  color: var(--navy);
+  text-wrap: balance;
+}
+
+/* ---------- entrance (visible by default; motion is a bonus) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .pt-hero-inner > * {
+    opacity: 0;
+    animation: ptUp .8s var(--ease) forwards;
+  }
+  .pt-hero-inner > *:nth-child(1) { animation-delay: .04s; }
+  .pt-hero-inner > *:nth-child(2) { animation-delay: .12s; }
+  .pt-hero-inner > *:nth-child(3) { animation-delay: .2s; }
+  .pt-hero-inner > *:nth-child(4) { animation-delay: .28s; }
+  .pt-hero-inner > *:nth-child(5) { animation-delay: .36s; }
+}
+@keyframes ptUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pt-hero-inner > * { opacity: 1; transform: none; animation: none; }
+  .pt-step, .pt-benefit, .pt-feature { transition: none; }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 960px) {
+  .pt-steps { grid-template-columns: repeat(2, 1fr); }
+  /* `grid-auto-rows: 1fr` only exists to support the plum feature's
+     `grid-row: 1 / span 2`. That span is dropped here, so the equal-row
+     constraint has no purpose left — it just inflates every benefit card to
+     the height of the tallest row. */
+  .pt-why-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; }
+  .pt-feature { grid-column: 1 / -1; grid-row: auto; }
+  .pt-benefit--wide { grid-column: 1 / -1; }
+  /* Three squares in two columns would leave the last one beside an empty cell. */
+  .pt-benefit--square:last-child { grid-column: 1 / -1; }
+  .pt-apply-grid { grid-template-columns: 1fr; }
+  .pt-apply-intro p { max-width: none; }
+}
+@media (max-width: 640px) {
+  .pt-stats { grid-template-columns: repeat(2, 1fr); row-gap: clamp(20px, 5vw, 28px); }
+  .pt-voices-grid { grid-template-columns: 1fr; }
+  /* These three all sit on the .82–.86rem floor, which is 13.1–13.8px against a
+     16px root (base.css clamps `body`, not `html`). .pt-err is the only feedback
+     a rejected applicant gets. */
+  .pt-err { font-size: .9rem; }
+  .pt-form-note { font-size: .92rem; }
+  .pt-stat-l { font-size: .9rem; }
+}
+@media (max-width: 480px) {
+  .pt-steps { grid-template-columns: 1fr; }
+  .pt-why-grid { grid-template-columns: 1fr; }
+  .pt-form { grid-template-columns: 1fr; }
+  .pt-hero-cta .btn { flex: 1 1 auto; }
+  /* The base clamp FLOORS at 2.5rem (6.4vw only reaches 40px at 625px wide), so
+     the h1 never scales for phones. New floor takes over below ~476px; the max
+     is unchanged, so anything wider is byte-identical. */
+  .pt-hero-title { font-size: clamp(1.95rem, 8.4vw, 2.5rem); line-height: 1.14; max-width: none; }
+  .pt-voices-title { line-height: 1.18; }
+  .pt-feature-t { line-height: 1.18; }
+}
+@media (max-width: 460px) {
+  /* Two 135px tracks cannot hold "Rs.8,000–20,000" at the 27.2px clamp floor;
+     it wraps after the dash and `line-height: 1` makes the halves collide. */
+  .pt-stats { grid-template-columns: 1fr; }
+  .pt-stat-n { font-size: clamp(1.5rem, 7vw, 2.9rem); line-height: 1.12; }
+  .pt-stat-l { max-width: none; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Hero: copy on the left, the four stats on the right (they count up once)
+   The stats used to sit in a full-width band under the hero (.pt-stats); the
+   same STATS now render inside .pt-hero-grid as a 2×2 set of cards.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.pt-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: center;
+  gap: clamp(36px, 5vw, 88px);
+}
+
+.pt-hero-grid .pt-hero-inner {
+  max-width: 640px;
+}
+
+.pt-hero-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 1.4vw, 18px);
+}
+
+.pt-hero-stats .pt-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(150px, 13vw, 196px);
+  padding: clamp(20px, 2vw, 28px);
+  background: #ffffff;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* Short gold rule in the corner of every card. */
+.pt-hero-stats .pt-stat::before {
+  content: '';
+  position: absolute;
+  top: clamp(20px, 2vw, 28px);
+  left: clamp(20px, 2vw, 28px);
+  width: 28px;
+  height: 3px;
+  border-radius: 3px;
+  background: #f0c14e;
+}
+
+/* The lead figure sits on the brand plum. */
+.pt-hero-stats .pt-stat:first-child {
+  background: var(--navy);
+  border-color: transparent;
+}
+
+.pt-hero-stats .pt-stat:first-child .pt-stat-n,
+.pt-hero-stats .pt-stat:first-child .pt-stat-l {
+  color: #ffffff;
+}
+
+.pt-hero-stats .pt-stat-n {
+  font-size: clamp(2rem, 3.3vw, 3.1rem);
+  line-height: 1.04;
+}
+
+.pt-hero-stats .pt-stat-l {
+  max-width: none;
+  margin-top: 10px;
+}
+
+/* Count-up: the invisible final value and the live value share one cell. */
+.pt-count {
+  display: inline-grid;
+  font-variant-numeric: tabular-nums;
+}
+
+.pt-count > .pt-count-ghost,
+.pt-count > .pt-count-live {
+  grid-area: 1 / 1;
+}
+
+.pt-count-ghost {
+  visibility: hidden;
+}
+
+.pt-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pt-hero-stats .pt-stat {
+    opacity: 0;
+    animation: ptUp 0.8s var(--ease) forwards;
+    animation-delay: calc(0.3s + var(--i, 0) * 0.12s);
+  }
+}
+
+/* Tablet and below: stats drop under the copy, still 2×2. */
+@media (max-width: 960px) {
+  .pt-hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pt-hero-grid .pt-hero-inner {
+    max-width: 840px;
+  }
+}
+
+@media (max-width: 460px) {
+  .pt-hero-stats .pt-stat {
+    min-height: 132px;
+    padding: 18px 16px;
+  }
+
+  .pt-hero-stats .pt-stat::before {
+    top: 18px;
+    left: 16px;
+  }
+
+  .pt-hero-stats .pt-stat-n {
+    font-size: clamp(1.45rem, 7vw, 2rem);
+    line-height: 1.1;
+  }
+}
+
+/* Stat cards: keep the figure clear of the gold rule, and size the numbers so
+   the widest one (Rs.8,000–20,000) stays inside its card. */
+.pt-hero-stats .pt-stat {
+  padding-top: calc(clamp(20px, 2vw, 28px) + 26px);
+}
+
+.pt-hero-stats .pt-stat-n {
+  font-size: clamp(1.8rem, 2.6vw, 2.6rem);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 460px) {
+  .pt-hero-stats .pt-stat {
+    padding-top: 44px;
+  }
+
+  .pt-hero-stats .pt-stat-n {
+    font-size: clamp(1.4rem, 6.6vw, 1.9rem);
+  }
+}
+
+/* Stat cards as wide rectangles: number on the left, label on the right, the
+   gold rule turned into a short vertical accent. Desktop stacks the four in the
+   right-hand column; tablet puts them 2x2 under the copy; phones stack them. */
+.pt-hero-stats {
+  grid-template-columns: 1fr;
+}
+
+.pt-hero-stats .pt-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 58%) minmax(0, 1fr);
+  align-items: center;
+  column-gap: clamp(14px, 1.6vw, 22px);
+  min-height: 0;
+  padding: clamp(18px, 1.6vw, 24px) clamp(20px, 2vw, 28px) clamp(18px, 1.6vw, 24px) clamp(30px, 2.8vw, 40px);
+}
+
+.pt-hero-stats .pt-stat::before {
+  top: 26%;
+  bottom: 26%;
+  left: clamp(16px, 1.5vw, 20px);
+  width: 3px;
+  height: auto;
+}
+
+.pt-hero-stats .pt-stat-n {
+  font-size: clamp(1.5rem, 2.1vw, 2.15rem);
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.pt-hero-stats .pt-stat-l {
+  margin-top: 0;
+  line-height: 1.35;
+}
+
+@media (max-width: 960px) and (min-width: 461px) {
+  .pt-hero-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 460px) {
+  .pt-hero-stats .pt-stat {
+    padding: 16px 16px 16px 28px;
+  }
+
+  .pt-hero-stats .pt-stat::before {
+    top: 26%;
+    left: 14px;
+  }
+
+  .pt-hero-stats .pt-stat-n {
+    font-size: clamp(1.3rem, 6vw, 1.6rem);
+  }
+}
+
+/* Tablet 2x2: narrower cards, so the number gets more of the row and a smaller
+   size — keeps Rs.8,000–20,000 inside its card. */
+@media (max-width: 960px) and (min-width: 461px) {
+  .pt-hero-stats .pt-stat {
+    grid-template-columns: minmax(0, 62%) minmax(0, 1fr);
+    column-gap: 12px;
+    padding-right: 16px;
+  }
+
+  .pt-hero-stats .pt-stat-n {
+    font-size: clamp(1.2rem, 2.9vw, 1.5rem);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   How it works — pinned cards on a thread
+   A grid-paper board; each step is a tilted plum card with a white inset panel
+   (number + description) and its title in the plum strip below. Partner.tsx
+   (PinnedSteps) measures .pt-pin-anchor in every card, then draws .pt-thread
+   and the SVG push-pins (.pt-pin) above the cards.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.pt-board {
+  position: relative;
+  padding: clamp(52px, 5.4vw, 76px) clamp(14px, 3vw, 44px) clamp(40px, 4.4vw, 60px);
+  border: 1px solid var(--line-soft);
+  border-radius: 28px;
+  background-color: #fbf9fc;
+  background-image:
+    linear-gradient(rgba(52, 32, 78, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 32, 78, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-position: center;
+}
+
+.pt-steps--pinned {
+  position: relative;
+  z-index: 1;
+  align-items: start;
+  gap: clamp(20px, 2.6vw, 36px);
+}
+
+.pt-steps--pinned .pt-pin-card:nth-child(even) {
+  margin-top: clamp(44px, 6vw, 92px);
+}
+
+.pt-steps--pinned .pt-pin-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  padding: 12px 12px 2px;
+  background: var(--navy);
+  border: 0;
+  border-radius: 18px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 36px -20px rgba(28, 14, 48, 0.6),
+    0 8px 14px -8px rgba(28, 14, 48, 0.35);
+  transform: rotate(var(--tilt, 0deg));
+  transition: box-shadow 0.3s var(--ease);
+}
+
+/* Pinned cards do not lift on hover — the thread is tied to them. */
+.pt-steps--pinned .pt-pin-card:hover {
+  transform: rotate(var(--tilt, 0deg));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 30px 44px -20px rgba(28, 14, 48, 0.68),
+    0 10px 18px -8px rgba(28, 14, 48, 0.4);
+}
+
+.pt-pin-anchor {
+  position: absolute;
+  top: 16px;
+  left: var(--pin-x, 50%);
+  width: 2px;
+  height: 2px;
+  pointer-events: none;
+}
+
+.pt-pin-paper {
+  grid-area: 1 / 1 / 3 / 2;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(52, 32, 78, 0.06);
+}
+
+.pt-steps--pinned .pt-step-n {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: clamp(30px, 2.8vw, 38px) 20px 6px;
+  font-size: clamp(2.5rem, 3.5vw, 3.3rem);
+}
+
+.pt-steps--pinned .pt-step-d {
+  grid-area: 2 / 1;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 4px 20px 24px;
+}
+
+.pt-steps--pinned .pt-step-t {
+  grid-area: 3 / 1;
+  margin: 0;
+  padding: 14px 10px 13px;
+  color: #ffffff;
+  font-size: clamp(1.1rem, 1.45vw, 1.32rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.pt-thread {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(1px 3px 1.5px rgba(20, 10, 40, 0.22));
+}
+
+.pt-thread path {
+  fill: none;
+  stroke: #221533;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.pt-pin {
+  position: absolute;
+  z-index: 3;
+  width: 46px;
+  height: 51.75px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+@media (max-width: 960px) {
+  .pt-steps--pinned {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(28px, 5vw, 48px);
+    row-gap: 60px;
+  }
+
+  .pt-steps--pinned .pt-pin-card:nth-child(even) {
+    margin-top: 48px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pt-board {
+    padding: 54px 12px 40px;
+    border-radius: 22px;
+  }
+
+  .pt-steps--pinned {
+    grid-template-columns: 1fr;
+    row-gap: 54px;
+  }
+
+  .pt-steps--pinned .pt-pin-card {
+    width: 88%;
+  }
+
+  .pt-steps--pinned .pt-pin-card:nth-child(odd) {
+    justify-self: start;
+  }
+
+  .pt-steps--pinned .pt-pin-card:nth-child(even) {
+    justify-self: end;
+    margin-top: 0;
+  }
+}
+
+/* Bigger, more present pins; on tablet and phone the thread runs BEHIND the
+   cards (it only shows in the gaps), so it never crosses the step text. */
+.pt-pin {
+  width: 58px;
+  height: 65.25px;
+}
+
+@media (max-width: 960px) {
+  .pt-thread {
+    z-index: 0;
+  }
+}

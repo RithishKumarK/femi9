@@ -1,0 +1,193 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   craft-home-type.css — Landing-page RE-SKIN: typography + palette taken from
+   the "Femi9 Home v2" reference. Layout/design unchanged; only the type system
+   and colors change.
+
+   Reference type system:
+     • Display / headlines → 'Newsreader' (editorial serif)
+     • Body / UI           → 'Hanken Grotesk' (grotesque sans)
+     • Eyebrows            → Hanken 800, .2em tracking, UPPERCASE, gold-deep #D8A22F
+     • Body ink #4B3E63 · muted #877D9E · gold #F0C14E · gold-deep #D8A22F
+       lilac #C9AEE4 · lavender #EDE7F9 · deep purple #3A2158 / #2A1B47
+
+   Loaded AFTER figma-landing(-responsive).css, and scoped to .figma-landing so
+   every rule matches or beats the base specificity without touching that file.
+   Fonts are loaded via the Google Fonts link in app/layout.tsx.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Base: body/UI face + ink ──────────────────────────────────────────────── */
+.figma-landing {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: #4b3e63;
+}
+
+/* ── Display headlines → Newsreader serif ──────────────────────────────────────
+   Same sizes as the base (design unchanged); only the face + weight change.
+   Newsreader reads elegantly at a light-to-medium weight for large display. */
+.figma-landing h1,
+.figma-landing h2 {
+  font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+.figma-landing .fl-hero h1,
+.figma-landing .fl-hero h2 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  /* Size the display up so the left column fills the tall hero instead of
+     floating in empty space (responsive: small on phones, large on desktop). */
+  font-size: clamp(42px, 5.6vw, 84px);
+  line-height: 1.03;
+}
+/* Give the copy column a touch more width + rhythm and larger sub-copy so the
+   whole left side reads generously and reduces the empty feel.
+
+   DESKTOP ONLY: these fixed px widths must be guarded behind min-width, or they
+   force a 720px / 610px column at phone width and the hero overflows (the title,
+   copy and Buy Now button run off the right edge, then get clipped by the global
+   overflow-x:clip). Below 901px the responsive sheet's own hero rules take over,
+   which leave the copy column at `width:auto`.
+
+   master fixed the same overflow by keeping these rules unguarded and releasing
+   the width back to 100% under `@media (max-width:768px)`. This guard supersedes
+   that: it also stops the 720px width applying between 769–900px, and keeps the
+   desktop 22px/16px type off phones instead of only the width. The companion
+   half of master's fix — `minmax(0,1fr)` on the hero stack track and the
+   `min-width:0` floor release on the scenes, in figma-landing-responsive.css —
+   is unaffected and still in force. */
+@media (min-width: 901px) {
+  .figma-landing .fl-hero__copy,
+  .figma-landing .fl-hero__copy--second {
+    width: 720px;
+    gap: 30px;
+  }
+  .figma-landing .fl-hero__copy > p {
+    font-size: 22px;
+    line-height: 1.5;
+    max-width: 610px;
+  }
+  .figma-landing .fl-hero__proof {
+    font-size: 16px;
+  }
+}
+.figma-landing .fl-heading h2,
+.figma-landing .fl-about__copy h2 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+}
+/* Journal + partner headings carry their own font (partner uses !important). */
+.figma-landing .fl-journal .fl-heading h2 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+}
+.figma-landing .fl-partner__copy h2 {
+  font-family: 'Newsreader', Georgia, serif !important;
+  font-weight: 400 !important;
+}
+/* Cycle-tracker section title ("Know Your Cycle…") pins Instrument Sans via a
+   `font:` shorthand !important at (0,2,1); this (0,3,1) !important, loaded last,
+   flips it to the display serif like every other section heading. */
+.figma-landing .fl-cycle .cyc-intro h2 {
+  font-family: 'Newsreader', Georgia, serif !important;
+}
+
+/* ── Eyebrows → Hanken 800 · .2em · UPPERCASE · gold-deep ──────────────────────
+   The reference's `.ey`. Base is `font:600 20px/1 "Instrument Sans"` in gold. */
+.figma-landing .fl-kicker {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #d8a22f;
+}
+.figma-landing .fl-kicker--gold {
+  color: #d8a22f;
+}
+/* light-on-purple sections keep the eyebrow legible but still gold */
+.figma-landing .fl-heading--light .fl-kicker {
+  color: #f0c14e;
+}
+
+/* ── Body / sub-copy → Hanken, muted taken from the reference ─────────────────
+   Override the spots that pin their own face (Urbanist / Instrument Sans). */
+.figma-landing .fl-heading > div:first-child > p:last-child {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: #877d9e;
+}
+.figma-landing .fl-heading--light > div:first-child > p:last-child {
+  color: #efedf7;
+}
+.figma-landing .fl-journal .fl-heading > div:first-child > p:last-child {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: #877d9e;
+}
+.figma-landing .fl-about__copy > p:not(.fl-kicker) {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: #877d9e;
+}
+
+/* ── Card titles → Hanken semibold (sans) for hierarchy against serif display ─ */
+.figma-landing .fl-blog h3,
+.figma-landing .fl-benefit h3,
+.figma-landing .fl-review h3 {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+}
+
+/* ── Buttons → Hanken semibold ───────────────────────────────────────────────
+   Partner buttons force Instrument Sans with !important, so match it. */
+.figma-landing .fl-btn {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+}
+.figma-landing .fl-partner__actions .fl-btn {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* ── Partner section body/stats (base pins Instrument Sans !important) ────────
+   Sub-copy + small labels → Hanken; the big stat numbers → Newsreader, echoing
+   the reference's serif display numerals (.idx). */
+.figma-landing .fl-partner {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+}
+.figma-landing .fl-partner__copy > p,
+.figma-landing .fl-partner__stats small {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+}
+.figma-landing .fl-partner__stats strong {
+  font-family: 'Newsreader', Georgia, serif !important;
+  font-weight: 500 !important;
+}
+
+/* ── Global chrome (nav + footer) ─────────────────────────────────────────────
+   The header and footer are shared components, but they frame the landing page,
+   so they carry the same body face (Hanken Grotesk) for a consistent read. */
+.nav-in,
+.nav-links,
+.nav-links a,
+.nav-right,
+.nav-signout,
+.cart-btn,
+.burger {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+}
+.footer,
+.footer p,
+.footer a,
+.footer-desc,
+.footer-tagline,
+.footer-addr,
+.nl-form,
+.nl-form input,
+.nl-submit,
+.footer-bottom {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+}
+/* Footer column headings: quiet uppercase labels, not serif display. */
+.footer-col h4 {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+}

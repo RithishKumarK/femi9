@@ -1,0 +1,81 @@
+# dependencies
+/node_modules
+# next
+/.next/
+/out/
+# production
+/build
+# env
+.env
+.env*.local
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+*.log
+/.npm-cache/
+/.next-swc-cache/
+*.tsbuildinfo
+# prisma
+/prisma/*.db
+
+# GeoLite2 databases — downloaded by scripts/fetch-geoip.mjs, never committed.
+# They are large binaries under MaxMind's licence, and they go stale; the image
+# build fetches its own copy. See docs/GEOIP.md.
+/data/geoip/*.mmdb
+/data/geoip/*.partial
+
+# Terraform local state and operator values contain generated DB/auth secrets.
+/infra/terraform/.terraform/
+/infra/terraform/*.tfstate
+/infra/terraform/*.tfstate.*
+/infra/terraform/*.tfvars
+!/infra/terraform/*.tfvars.example
+/infra/terraform/*.plan
+/infra/terraform/femi9.plan
+/infra/terraform/backend.hcl
+/infra/terraform/state-bootstrap/*.tfstate
+/infra/terraform/state-bootstrap/*.tfstate.*
+/infra/terraform/state-bootstrap/.terraform/
+
+# playwright
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
+
+# Source testimonial footage (350MB). Only web-sized transcodes are served, and
+# those live in S3 (see src/data/videoTestimonials.ts), not in this repo.
+Testimonial Videos/
+
+# Dev upload scratch. app/api/admin/upload writes here when S3/Cloudinary are
+# unconfigured, and the product-page testimonial clips are dropped here for local
+# runs. In staging/prod the same /uploads/* paths are served from S3 through
+# CloudFront, so none of this belongs in the repo.
+public/uploads/
+
+# ── Standalone preview repo (Vercel) ───────────────────────────────────────
+# This copy of the app is published to show the storefront working. Internal
+# material is deliberately kept out of a PUBLIC repo; none of it is needed to
+# build or serve the site. It all still lives in the working copy and in the
+# femi9-platform monorepo.
+/infra/
+/docs/
+/.github/
+/test/
+/DEPLOY.md
+/Dockerfile
+/.dockerignore
+/docker-compose.yml
+/docker-entrypoint.sh
+/playwright.config.ts
+/vitest.config.ts
+
+# Source blog artwork: ~50MB of originals already web-sized into
+# public/assets/img/blogs. Only the served copies belong in a deploy repo.
+/Femi9_blog images (1)/
+.gstack/
+
+# Source pad video (19MB). The site serves the transparent frames extracted from
+# it in public/assets/pad-frames-video/, not the video itself.
+/video 1/

@@ -1,0 +1,305 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   pdp-buybox.css — the product page's buy block, rebuilt on Lumi9's layout.
+
+   Structure and behaviour are Lumi9's: a sticky square stage with a thumbnail
+   rail beneath it, and a buy column ordered identity → proof → description →
+   price → size → pack → button. Colour and type are Femi9's throughout — every
+   value below is a token from base.css or craft.css, and not one Lumi9 hex or
+   typeface is imported.
+
+   Loaded LAST among the PDP sheets, so it wins over app.css and
+   craft-product.css without reaching for !important. Everything is scoped under
+   `.pdp-page` (0,2,x) so it also beats the base single-class rules regardless
+   of how the bundler orders the files — the one exception being app.css's
+   mobile `!important` block, which this sheet's own media query re-states.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── The two columns ────────────────────────────────────────────────────────
+   `minmax(0, …)` on both tracks, not bare fractions: a grid track's default
+   `min-width: auto` refuses to shrink below its content, so one long unbroken
+   word in the description column would push the whole grid wider than the page
+   rather than wrap. */
+.pdp-page .pdp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 58px);
+  align-items: start;
+}
+
+/* ── Gallery column ─────────────────────────────────────────────────────────
+   The wrapper stretches to the full height of the grid row so the sticky child
+   inside it has somewhere to travel. Without this, `align-items: start` on the
+   grid collapses the column to exactly the stage's height, the sticky element's
+   containing block is the same height as the element, and it never sticks —
+   the classic "position:sticky does nothing" case, and it is a parent's height
+   every time, never the sticky rule itself. */
+.pdp-page .pdp-gallery-layout {
+  display: block;
+  align-self: stretch;
+  height: 100%;
+  /* The old vertical thumb stack made this a flex ROW. Nothing lays out
+     sideways here any more. */
+  gap: 0;
+}
+
+.pdp-page .pdp-stage-column {
+  position: sticky;
+  /* Clear of the sticky header, plus a little air. --nav-h is declared in
+     base.css and is what every other anchor offset in the app measures from. */
+  top: calc(var(--nav-h) + 14px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.4vw, 14px);
+}
+
+/* ── The stage ──────────────────────────────────────────────────────────────
+   Square, like Lumi9's. It was 4:5 with a 520px floor, which is the shape that
+   left a tall gap beside the buy column — and that gap is what the unrelated
+   second image below it existed to fill. A square stage and a thumbnail rail
+   underneath fill the column honestly, so the filler is gone. */
+.pdp-page .pdp-hero-stage {
+  aspect-ratio: 1 / 1;
+  /* Overrides app.css's 520px floor, which fights the aspect ratio on a narrow
+     desktop window and wins, un-squaring the stage. */
+  min-height: 0;
+  width: 100%;
+  padding: clamp(16px, 3vw, 40px);
+}
+
+/* ── Thumbnail rail ─────────────────────────────────────────────────────────
+   One horizontal scroller under the stage, at every width. The old stack was
+   vertical on desktop and re-declared horizontal in a mobile block full of
+   !important; there is now one behaviour and one set of rules for it. */
+.pdp-page .pdp-thumb-rail {
+  display: flex;
+  gap: clamp(8px, 1vw, 12px);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Vertical padding, not clipping: an overflow-x scroller is overflow-y auto
+     as well, which would otherwise shear the focus ring off the top and bottom
+     of every thumbnail. */
+  padding: 3px 0 5px;
+}
+
+.pdp-page .pdp-thumb-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp-page .pdp-thumb {
+  flex: none;
+  width: clamp(58px, 7vw, 76px);
+  height: clamp(58px, 7vw, 76px);
+  padding: 2px;
+  border: 2px solid transparent;
+  border-radius: var(--cr-r-sm);
+  background: #fff;
+  box-shadow: var(--cr-shadow-xs);
+  overflow: hidden;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition:
+    border-color var(--cr-dur) var(--cr-ease),
+    box-shadow var(--cr-dur) var(--cr-ease),
+    transform var(--cr-dur) var(--cr-ease);
+}
+
+.pdp-page .pdp-thumb img,
+.pdp-page .pdp-thumb svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--cr-r-sm) - 4px);
+}
+
+.pdp-page .pdp-thumb:hover {
+  border-color: var(--lilac);
+  transform: translateY(-2px);
+  box-shadow: var(--cr-shadow-sm);
+}
+
+.pdp-page .pdp-thumb.active {
+  border-color: var(--navy);
+  box-shadow: var(--cr-shadow-sm);
+}
+
+/* ── Buy column rhythm ──────────────────────────────────────────────────────
+   One gap governs the column; the blocks that need more air ask for it rather
+   than every block carrying its own margin. */
+.pdp-page .pdp-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.6vw, 20px);
+  max-width: 580px;
+}
+
+.pdp-page .pdp-block {
+  margin: 0;
+}
+
+/* The qualifier beside a section label — "Size · 290mm". Same line, clearly
+   secondary, so the label still reads as one word from across the page. */
+.pdp-page .pdp-label-note {
+  margin-left: 6px;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ── SIZE RUN ───────────────────────────────────────────────────────────────
+   Links, not buttons, and that is the feature: each chip is a real route to a
+   real product, so the URL matches the choice and the browser's own Back works
+   between sizes.
+
+   `auto-fit` with a 78px floor rather than Lumi9's fixed five columns — Femi9's
+   catalogue is administered, so the number of lengths is not knowable here. Five
+   columns hardcoded would tear the row the day a sixth pad ships. */
+.pdp-page .pdp-size-run {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(78px, 1fr));
+  gap: clamp(6px, 0.9vw, 10px);
+}
+
+.pdp-page .pdp-size-chip {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 6px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--cr-r-sm);
+  background: #fff;
+  box-shadow: var(--cr-shadow-xs);
+  color: var(--navy);
+  text-align: center;
+  text-decoration: none;
+  transition:
+    border-color var(--cr-dur) var(--cr-ease),
+    background var(--cr-dur) var(--cr-ease),
+    color var(--cr-dur) var(--cr-ease),
+    transform var(--cr-dur) var(--cr-ease),
+    box-shadow var(--cr-dur) var(--cr-ease);
+}
+
+.pdp-page .pdp-size-chip b {
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.pdp-page .pdp-size-chip span {
+  /* The disambiguator — "Large", "Double Wings". Two 330mm pads differ only
+     here, so it can never be dropped, only quietened. */
+  max-width: 100%;
+  overflow: hidden;
+  font-size: clamp(10px, 0.9vw, 11px);
+  font-weight: 500;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.72;
+}
+
+.pdp-page .pdp-size-chip:hover {
+  border-color: var(--lilac);
+  transform: translateY(-2px);
+  box-shadow: var(--cr-shadow-sm);
+}
+
+.pdp-page .pdp-size-chip.active {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: var(--butter);
+  box-shadow: var(--cr-shadow-sm);
+}
+
+.pdp-page .pdp-size-chip.active span {
+  opacity: 0.8;
+}
+
+/* ── TRUST STRIP ────────────────────────────────────────────────────────────
+   Four loose circles became one tinted panel, the way Lumi9 groups its three.
+   Grouping is what turns four separate claims into a single reassurance. */
+.pdp-page .pdp-benefit-badges {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(8px, 1.2vw, 14px);
+  padding: clamp(14px, 1.8vw, 20px);
+  border: 1px solid var(--cr-hairline);
+  border-radius: var(--cr-r-md);
+  background: var(--lilac-tint);
+}
+
+.pdp-page .pdp-benefit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.pdp-page .pdp-benefit-item span {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--navy);
+}
+
+.pdp-page .benefit-circle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--cr-shadow-xs);
+  color: var(--forest-2);
+}
+
+.pdp-page .benefit-circle svg {
+  width: 21px;
+  height: 21px;
+}
+
+/* ── Narrow ─────────────────────────────────────────────────────────────────
+   One column, and the stage stops sticking: on a phone the buy column is
+   directly underneath, so a pinned image would just eat half the screen while
+   she reads. Written at 920px to meet app.css's existing PDP breakpoint. */
+@media (max-width: 920px) {
+  .pdp-page .pdp-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(22px, 4vw, 36px);
+  }
+
+  .pdp-page .pdp-stage-column {
+    position: static;
+    top: auto;
+  }
+
+  .pdp-page .pdp-right-col {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .pdp-page .pdp-hero-stage {
+    /* app.css caps the mobile stage at 420px tall with !important and forces
+       1:1; both are still what we want, and re-stating the ratio here keeps the
+       two sheets from disagreeing if that block is ever cleaned up. */
+    aspect-ratio: 1 / 1;
+    padding: 14px;
+  }
+
+  .pdp-page .pdp-benefit-badges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pdp-page .pdp-size-run {
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  }
+}

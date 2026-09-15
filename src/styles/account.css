@@ -1,0 +1,382 @@
+/* ===== ACCOUNT SCREEN (/account) — T3 owns this file. Prefix: .acct-*
+   Layout only; every primitive comes from member.css.
+   Never declare a .m-* rule here, and never use the admin classes
+   (panel / pad-lg / dash-grid / col-* / dtable / badge / avatar). ===== */
+
+/* --------------------------------------------------------------------------
+   1. RECORDS CARD — the tabbed Orders / Subscriptions / Addresses / Profile
+   block. The tab strip bleeds to the card's edges so its underline reads as a
+   real divider rather than a floating line inside the padding.
+   -------------------------------------------------------------------------- */
+.acct-tabs {
+  margin-inline: calc(clamp(22px, 2.8vw, 32px) * -1);
+  padding-inline: clamp(22px, 2.8vw, 32px);
+}
+
+.acct-tab__count {
+  margin-left: 7px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--cream-2);
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+/* Deliberately keyed off aria-selected, not the tab class, so this file never
+   reaches into a .m-* rule. */
+[aria-selected="true"] > .acct-tab__count { background: var(--butter); color: #7A5510; }
+
+.acct-panel { padding-top: 6px; }
+.acct-panel:focus-visible {
+  outline: 2px solid rgba(86, 49, 132, .45);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+/* Panel-level heading + its one action (Add address / Edit details). */
+.acct-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.acct-panel__head p { margin-top: 3px; }
+
+/* Generic card shelf: subscriptions and addresses both use it. */
+.acct-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  gap: var(--m-gap);
+}
+
+/* --------------------------------------------------------------------------
+   2. ORDER LIST
+   The row is a div rather than an anchor so the Buy-again control can live
+   inside it without nesting a button in a link. The order number carries a
+   stretched ::after overlay instead, which keeps the WHOLE row clickable while
+   leaving exactly one thing in the tab order.
+   -------------------------------------------------------------------------- */
+.acct-orders { --m-cols: 52px minmax(0, 1fr) auto; }
+
+.acct-order {
+  position: relative;
+  border-radius: 12px;
+  transition: background .2s var(--ease);
+}
+.acct-order:hover,
+.acct-order:focus-within { background: var(--butter-soft); }
+
+.acct-order__link {
+  display: inline-block;
+  color: var(--navy);
+  text-decoration: none;
+}
+.acct-order__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.acct-order__link:focus-visible { outline: none; }
+.acct-order__link:focus-visible::after {
+  outline: 2px solid rgba(86, 49, 132, .45);
+  outline-offset: -2px;
+}
+
+/* Above the stretched overlay, so Buy again is independently clickable. */
+.acct-order__actions { position: relative; z-index: 1; margin-top: 9px; }
+
+.acct-order__end { flex-direction: column; align-items: flex-end; gap: 7px; }
+@media (max-width: 560px) {
+  .acct-order__end { flex-direction: row; align-items: center; flex-wrap: wrap; }
+}
+
+/* --------------------------------------------------------------------------
+   3. SUBSCRIPTION CARD
+   -------------------------------------------------------------------------- */
+.acct-sub__actions { flex-wrap: wrap; }
+.acct-sub__cancel { margin-left: auto; color: #A54646; }
+.acct-sub__cancel:hover,
+.acct-sub__cancel:focus-visible { color: #7d3434; }
+@media (max-width: 420px) {
+  .acct-sub__cancel { margin-left: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   4. ADDRESS CARD
+   -------------------------------------------------------------------------- */
+.acct-addr.is-default { border-color: rgba(240, 193, 78, .55); }
+.acct-addr__tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.acct-addr__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.acct-addr__name {
+  font-size: .96rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--navy);
+  overflow-wrap: anywhere;
+}
+.acct-addr__body p { overflow-wrap: anywhere; }
+
+/* --------------------------------------------------------------------------
+   5. FORM EXTRAS used by the two dialogs
+   -------------------------------------------------------------------------- */
+
+/* Label chip group (Home / Work / Other). <Chip> already ships .chip-opt. */
+.acct-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.acct-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .92rem;
+  line-height: 1.4;
+  color: var(--navy);
+  cursor: pointer;
+}
+.acct-check input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--forest-2);
+  cursor: pointer;
+}
+/* The <label> is the whole hit area, and at 18px of box inside a 21px line it
+   was the smallest interactive element in the account flow — sitting in a sheet
+   where every other control is 44px+. Grown on touch only; the desktop dialog
+   keeps its 21px row. */
+@media (pointer: coarse) {
+  .acct-check { gap: 12px; min-height: 44px; padding: 6px 0; }
+  .acct-check input { width: 22px; height: 22px; }
+}
+
+/* The 6-digit OTP box. The trailing letter-space is padded back out on the
+   right so the digits stay optically centred. */
+.acct-code {
+  text-align: center;
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: .45em;
+  padding-left: calc(15px + .45em);
+}
+.acct-code__actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+
+/* --------------------------------------------------------------------------
+   6. SPEND + ANCHOR
+   -------------------------------------------------------------------------- */
+.acct-spend__chart { min-width: 0; }
+/* The member sub-nav links to /account#rewards, so the target must clear the
+   sticky storefront nav when the browser jumps to it. */
+.acct-anchor { scroll-margin-top: 96px; }
+
+/* --------------------------------------------------------------------------
+   7. REWARDS PANEL
+   Balance well on the left, the real earn rules on the right, then the redeem
+   shelf, the customer's saved codes and their points history.
+   -------------------------------------------------------------------------- */
+.acct-rw__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: var(--m-gap);
+  margin-top: 4px;
+}
+@media (max-width: 900px) { .acct-rw__grid { grid-template-columns: 1fr; } }
+
+.acct-rw__balance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: clamp(20px, 2.4vw, 28px);
+  background: var(--butter-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--tile-r);
+}
+.acct-rw__label { font-size: .8rem; font-weight: 500; line-height: 1.35; color: #8A5A00; }
+.acct-rw__num {
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 4.6vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--navy);
+}
+.acct-rw__unit { font-size: .88rem; font-weight: 500; line-height: 1.4; color: var(--forest-2); }
+
+.acct-rw__track {
+  height: 8px;
+  margin-top: 18px;
+  border-radius: 999px;
+  background: rgba(52, 32, 78, .12);
+  overflow: hidden;
+}
+.acct-rw__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--yellow);
+  transition: width .6s var(--ease);
+}
+.acct-rw__note { margin-top: 10px; font-size: .84rem; line-height: 1.5; color: var(--ink); }
+.acct-rw__note b { color: var(--navy); font-weight: 600; }
+/* Composed onto the .m-note / .m-field__error primitives via className rather
+   than reached into with a descendant selector — member.css owns those rules. */
+.acct-rw__flash { margin-top: 16px; }
+.acct-rw__code-inline { font-family: var(--display); letter-spacing: .04em; }
+
+.acct-rw__earn { display: flex; flex-direction: column; min-width: 0; }
+.acct-rw__sublabel {
+  display: block;
+  margin-top: 12px;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.acct-rw__earn .acct-rw__sublabel { margin-top: 0; }
+
+.acct-rw__earn-list { display: flex; flex-direction: column; margin-top: 4px; }
+.acct-rw__earn-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.acct-rw__earn-list li:first-child { border-top: 0; }
+/* One icon-tile colour for the whole list — status is the only thing colour
+   is allowed to carry here. */
+.acct-rw__earn-ic {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: var(--butter-soft);
+  color: var(--forest-2);
+}
+.acct-rw__earn-ic svg { width: 16px; height: 16px; }
+.acct-rw__earn-t { font-size: .92rem; line-height: 1.4; color: var(--ink); overflow-wrap: anywhere; }
+.acct-rw__earn-pts { font-size: .84rem; font-weight: 600; color: var(--forest-2); white-space: nowrap; }
+.acct-rw__earn-list li.is-done .acct-rw__earn-pts { color: #3D8B5C; }
+.acct-rw__refer { margin-top: 14px; align-self: flex-start; }
+
+.acct-rw__redeem {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 215px), 1fr));
+  gap: var(--m-gap);
+  margin-top: 4px;
+}
+/* Out-of-reach rewards sit recessed in the shelf; an affordable one lifts onto
+   a real surface. Colour carries state, not identity. */
+.acct-rw__reward {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 18px;
+  border-radius: var(--tile-r);
+  background: var(--cream-2);
+  border: 1px solid transparent;
+}
+.acct-rw__reward.can {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.acct-rw__reward-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.acct-rw__reward-top b {
+  font-family: var(--display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.28;
+  color: var(--navy);
+  overflow-wrap: anywhere;
+}
+.acct-rw__cost { flex: none; font-size: .8rem; font-weight: 600; color: var(--forest-2); white-space: nowrap; }
+.acct-rw__btn { margin-top: auto; align-self: flex-start; padding: .68em 1.35em; font-size: .9rem; }
+.acct-rw__togo { margin-top: auto; align-self: flex-start; }
+/* This shrinks the compliant ~45px base .btn down to ~37px. "Redeem" is the one
+   action in the whole panel, so on touch it goes back up to 44px and stretches
+   across its card — the reward tile is only ~215px wide on a phone. */
+@media (pointer: coarse) {
+  .acct-rw__btn { min-height: 44px; padding: .7em 1.4em; font-size: .95rem; }
+  .acct-rw__reward .acct-rw__btn { align-self: stretch; }
+}
+
+.acct-rw__codes { display: flex; flex-direction: column; margin-top: 4px; }
+.acct-rw__code {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.acct-rw__codes li:first-child { border-top: 0; }
+.acct-rw__code-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+/* No monospace family is loaded, so the code reads as a code through the
+   display face plus generous tracking rather than a fourth font. */
+.acct-rw__code-value {
+  font-family: var(--display);
+  font-size: .98rem;
+  font-weight: 600;
+  letter-spacing: .07em;
+  line-height: 1.3;
+  color: var(--navy);
+  overflow-wrap: anywhere;
+}
+.acct-rw__code.is-used .acct-rw__code-value { color: var(--muted); }
+.acct-rw__code > :last-child { margin-left: auto; flex: none; }
+
+.acct-rw__activity { display: flex; flex-direction: column; margin-top: 4px; }
+.acct-rw__activity li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.acct-rw__activity li:first-child { border-top: 0; }
+.acct-rw__activity li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.acct-rw__activity b {
+  font-size: .92rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--navy);
+  overflow-wrap: anywhere;
+}
+.acct-rw__act-pts { flex: none; font-size: .95rem; font-weight: 600; color: var(--navy); }
+
+/* --------------------------------------------------------------------------
+   8. NARROW-SCREEN TYPE FLOOR
+   .acct-rw__sublabel is the section heading for "Ways to earn", "Redeem your
+   points", "Your reward codes" and "Recent activity" — the panel's whole
+   navigational structure, set in 11.5px uppercase grey. Below 480px it sits
+   beside a clamp(2.4rem, 4.6vw, 3.2rem) balance number, and at that contrast in
+   scale the small type reads as disabled. Additive, so desktop is untouched.
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .acct-rw__sublabel { font-size: .82rem; letter-spacing: .05em; }
+  .acct-rw__label,
+  .acct-rw__cost { font-size: .88rem; }
+  .acct-rw__note { font-size: .9rem; }
+  .acct-rw__earn-pts { font-size: .88rem; }
+  .acct-tab__count { font-size: .78rem; }
+}
+
+/* --------------------------------------------------------------------------
+   9. REDUCED MOTION
+   member.css §15 already kills every transition inside .m-area; this is the
+   belt-and-braces for the one width animation that would otherwise be the most
+   noticeable movement on the page.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .acct-rw__fill { transition: none !important; }
+}

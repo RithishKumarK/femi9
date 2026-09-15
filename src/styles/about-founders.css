@@ -1,0 +1,374 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ABOUT — "Built By A Doctor. Backed By Women. Made For Every Body."
+   About.tsx `AboutScreen`.
+
+   Its own `.f9-about` block, so none of the Figma-export `.fl-about*` /
+   `.fl-founder*` rules (absolute artboard positions, hover-arrow choreography)
+   reach it. Copy and people are unchanged.
+
+     copy   left: kicker, headline, both paragraphs, Know More
+     stage  right: a "meet the team" row of three rounded portrait cards.
+            The founder sits in the middle, set back on a dark plate; the two
+            co-founders overlap her edges from either side, each tipped a few
+            degrees. Every card carries a floating pill (role over name) that
+            hangs off its edge rather than covering the face.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.figma-landing .f9-about {
+  --a-ink: #34204e;
+  --a-ink-soft: #5d5170;
+  --a-gold: #d9a331;
+  --a-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  position: relative;
+  overflow: clip;
+  padding: clamp(72px, 8.5vw, 120px) clamp(20px, 4.5vw, 72px) clamp(84px, 10vw, 140px);
+  color: var(--a-ink);
+  background:
+    radial-gradient(45% 55% at 12% 30%, rgba(236, 226, 247, 0.65) 0%, rgba(236, 226, 247, 0) 70%),
+    #fbf9fc;
+}
+
+.f9-about__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(36px, 4.5vw, 80px);
+  max-width: 1400px;
+  margin-inline: auto;
+}
+
+/* ── Copy (left) ──────────────────────────────────────────────────────── */
+.f9-about__copy {
+  position: relative;
+  z-index: 2;
+}
+
+.figma-landing .f9-about__copy .fl-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 clamp(16px, 1.8vw, 22px);
+  color: var(--a-gold);
+  font-family: 'Urbanist', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.figma-landing .f9-about__title {
+  margin: 0;
+  max-width: 16ch;
+  color: var(--a-ink) !important;
+  font-family: 'Newsreader', Georgia, 'Times New Roman', serif !important;
+  font-size: clamp(38px, 4.2vw, 60px) !important;
+  font-weight: 500 !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.026em !important;
+  text-wrap: balance;
+}
+
+.figma-landing .f9-about__text {
+  max-width: 54ch;
+  margin: clamp(18px, 1.8vw, 24px) 0 0 !important;
+  color: var(--a-ink-soft) !important;
+  font-family: 'Hanken Grotesk', 'Urbanist', system-ui, sans-serif !important;
+  font-size: clamp(16px, 1.2vw, 18.5px) !important;
+  font-weight: 400 !important;
+  line-height: 1.66 !important;
+  text-wrap: pretty;
+}
+
+.figma-landing .f9-about__copy .fl-btn {
+  margin-top: clamp(28px, 3vw, 40px);
+}
+
+/* ── Stage (right) ────────────────────────────────────────────────────── */
+/* All placement is in % of the stage, which is 1.2× as wide as it is tall.
+   A card is 36% of the stage wide at 4:5, so it is 54% of the stage tall. */
+.f9-about__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.2;
+  margin: 0;
+}
+
+/* The dark plate the founder's card is set into. */
+.f9-about__stage::before {
+  content: '';
+  position: absolute;
+  left: 30%;
+  top: 4%;
+  width: 40%;
+  height: 68%;
+  z-index: 0;
+  border-radius: clamp(22px, 2.6vw, 36px);
+  background: var(--a-ink);
+  box-shadow: 0 30px 60px -30px rgba(34, 21, 47, 0.55);
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────── */
+.figma-landing .f9-about__card {
+  position: absolute;
+  margin: 0;
+  width: var(--w, 36%);
+  left: var(--x);
+  top: var(--y);
+  z-index: var(--z);
+  rotate: var(--r, 0deg);
+  filter: drop-shadow(0 26px 30px rgba(34, 21, 47, 0.26)) drop-shadow(0 6px 10px rgba(34, 21, 47, 0.14));
+  transition:
+    translate 0.45s var(--a-ease),
+    rotate 0.45s var(--a-ease),
+    filter 0.45s var(--a-ease);
+}
+
+/* The founder: centre, set back on the plate. */
+.f9-about__card--founder {
+  --x: 32%;
+  --y: 9%;
+  --z: 1;
+}
+
+/* Co-founders overlap her edges from either side, tipped outward. */
+.f9-about__card--vignesh {
+  --x: 1%;
+  --y: 20%;
+  --z: 2;
+  --r: -3deg;
+}
+
+.f9-about__card--nayanthara {
+  --x: 63%;
+  --y: 22%;
+  --z: 2;
+  --r: 4deg;
+}
+
+/* The card face: a rounded portrait with a soft white rim. */
+.f9-about__face {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: clamp(4px, 0.45vw, 7px) solid #ffffff;
+  border-radius: clamp(18px, 2vw, 28px);
+  background: #efe6da;
+}
+
+.figma-landing .f9-about__photo {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 18%;
+  transition: scale 0.8s var(--a-ease);
+}
+
+/* ── Pill labels ──────────────────────────────────────────────────────────
+   Role over name, on the section's own plum, hanging off each card's edge:
+   the co-founders' above their outer top corner, the founder's across her top
+   edge. A direct child of <figure>, so it rides the card's tilt. */
+.f9-about__caption {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  padding: clamp(9px, 0.9vw, 13px) clamp(18px, 1.8vw, 26px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: var(--a-ink);
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 14px 26px -14px rgba(34, 21, 47, 0.6);
+}
+
+.f9-about__card--vignesh .f9-about__caption {
+  top: 0;
+  left: 0;
+  translate: -12% -55%;
+}
+
+.f9-about__card--founder .f9-about__caption {
+  top: 0;
+  left: 50%;
+  translate: -50% -55%;
+}
+
+.f9-about__card--nayanthara .f9-about__caption {
+  bottom: 0;
+  right: 0;
+  translate: 10% 55%;
+}
+
+.figma-landing .f9-about__name {
+  color: #ffffff;
+  font-family: 'Hanken Grotesk', 'Urbanist', system-ui, sans-serif;
+  font-size: clamp(14px, 1.1vw, 17px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+
+.figma-landing .f9-about__role {
+  color: #f4d58a;
+  font-family: 'Hanken Grotesk', 'Urbanist', system-ui, sans-serif;
+  font-size: clamp(11px, 0.8vw, 12px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.18em;
+}
+
+@media (hover: hover) {
+  .figma-landing .f9-about__card:hover {
+    z-index: 4;
+    translate: 0 -10px;
+    rotate: 0deg;
+    filter: drop-shadow(0 34px 38px rgba(34, 21, 47, 0.32)) drop-shadow(0 8px 12px rgba(34, 21, 47, 0.16));
+  }
+
+  .f9-about__card:hover .f9-about__photo {
+    scale: 1.04;
+  }
+}
+
+/* ── Entrance (Reveal sets data-visible="true" on scroll-in) ──────────── */
+@keyframes f9AboutUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes f9AboutCard {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes f9AboutPlate {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.f9-about[data-visible='true'] .f9-about__copy > * {
+  animation: f9AboutUp 0.9s var(--a-ease) both;
+}
+
+.f9-about[data-visible='true'] .f9-about__copy > :nth-child(2) { animation-delay: 0.08s; }
+.f9-about[data-visible='true'] .f9-about__copy > :nth-child(3) { animation-delay: 0.16s; }
+.f9-about[data-visible='true'] .f9-about__copy > :nth-child(4) { animation-delay: 0.24s; }
+.f9-about[data-visible='true'] .f9-about__copy > :nth-child(5) { animation-delay: 0.32s; }
+
+/* One at a time, in reading order of importance: the founder, then Nayanthara,
+   then Vignesh Shivan. Each fades in as the previous one settles. Only the
+   timing is sequenced; the cards' places in the layout are untouched. The
+   founder's plate fades in with her card. */
+.f9-about[data-visible='true'] .f9-about__card {
+  animation: f9AboutCard 0.9s var(--a-ease) both;
+}
+
+.f9-about[data-visible='true'] .f9-about__stage::before {
+  animation: f9AboutPlate 0.9s ease both;
+  animation-delay: 0.15s;
+}
+
+.f9-about[data-visible='true'] .f9-about__card--founder { animation-delay: 0.2s; }
+.f9-about[data-visible='true'] .f9-about__card--nayanthara { animation-delay: 0.75s; }
+.f9-about[data-visible='true'] .f9-about__card--vignesh { animation-delay: 1.3s; }
+
+/* ── Tablet & phone: copy first, then the stage ──────────────────────── */
+@media (max-width: 900px) {
+  .f9-about__layout {
+    grid-template-columns: 1fr;
+    gap: 64px;
+  }
+
+  .figma-landing .f9-about__title {
+    max-width: 20ch;
+    font-size: clamp(32px, 7vw, 46px) !important;
+  }
+
+  .f9-about__stage {
+    width: min(100%, 760px);
+    margin-inline: auto;
+  }
+}
+
+/* Phones: the row stays, cards a little wider and pills tighter, so every
+   face still reads at 360px. */
+@media (max-width: 520px) {
+  .f9-about__stage {
+    aspect-ratio: 1.02;
+  }
+
+  .f9-about__stage::before {
+    left: 27%;
+    top: 5%;
+    width: 46%;
+    height: 66%;
+  }
+
+  .figma-landing .f9-about__card {
+    --w: 40%;
+  }
+
+  .f9-about__card--founder {
+    --x: 30%;
+    --y: 11%;
+  }
+
+  .f9-about__card--vignesh {
+    --x: 0%;
+    --y: 26%;
+  }
+
+  .f9-about__card--nayanthara {
+    --x: 60%;
+    --y: 28%;
+  }
+
+  .f9-about__caption {
+    gap: 3px;
+    padding: 6px 11px;
+  }
+
+  .figma-landing .f9-about__name {
+    font-size: 13px;
+  }
+
+  .figma-landing .f9-about__role {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .f9-about *,
+  .f9-about *::before,
+  .f9-about *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,913 @@
+/* ============================================================
+   Femi9 — Creator / Affiliate Program page
+   Scoped under .affiliate ; reuses global tokens + helpers.
+   ============================================================ */
+
+.affiliate {
+  position: relative;
+  color: var(--ink);
+}
+
+/* shared reveal (content visible by default; JS flips .in) */
+.af-rise {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .af-rise {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  }
+  .af-rise.in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* section heading block */
+.af-head {
+  max-width: 42rem;
+  margin-bottom: clamp(32px, 4vw, 52px);
+}
+.af-head h2 {
+  font-size: clamp(1.7rem, 3.4vw, 2.7rem);
+}
+.af-head p {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+  max-width: 46ch;
+}
+
+/* =========================== HERO =========================== */
+.af-hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(56px, 9vw, 104px);
+}
+.af-hero-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(46vw 44vw at 82% 6%, rgba(201, 174, 228, 0.4), transparent 60%),
+    radial-gradient(40vw 40vw at 6% 92%, rgba(240, 193, 78, 0.26), transparent 62%);
+}
+.af-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.04fr 0.96fr;
+  gap: clamp(28px, 4vw, 60px);
+  align-items: center;
+}
+.af-hero-copy {
+  min-width: 0;
+}
+.af-hero-title {
+  font-size: clamp(2.3rem, 5.6vw, 4rem);
+  margin-top: 18px;
+  color: var(--navy);
+}
+.af-hero-sub {
+  margin-top: 20px;
+  max-width: 40ch;
+  font-size: clamp(1.02rem, 1.5vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--ink);
+}
+.af-hero-sub strong {
+  color: var(--navy);
+  font-weight: 600;
+}
+.af-hero-cta {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.af-hero-cta .btn {
+  min-height: 48px;
+}
+.af-hero-trust {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.af-hero-trust p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 30ch;
+}
+.af-hero-trust strong {
+  color: var(--navy);
+}
+.af-avatars {
+  display: flex;
+}
+.af-avatars span {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--forest-2);
+  border: 2px solid var(--cream);
+  margin-left: -10px;
+}
+.af-avatars span:first-child {
+  margin-left: 0;
+}
+.af-avatars span:nth-child(2) { background: var(--lilac); color: var(--navy); }
+.af-avatars span:nth-child(3) { background: var(--yellow); color: var(--navy); }
+.af-avatars span:nth-child(4) { background: var(--sage); color: var(--navy); }
+
+/* hero preview card */
+.af-preview {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(20px, 2.4vw, 28px);
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .af-preview {
+    animation: afFloat 7s ease-in-out infinite;
+  }
+}
+@keyframes afFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.af-preview-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.af-preview-who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.af-preview-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  color: #fff;
+  background: var(--forest-2);
+  flex-shrink: 0;
+}
+.af-preview-who b {
+  display: block;
+  color: var(--navy);
+  font-size: 0.98rem;
+}
+.af-preview-who span {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.af-preview-live {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--forest-2);
+  background: var(--sage-tint);
+  padding: 5px 11px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.af-preview-live::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--yellow-deep);
+}
+.af-preview-code {
+  margin-top: 20px;
+  background: var(--butter-soft);
+  border: 1px dashed var(--yellow-deep);
+  border-radius: var(--r-img);
+  padding: 18px 20px;
+  text-align: center;
+}
+.af-preview-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.af-preview-code strong {
+  display: block;
+  margin: 6px 0 8px;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  letter-spacing: 0.06em;
+  color: var(--navy);
+}
+.af-preview-off {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--yellow);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.af-preview-stats {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.af-preview-stats > div {
+  background: var(--lilac-tint);
+  border-radius: 14px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.af-preview-stats b {
+  display: block;
+  color: var(--navy);
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+.af-preview-stats span {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.af-preview-note {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+/* ======================= HOW IT WORKS ======================= */
+.af-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2.4vw, 26px);
+  counter-reset: none;
+}
+.af-step {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(22px, 2.6vw, 30px);
+  box-shadow: var(--shadow-sm);
+  height: 100%;
+}
+.af-step-num {
+  display: inline-block;
+  font-size: clamp(2rem, 4vw, 2.7rem);
+  color: var(--lilac);
+  line-height: 1;
+}
+.af-step h3 {
+  margin-top: 14px;
+  font-size: 1.18rem;
+  color: var(--navy);
+}
+.af-step p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+/* connector between steps — the direct children are <li> (Rise renders as="li"
+   here so the <ol> exposes real list items to screen readers) */
+.af-steps > li {
+  position: relative;
+}
+.af-steps > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: clamp(38px, 4.4vw, 52px);
+  right: calc(clamp(16px, 2.4vw, 26px) / -2);
+  width: clamp(16px, 2.4vw, 26px);
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--lilac) 0 6px,
+    transparent 6px 11px
+  );
+  transform: translateX(50%);
+}
+
+/* ==================== PERKS + TIERS BAND ==================== */
+.af-perks {
+  background: var(--forest);
+  color: #fff9ea;
+  border-radius: clamp(24px, 3vw, 36px);
+  padding: clamp(30px, 4.4vw, 60px);
+}
+.af-perks-head h2 {
+  color: #fff;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+}
+.af-perks-head p {
+  margin-top: 12px;
+  color: rgba(255, 249, 234, 0.72);
+  max-width: 44ch;
+}
+.af-perks-grid {
+  margin-top: clamp(26px, 3.4vw, 40px);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(14px, 1.8vw, 22px);
+}
+.af-perk {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--r-img);
+  padding: 22px 20px;
+}
+.af-perk-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: var(--yellow);
+  color: var(--navy);
+}
+.af-perk-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.af-perk b {
+  display: block;
+  margin-top: 16px;
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+.af-perk p {
+  margin-top: 8px;
+  color: rgba(255, 249, 234, 0.68);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.af-tiers {
+  margin-top: clamp(26px, 3.4vw, 40px);
+  padding-top: clamp(24px, 3vw, 34px);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.af-tiers-label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 249, 234, 0.6);
+  margin-bottom: 18px;
+}
+.af-tiers-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(12px, 1.6vw, 18px);
+}
+.af-tier {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--r-img);
+  padding: 18px 20px;
+}
+.af-tier-name {
+  font-size: 0.86rem;
+  color: rgba(255, 249, 234, 0.82);
+  font-weight: 500;
+}
+.af-tier b {
+  color: var(--yellow);
+  font-size: clamp(1.6rem, 3.2vw, 2.1rem);
+  line-height: 1.1;
+}
+.af-tier-sub {
+  font-size: 0.82rem;
+  color: rgba(255, 249, 234, 0.6);
+}
+
+/* ==================== FORM / DASHBOARD ===================== */
+.af-join-grid {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: clamp(28px, 4vw, 60px);
+  align-items: start;
+}
+.af-join-intro {
+  position: sticky;
+  top: 96px;
+}
+.af-kicker {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--forest-2);
+  margin-bottom: 14px;
+}
+.af-join-intro h2 {
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+  color: var(--navy);
+}
+.af-join-intro p {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  max-width: 38ch;
+}
+.af-reassure {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.af-reassure li {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 0.96rem;
+  color: var(--ink);
+}
+.af-reassure svg {
+  width: 20px;
+  height: 20px;
+  color: var(--yellow-deep);
+  flex-shrink: 0;
+}
+
+.af-join-panel {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
+  padding: clamp(24px, 3vw, 40px);
+}
+
+/* form */
+.af-form {
+  display: grid;
+  gap: 20px;
+}
+.af-field {
+  display: grid;
+  gap: 8px;
+}
+.af-field > label,
+.af-fieldset > legend {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--navy);
+  padding: 0;
+}
+.af-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.af-field input,
+.af-select select {
+  width: 100%;
+  min-height: 50px;
+  padding: 13px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream);
+  color: var(--navy);
+  font: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.af-field input::placeholder {
+  color: var(--muted);
+}
+.af-field input:focus-visible,
+.af-select select:focus-visible {
+  outline: none;
+  border-color: var(--forest-2);
+  box-shadow: 0 0 0 4px rgba(86, 49, 132, 0.14);
+}
+.af-handle {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream);
+  overflow: hidden;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.af-handle:focus-within {
+  border-color: var(--forest-2);
+  box-shadow: 0 0 0 4px rgba(86, 49, 132, 0.14);
+}
+.af-handle > span {
+  padding: 0 6px 0 16px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.af-handle input {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding-left: 0;
+}
+.af-handle input:focus-visible {
+  box-shadow: none;
+}
+
+.af-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.af-chip {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: var(--r-chip);
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.94rem;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease),
+    color 0.2s var(--ease), transform 0.15s var(--ease);
+}
+.af-chip:hover {
+  border-color: var(--forest-2);
+}
+.af-chip:active {
+  transform: scale(0.97);
+}
+.af-chip.is-on {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff9ea;
+}
+
+.af-select {
+  position: relative;
+}
+.af-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+}
+.af-select-arrow {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--forest-2);
+  border-bottom: 2px solid var(--forest-2);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.af-error {
+  color: #b23a4d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: -4px 0 0;
+}
+.af-submit {
+  min-height: 52px;
+  width: 100%;
+  margin-top: 4px;
+  font-size: 1.04rem;
+}
+.af-form-fine {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* dashboard */
+.af-dash {
+  display: grid;
+  gap: 18px;
+}
+.af-dash-hero {
+  text-align: center;
+  padding-bottom: 6px;
+}
+.af-dash-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--yellow);
+  padding: 5px 13px;
+  border-radius: 999px;
+}
+.af-dash-hero h3 {
+  margin-top: 14px;
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  color: var(--navy);
+}
+.af-dash-hero p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.98rem;
+}
+
+/* The .af-copyfield / .af-code / .af-copybtn block that used to live here was
+   removed: no .tsx references any of those class names. The share row that
+   actually renders is .af-share / .af-share-url / .af-share-copy, styled at the
+   bottom of this file. */
+
+.af-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 2px;
+}
+.af-stat {
+  background: var(--cream);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  padding: 18px 12px;
+  text-align: center;
+}
+.af-stat b {
+  display: block;
+  color: var(--navy);
+  font-size: clamp(1.1rem, 2.6vw, 1.4rem);
+  font-weight: 600;
+}
+.af-stat span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.af-payout-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: var(--butter-soft);
+  border-radius: 14px;
+  padding: 14px 16px;
+  line-height: 1.5;
+}
+.af-payout-note svg {
+  width: 20px;
+  height: 20px;
+  color: var(--yellow-deep);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.af-startover {
+  justify-self: center;
+  padding: 8px 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--forest-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: 44px;
+}
+.af-startover:hover {
+  color: var(--navy);
+}
+
+/* ============================= FAQ ========================= */
+.af-faq-grid {
+  display: grid;
+  grid-template-columns: 0.78fr 1.22fr;
+  gap: clamp(28px, 4vw, 60px);
+  align-items: start;
+}
+.af-faq-intro {
+  position: sticky;
+  top: 96px;
+}
+.af-faq-intro h2 {
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  color: var(--navy);
+}
+.af-faq-intro p {
+  margin-top: 16px;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 34ch;
+}
+.af-faq-intro strong {
+  color: var(--navy);
+}
+.af-faq-list {
+  display: grid;
+  gap: 12px;
+}
+.af-faq {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-img);
+  padding: 4px 22px;
+  box-shadow: var(--shadow-sm);
+}
+.af-faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  font-weight: 600;
+  color: var(--navy);
+  font-size: clamp(1rem, 1.6vw, 1.1rem);
+  min-height: 44px;
+}
+.af-faq summary::-webkit-details-marker {
+  display: none;
+}
+.af-faq-mark {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.af-faq-mark::before,
+.af-faq-mark::after {
+  content: "";
+  position: absolute;
+  background: var(--forest-2);
+  border-radius: 2px;
+  transition: transform 0.28s var(--ease), opacity 0.28s var(--ease);
+}
+.af-faq-mark::before {
+  top: 8px;
+  left: 0;
+  width: 18px;
+  height: 2px;
+}
+.af-faq-mark::after {
+  top: 0;
+  left: 8px;
+  width: 2px;
+  height: 18px;
+}
+.af-faq[open] .af-faq-mark::after {
+  transform: scaleY(0);
+  opacity: 0;
+}
+.af-faq p {
+  padding: 0 0 22px;
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.6;
+  max-width: 62ch;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .af-faq[open] p {
+    animation: afReveal 0.34s var(--ease);
+  }
+}
+@keyframes afReveal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ========================= RESPONSIVE ====================== */
+@media (max-width: 960px) {
+  .af-hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .af-preview {
+    max-width: 460px;
+  }
+  .af-perks-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .af-join-grid,
+  .af-faq-grid {
+    grid-template-columns: 1fr;
+  }
+  .af-join-intro,
+  .af-faq-intro {
+    position: static;
+  }
+}
+
+@media (max-width: 680px) {
+  .af-steps {
+    grid-template-columns: 1fr;
+  }
+  .af-steps > li:not(:last-child)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .af-perks-grid,
+  .af-tiers-row {
+    grid-template-columns: 1fr;
+  }
+  .af-stats {
+    grid-template-columns: 1fr;
+  }
+  /* `rem` resolves against <html>, which base.css never clamps, so all of these
+     sit at 11.5–12.5px on a phone. Raise them to a readable floor. */
+  .af-preview-stats span,
+  .af-stat span {
+    font-size: 0.82rem;
+  }
+  .af-preview-note {
+    font-size: 0.84rem;
+  }
+  .af-preview-label,
+  .af-preview-live,
+  .af-dash-badge,
+  .af-tiers-label {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 420px) {
+  /* Three tracks leave a ~71px content box, which wraps "Rs. 4,200" onto two
+     lines while its neighbours stay on one. Two tracks plus a full-width row
+     for the currency figure keeps every tile the same height. */
+  .af-preview-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .af-preview-stats > div:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- creator share link ----------
+   The tracked /a/<code> URL. A creator who never sees this can never earn:
+   commission is only attributed to visitors who arrive through it. */
+.af-share {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.af-share-url {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream-2);
+  color: var(--navy);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  /* A long site origin must wrap rather than push the panel sideways at 360px. */
+  overflow-wrap: anywhere;
+}
+
+.af-share-copy {
+  flex: 0 0 auto;
+  padding: 0.6em 1.15em;
+  font-size: 0.88rem;
+}
+
+/* This override shrinks the base .btn box to ~41.7px tall, and it is the only
+   control that hands a creator their tracked /a/<code> link. Restore a 44px
+   target on touch devices; mouse pointers keep the existing compact button. */
+@media (pointer: coarse) {
+  .af-share-copy { min-height: 44px; }
+}
+
+@media (max-width: 560px) {
+  .af-share-copy { flex: 1 1 100%; }
+}

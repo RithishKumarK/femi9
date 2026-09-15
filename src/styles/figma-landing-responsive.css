@@ -1,0 +1,3234 @@
+.fl-testimonials {
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .fl-hero__copy--second > p,
+  .fl-hero :is(h1, h2) {
+    width: min(100%, 680px);
+  }
+
+  /* The first-pass About geometry that used to live here was shadowed in full
+     by the 810-1037 pass below (and its 484.657px/347px widths were the desktop
+     artboard values verbatim, which made the live numbers unfindable by grep).
+     The `.fl-products__grid` / `.fl-product*` / `.has-hover-*` rules that
+     followed it target markup this app has not rendered since ProductCard
+     replaced them — the live grid is `.grid-products` with `.card` children. */
+
+  .fl-journal {
+    height: auto;
+    min-height: 1700px;
+  }
+
+  .fl-journal .fl-heading,
+  .fl-journal__grid {
+    position: relative;
+    inset: auto;
+  }
+
+  .fl-journal .fl-heading {
+    padding-top: 90px;
+  }
+
+  .fl-journal__grid {
+    margin-top: 44px;
+    grid-template-columns: 1fr;
+  }
+
+  .fl-testimonials__track {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin-top: 44px;
+    overflow-x: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    scroll-snap-type: x mandatory;
+  }
+
+  .fl-testimonials[data-visible=true] .fl-testimonials__track:not(.is-manual) {
+    animation: none;
+  }
+
+  .fl-review {
+    flex-basis: min(381px, 82vw);
+    scroll-snap-align: start;
+  }
+
+  .fl-partner {
+    height: auto;
+    min-height: 1080px;
+  }
+
+  .fl-partner__layout {
+    min-height: 920px;
+  }
+
+  .fl-partner__copy,
+  .fl-partner__image {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    transform: none;
+  }
+
+  .fl-partner__copy {
+    padding-top: 70px;
+  }
+
+  .fl-partner__copy h2,
+  .fl-partner__copy > p {
+    width: auto;
+  }
+
+  .fl-partner__image {
+    margin-top: 48px;
+  }
+
+  .fl-partner[data-visible=true] .fl-partner__copy,
+  .fl-partner[data-visible=true] .fl-partner__image {
+    transform: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .fl-journal {
+    min-height: 1600px;
+  }
+
+  .fl-testimonials__controls {
+    gap: 12px;
+  }
+}
+
+/* Mobile-first repair pass for the Figma landing page.
+   This file is loaded after the generated landing CSS, so these rules deliberately
+   flatten desktop fixed layouts into scroll-friendly mobile sections. */
+@media (max-width: 900px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  /* Nav is a DESCENDANT of .figma-landing (Home.tsx), and `overflow-x:hidden`
+     here made this box the sticky nav's scrollport — the header scrolled away
+     and never came back. `clip` hides the same bleed without creating one. */
+  .figma-landing {
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .fl-shell {
+    width: 100%;
+    height: auto;
+    padding-inline: clamp(18px, 5vw, 32px);
+  }
+
+  .fl-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .fl-heading > div:first-child {
+    gap: 10px;
+  }
+
+  .fl-heading h2 {
+    font-size: clamp(30px, 8vw, 40px);
+    line-height: 1.12;
+    letter-spacing: 0;
+  }
+
+  .fl-heading > div:first-child > p:last-child {
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  /* `.fl-product__buy` was in this list and matches nothing — ProductCard
+     renders `.add`, which keeps the 48px floor. */
+  .fl-btn,
+  .add {
+    min-height: 48px;
+    border-radius: 999px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  /* The `.fl-nav*` block that sat here styled the Figma nav markup. Nav.tsx has
+     rendered `.nav` / `.burger` / `.mobile-menu` (Nav.css, 960px breakpoint)
+     for a long time, so every one of those rules was inert — and misleading,
+     because it read as though the landing page had its own mobile header. */
+
+  .fl-hero {
+    height: 760px;
+    min-height: 760px;
+    padding-top: 72px;
+  }
+
+  .fl-hero__scene {
+    min-height: 760px;
+  }
+
+  .fl-hero__inner {
+    min-height: 760px;
+    padding-top: 44px;
+    padding-bottom: 250px;
+    align-items: flex-start;
+  }
+
+  .fl-hero__copy,
+  .fl-hero__copy--second {
+    width: min(100%, 620px);
+    gap: 18px;
+  }
+
+  .fl-hero h1,
+  .fl-hero h2 {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    display: block;
+    font-size: clamp(38px, 10vw, 54px);
+    line-height: 1.04;
+    letter-spacing: 0;
+  }
+
+  .fl-hero__copy > p,
+  .fl-hero__copy--second > p {
+    width: 100%;
+    max-width: 34rem;
+    height: auto;
+    display: block;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .fl-hero__proof {
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+  }
+
+  /* Deleted: `.fl-hero__model`, `.fl-hero__pad`, `.fl-hero__cloud`,
+     `.fl-hero__flower` (NOT the same class as `.fl-hero__flower-icon`),
+     `.fl-hero__second-product`, `.fl-hero__second-shape`. None of them has been
+     in the hero markup since the carousel was rebuilt, which is why this whole
+     breakpoint looked as though it repositioned the hero art and did nothing.
+     The `.fl-hero__pager button` sizes that were here lost on specificity to
+     `.figma-landing .fl-hero__pager button`; the real touch target is now in
+     the `pointer: coarse` block further down. */
+
+  .fl-hero__pager {
+    bottom: 22px;
+  }
+
+  .fl-products,
+  .fl-why,
+  .fl-journal,
+  .fl-testimonials,
+  .fl-partner {
+    height: auto;
+    min-height: 0;
+    padding-block: 56px;
+  }
+
+  /* These four are `loading="lazy"` in Home.tsx, so display:none here means the
+     phone never requests them at all. */
+  .fl-products__ribbon,
+  .fl-journal__ribbon,
+  .fl-journal__polygon,
+  .fl-partner__ribbon {
+    display: none;
+  }
+
+  .grid-products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    border-radius: 12px;
+  }
+
+  .card-body {
+    padding: 14px;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card-desc {
+    font-size: .82rem;
+  }
+
+  .card-foot {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .add {
+    width: 100%;
+  }
+
+  .fl-why__grid {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .fl-why__product {
+    grid-row: auto;
+    height: 300px;
+    order: -1;
+  }
+
+  .fl-why__column {
+    gap: 16px;
+  }
+
+  .fl-benefit {
+    height: auto;
+    min-height: 168px;
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .fl-benefit h3 {
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  .fl-benefit p {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .fl-benefit__art {
+    width: 104px;
+    max-width: 34%;
+    height: 132px;
+  }
+
+  .fl-journal .fl-heading,
+  .fl-journal__grid {
+    position: relative;
+    inset: auto;
+  }
+
+  .fl-journal .fl-heading {
+    padding-top: 0;
+  }
+
+  .fl-journal__grid {
+    margin-top: 28px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .fl-blog {
+    height: 330px;
+    border-radius: 12px;
+  }
+
+  .fl-blog__photo,
+  .fl-blog__photo img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .fl-cycle {
+    height: auto;
+  }
+
+  .fl-cycle .cyc {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 52px 0 !important;
+  }
+
+  .fl-cycle .cyc-panel {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  .fl-cycle .cyc > .wrap {
+    padding-inline: clamp(18px, 5vw, 32px) !important;
+  }
+
+  .fl-cycle .cyc-card {
+    padding: 20px !important;
+    border-radius: 18px !important;
+  }
+
+  .fl-cycle .cyc-intro h2 {
+    font-size: clamp(30px, 8vw, 38px) !important;
+  }
+
+  .fl-testimonials .fl-heading {
+    height: auto;
+  }
+
+  .fl-testimonials__track {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    margin-top: 28px;
+    padding: 0 4px 18px;
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    transform: none;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .fl-testimonials[data-visible=true] .fl-testimonials__track:not(.is-manual) {
+    animation: none;
+  }
+
+  .fl-review {
+    flex: 0 0 min(330px, 84vw);
+    width: min(330px, 84vw);
+    height: auto;
+    min-height: 430px;
+    scroll-snap-align: start;
+  }
+
+  .fl-review__media {
+    height: 275px;
+  }
+
+  .fl-review__body {
+    height: auto;
+    min-height: 140px;
+  }
+
+  .fl-partner__layout {
+    min-height: 0;
+  }
+
+  .fl-partner__copy,
+  .fl-partner__image {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    opacity: 1;
+    transform: none;
+  }
+
+  .fl-partner__copy {
+    padding-top: 0;
+  }
+
+  .fl-partner__copy h2,
+  .fl-partner__copy > p,
+  .fl-partner__stats {
+    width: 100%;
+  }
+
+  .fl-partner__copy > p {
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .fl-partner__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .fl-partner__stats strong {
+    font-size: 26px;
+  }
+
+  .fl-partner__stats small {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .fl-partner__actions {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .fl-partner__actions .fl-btn {
+    flex: 1 1 190px;
+  }
+
+  .fl-partner__image {
+    height: auto;
+    aspect-ratio: 1.12;
+    margin-top: 28px;
+    border-radius: 16px;
+  }
+
+  /* The `.fl-footer*` block that lived here (CTA card, packs art, link grid,
+     newsletter) styled the Figma footer export. Footer.tsx renders `.footer` /
+     `.footer-main` / `.footer-col` / `.nl-form` / `.nl-submit`, so none of it
+     ever applied. The genuinely useful parts — stacked newsletter form,
+     full-width submit, two-column link grid — belong on those real class names
+     in src/components/Footer.css (WS2 owns that file). */
+}
+
+@media (max-width: 620px) {
+  .fl-shell {
+    padding-inline: 18px;
+  }
+
+  .fl-hero__scene {
+    min-height: 720px;
+  }
+
+  .fl-hero {
+    height: 720px;
+    min-height: 720px;
+  }
+
+  .fl-hero__inner {
+    min-height: 720px;
+    padding-top: 36px;
+    padding-bottom: 230px;
+  }
+
+  .fl-hero h1,
+  .fl-hero h2 {
+    font-size: clamp(34px, 10.5vw, 42px);
+  }
+
+  .fl-hero__copy > p,
+  .fl-hero__copy--second > p {
+    font-size: 16px;
+  }
+
+  .fl-hero__proof {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* `.fl-hero__proof i` was here to drop the pipe when the row stacks. The
+     divider is a `<span class="fl-hero__proof-divider">`, so it hid nothing —
+     if this column layout is ever restored, hide THAT class instead. */
+
+  .fl-btn {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 18px;
+    font-size: 16px;
+  }
+
+  .grid-products {
+    grid-template-columns: 1fr;
+  }
+
+  .card-media {
+    aspect-ratio: 3 / 4;
+  }
+
+  .fl-benefit {
+    align-items: flex-start;
+    min-height: 0;
+  }
+
+  .fl-benefit__art {
+    width: 82px;
+    height: 110px;
+  }
+
+  .fl-blog {
+    height: 300px;
+  }
+
+  .fl-testimonials__controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .fl-review {
+    flex-basis: 86vw;
+    width: 86vw;
+  }
+
+  .fl-partner__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .fl-partner__actions {
+    flex-direction: column;
+  }
+}
+
+/* About page mobile composition. Keep the same animated founder collage from
+   desktop, but resize the portrait internals instead of only shrinking the
+   outer figure boxes. */
+@media (max-width: 900px) {
+  .fl-about {
+    height: auto;
+    min-height: 0;
+    padding: 86px 0 60px;
+    overflow: hidden;
+  }
+
+  .fl-about__layout {
+    display: block;
+    min-height: 0;
+  }
+
+  .fl-about__people {
+    position: relative;
+    inset: auto;
+    width: min(100%, 620px);
+    height: 520px;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .fl-about__copy {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    width: min(100%, 640px);
+    margin: 28px auto 0;
+    transform: none;
+    gap: 18px;
+  }
+
+  .fl-about__copy h2 {
+    font-size: clamp(31px, 7.2vw, 42px);
+    line-height: 1.12;
+    letter-spacing: 0;
+  }
+
+  .fl-about__copy > p:not(.fl-kicker) {
+    font-size: 17px;
+    line-height: 1.6;
+    text-transform: none;
+  }
+
+  /* `.fl-about__shape{opacity:.4}` used to be the only mobile treatment these
+     four got. Their real mobile geometry — and the opacity — is at the foot of
+     this file, together, so the whole story is in one place. */
+
+  .fl-founder__portrait {
+    clip-path: none !important;
+    border-radius: 18px;
+  }
+
+  .fl-founder--doctor {
+    width: 246px;
+    height: 286px;
+    left: 0;
+    top: 24px;
+  }
+
+  .fl-founder--doctor .fl-founder__portrait {
+    left: 0;
+    top: 48px;
+    width: 238px;
+    height: 226px;
+  }
+
+  .fl-founder--woman {
+    width: 342px;
+    height: 210px;
+    left: 42px;
+    top: 302px;
+  }
+
+  .fl-founder--woman .fl-founder__portrait {
+    left: 0;
+    top: 0;
+    width: 286px;
+    height: 210px;
+  }
+
+  .fl-founder--man {
+    width: 276px;
+    height: 292px;
+    right: 0;
+    left: auto;
+    top: 98px;
+  }
+
+  .fl-founder--man .fl-founder__portrait {
+    left: 0;
+    top: 58px;
+    width: 228px;
+    height: 218px;
+  }
+
+  .fl-founder--man figcaption {
+    left: 112px;
+  }
+
+  .fl-founder__spark {
+    left: 230px;
+    top: 26px;
+    transform: scale(.82);
+    transform-origin: left top;
+  }
+
+  /* The names are the touch fallback for a :hover reveal and must stay on. The
+     ARROWS must not: they are one-at-a-time pointing affordances, and pinning
+     all three open at once draws three hand-drawn squiggles across the collage
+     at 768px, which reads as a rendering bug. */
+  .fl-founder__hover-name {
+    opacity: 1;
+    font-size: 14px;
+  }
+
+  .fl-founder--doctor .fl-founder__hover-arrow,
+  .fl-founder--man .fl-founder__hover-arrow {
+    width: 82px;
+    height: auto;
+  }
+
+  .fl-founder--woman .fl-founder__hover-arrow {
+    width: 98px;
+    height: auto;
+  }
+}
+
+@media (hover: none) {
+  .fl-founder__hover-arrow {
+    display: none;
+  }
+}
+
+@media (hover: hover) and (max-width: 900px) {
+  .fl-founder__hover-arrow {
+    opacity: 0;
+  }
+
+  .fl-founder:hover .fl-founder__hover-arrow,
+  .fl-founder:focus-within .fl-founder__hover-arrow {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 620px) {
+  .fl-about {
+    padding: 78px 0 50px;
+  }
+
+  /* Percentages of the stage, not two hard-coded pixel widths that sum past it.
+     The old 170px doctor + 178px right-anchored man needed 348px of a stage
+     that is 324px wide at a 360px viewport (`.fl-shell` keeps 18px each side),
+     so the two portraits overlapped by 20px over a 98px band on every phone
+     narrower than 384px. 47% + 49% leaves a 4% gutter at any width. */
+  .fl-about__people {
+    width: min(100%, 360px);
+    height: min(442px, 123vw);
+    transform: none;
+  }
+
+  .fl-founder figcaption {
+    padding: 5px 9px;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: .2px;
+  }
+
+  .fl-founder--doctor {
+    width: 47%;
+    height: 60%;
+    left: 0;
+    top: 3.6%;
+  }
+
+  .fl-founder--doctor .fl-founder__portrait {
+    left: 0;
+    top: 17%;
+    width: 97%;
+    height: 77%;
+  }
+
+  /* The collage deliberately layers Vignesh's card over the bottom-left of the
+     doctor's, and at this size that lands exactly on her pill — it was reduced
+     to a navy sliver at the edge. Her figure spans 3.6%-63.6% of the stage and
+     his starts at 55%, i.e. 86% of the way down her box, so lifting the pill to
+     18% from her bottom clears him. Both boxes are percentages of the same
+     stage, so this holds at every width in this range rather than only at 360. */
+  .fl-founder--doctor figcaption {
+    left: 10px;
+    bottom: 18%;
+  }
+
+  .fl-founder--man {
+    width: 49%;
+    height: 60%;
+    right: 0;
+    left: auto;
+    top: 18.5%;
+  }
+
+  .fl-founder--man .fl-founder__portrait {
+    left: 0;
+    top: 19%;
+    width: 86%;
+    height: 72%;
+  }
+
+  /* The portrait is 86% of the figure box and left-aligned, so the pill is
+     anchored inside that, not to the figure's right edge. */
+  .fl-founder--man figcaption {
+    left: auto;
+    right: 25px;
+    bottom: 8px;
+  }
+
+  .fl-founder--woman {
+    width: 72%;
+    height: 38%;
+    left: 5%;
+    top: 55%;
+  }
+
+  .fl-founder--woman .fl-founder__portrait {
+    left: 0;
+    top: 0;
+    width: 87%;
+    height: 100%;
+  }
+
+  .fl-founder--woman figcaption {
+    left: 10px;
+    bottom: 8px;
+  }
+
+  /* The names used to be display:none on every phone, so the collage rendered
+     as three anonymous photos — and, being display:none, they were gone from
+     the accessibility tree too, leaving three identical "Femi9 founder" alts.
+     There is no hover on a phone, so they become static captions instead. Each
+     sits in the headroom its own figure box leaves above the portrait; the
+     woman's portrait fills her box, so hers goes underneath it. */
+  .fl-founder__hover-name {
+    opacity: 1;
+    max-width: 100%;
+    font-size: 14px;
+    line-height: 1.25;
+    white-space: normal;
+    pointer-events: auto;
+  }
+
+  .fl-founder--doctor .fl-founder__hover-name {
+    left: 0;
+    right: auto;
+    top: 0;
+  }
+
+  .fl-founder--man .fl-founder__hover-name {
+    left: auto;
+    right: 0;
+    top: 0;
+    text-align: right;
+  }
+
+  .fl-founder--woman .fl-founder__hover-name {
+    left: 0;
+    right: auto;
+    top: 100%;
+    margin-top: 5px;
+  }
+
+  /* No `display:none` for the arrows and sparks here: About.tsx gates all six
+     out of the markup below 621px (useMediaGate), which is the 184KB of SVG a
+     phone used to download and then hide. A rule here would match nothing. */
+
+  .fl-about__copy {
+    margin-top: 24px;
+    gap: 16px;
+  }
+
+  .fl-about__copy h2 {
+    font-size: clamp(30px, 8.8vw, 36px);
+  }
+
+  .fl-about__copy > p:not(.fl-kicker) {
+    font-size: 16px;
+    line-height: 1.58;
+  }
+}
+
+/* Homepage hero carousel: premium reduced-copy redesign */
+.figma-landing .fl-hero {
+  height: 820px;
+  min-height: 760px;
+  padding: 0;
+  background: #f7f1e3;
+  color: #21183c;
+  isolation: isolate;
+}
+
+.figma-landing .fl-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -190px;
+  right: -170px;
+  width: min(540px, 44vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(113, 81, 160, .2) 0%, rgba(113, 81, 160, .09) 42%, rgba(113, 81, 160, 0) 70%);
+  pointer-events: none;
+}
+
+.figma-landing .fl-hero__background {
+  background: #f7f1e3;
+  transition: opacity 800ms ease-in-out;
+}
+
+.figma-landing .fl-hero__background--first {
+  background:
+    linear-gradient(120deg, rgba(247, 241, 227, .98) 0%, rgba(247, 241, 227, .92) 58%, rgba(239, 232, 250, .88) 100%);
+}
+
+.figma-landing .fl-hero__background--second {
+  background:
+    linear-gradient(120deg, rgba(251, 246, 231, .98) 0%, rgba(247, 241, 227, .9) 56%, rgba(237, 230, 247, .82) 100%);
+}
+
+.figma-landing .fl-hero__scene {
+  z-index: 2;
+  display: grid;
+  align-items: center;
+  transition: opacity 800ms ease-in-out;
+}
+
+/* Keep the second carousel frame visually white, as in the Figma variant. */
+.figma-landing .fl-hero__scene--first .fl-hero__shape {
+  display: none;
+}
+
+.figma-landing .fl-hero__inner {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 55fr) minmax(340px, 45fr);
+  align-items: center;
+  gap: clamp(48px, 6vw, 76px);
+  padding: 110px clamp(32px, 4vw, 56px) 104px;
+}
+
+.figma-landing .fl-hero__copy,
+.figma-landing .fl-hero__copy--second {
+  width: auto;
+  max-width: 610px;
+  display: block;
+  color: #21183c;
+}
+
+.figma-landing .fl-hero__copy > * {
+  opacity: 1;
+  animation: none;
+}
+
+.figma-landing .fl-hero h1,
+.figma-landing .fl-hero h2 {
+  width: auto;
+  max-width: 11.4ch;
+  height: auto;
+  display: block;
+  margin: 0;
+  color: #21183c;
+  font-size: clamp(56px, 5vw, 64px);
+  line-height: 1.06;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.figma-landing .fl-hero__copy > p,
+.figma-landing .fl-hero__copy--second > p {
+  width: auto;
+  max-width: 520px;
+  height: auto;
+  display: block;
+  margin: 28px 0 0;
+  color: #514969;
+  font-size: 18px;
+  line-height: 1.55;
+  text-transform: none;
+}
+
+.figma-landing .fl-hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin-top: 38px;
+}
+
+.figma-landing .fl-hero__actions .fl-btn--gold {
+  min-width: 0;
+  min-height: 52px;
+  height: 52px;
+  padding: 0 32px;
+  border-radius: 999px;
+  background: #e7bb4f;
+  color: #21183c;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 18px 34px -22px rgba(82, 57, 10, .72);
+  transition: transform .22s ease, box-shadow .22s ease, background-color .22s ease;
+}
+
+.figma-landing .fl-hero__actions .fl-btn--gold:hover {
+  background: #f0c75b;
+  transform: translateY(-2px);
+  box-shadow: 0 22px 42px -20px rgba(82, 57, 10, .78);
+}
+
+.figma-landing .fl-hero__actions .fl-btn--gold:focus-visible,
+.figma-landing .fl-hero__pager button:focus-visible {
+  outline: 3px solid rgba(74, 66, 134, .36);
+  outline-offset: 4px;
+}
+
+.figma-landing .fl-hero__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 520px;
+  opacity: 0;
+  transform: scale(.98);
+  transition: opacity 800ms ease-in-out, transform 800ms ease-in-out;
+}
+
+.figma-landing .fl-hero:not(.is-second) .fl-hero__scene--first .fl-hero__visual,
+.figma-landing .fl-hero.is-second .fl-hero__scene--second .fl-hero__visual {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.figma-landing .fl-hero__visual::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 54px;
+  width: min(350px, 78%);
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(52, 32, 78, .15);
+  filter: blur(18px);
+  transform: translateX(-50%);
+}
+
+.figma-landing .fl-hero__product,
+.figma-landing .fl-hero__lifestyle {
+  position: relative;
+  z-index: 1;
+  width: min(470px, 100%);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 28px 34px rgba(61, 44, 92, .16));
+}
+
+.figma-landing .fl-hero__lifestyle {
+  width: min(430px, 100%);
+  border-radius: 30px;
+  box-shadow: 0 26px 58px -32px rgba(39, 35, 85, .42);
+}
+
+.figma-landing .fl-hero__pager {
+  bottom: 34px;
+}
+
+.figma-landing .fl-hero__pager button {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(74, 66, 134, .22);
+  transition: width 800ms ease-in-out, background-color 800ms ease-in-out;
+}
+
+.figma-landing .fl-hero__pager button.is-active {
+  width: 44px;
+  background: rgba(74, 66, 134, .66);
+}
+
+.figma-landing .fl-hero:not(.is-second) .fl-hero__scene--first .fl-hero__copy,
+.figma-landing .fl-hero.is-second .fl-hero__scene--second .fl-hero__copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.figma-landing .fl-hero__scene--first .fl-hero__copy,
+.figma-landing .fl-hero__scene--second .fl-hero__copy {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 800ms ease-in-out, transform 800ms ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO SLIDE — right to left
+
+   The rules above cross-fade the two scenes in place: the outgoing one fades
+   out where it stands and the incoming one fades up 14px. That reads as a
+   dissolve, not a carousel, and it gives no sense of a deck advancing.
+
+   These rules replace it with a directional slide. They are ANIMATIONS, not
+   transitions, for one reason: a transition only knows "active" and "inactive",
+   so the outgoing slide would have to retrace the incoming slide's path and the
+   two would cross in the middle. Two keyframe sets let the leaving slide exit
+   LEFT while the arriving one enters from the RIGHT — everything travelling the
+   same way, which is what makes it read as one deck moving.
+
+   Everything is scoped to `.fl-hero--slid`, which Home.tsx only adds after the
+   first slide change; without that gate the hidden scene would play its exit on
+   load and flash across the banner. `.fl-hero` already sets overflow:hidden, so
+   the travel cannot widen the page.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes flHeroEnterRight {
+  from { opacity: 0; transform: translateX(70px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes flHeroExitLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-70px); }
+}
+
+/* Inactive scene — leaves to the left. Listed first so the active rule below,
+   which carries one more class, out-specifies it. */
+.figma-landing .fl-hero--slid .fl-hero__scene .fl-hero__copy,
+.figma-landing .fl-hero--slid .fl-hero__scene .fl-hero__visual {
+  animation: flHeroExitLeft 620ms var(--ease) both;
+}
+
+/* Active scene — arrives from the right. */
+.figma-landing .fl-hero--slid:not(.is-second) .fl-hero__scene--first .fl-hero__copy,
+.figma-landing .fl-hero--slid:not(.is-second) .fl-hero__scene--first .fl-hero__visual,
+.figma-landing .fl-hero--slid.is-second .fl-hero__scene--second .fl-hero__copy,
+.figma-landing .fl-hero--slid.is-second .fl-hero__scene--second .fl-hero__visual {
+  animation: flHeroEnterRight 620ms var(--ease) both;
+}
+
+/* The product photo trails its copy by a beat. Without the offset the whole
+   scene moves as one flat plane; the small delay gives the banner a sense of
+   depth and stops the two halves reading as a single sliding rectangle. */
+.figma-landing .fl-hero--slid .fl-hero__scene .fl-hero__visual {
+  animation-delay: 70ms;
+}
+
+/* The wash behind each scene keeps its own cross-fade. Sliding the background
+   as well would drag the entire banner sideways, and the two slides sit on
+   different colours — the colour change is what should cross-fade. */
+
+@media (prefers-reduced-motion: reduce) {
+  .figma-landing .fl-hero--slid .fl-hero__scene .fl-hero__copy,
+  .figma-landing .fl-hero--slid .fl-hero__scene .fl-hero__visual,
+  .figma-landing .fl-hero--slid:not(.is-second) .fl-hero__scene--first .fl-hero__copy,
+  .figma-landing .fl-hero--slid:not(.is-second) .fl-hero__scene--first .fl-hero__visual,
+  .figma-landing .fl-hero--slid.is-second .fl-hero__scene--second .fl-hero__copy,
+  .figma-landing .fl-hero--slid.is-second .fl-hero__scene--second .fl-hero__visual {
+    animation: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .figma-landing .fl-hero {
+    height: 760px;
+    min-height: 720px;
+  }
+
+  .figma-landing .fl-hero__inner {
+    grid-template-columns: minmax(0, 55fr) minmax(300px, 45fr);
+    gap: 42px;
+    padding-block: 96px 82px;
+  }
+
+  .figma-landing .fl-hero h1,
+  .figma-landing .fl-hero h2 {
+    font-size: 48px;
+  }
+
+  .figma-landing .fl-hero__visual {
+    min-height: 430px;
+  }
+}
+
+/* 768, not 760: the hero has to flatten at the same width its typography
+   shrinks (the universal block further down is 768), or 761-768px — iPad
+   portrait, one of the target viewports — gets the desktop two-column hero set
+   at phone type scale. */
+@media (max-width: 768px) {
+  /* Both scenes are `position:absolute;inset:0` (figma-landing.css:19), so the
+     hero had NO in-flow children and its height was whatever min-height said —
+     720px — while the stacked mobile scene measures ~850px. `overflow:hidden`
+     then ate the difference, including the Buy Now button. Stacking the two
+     scenes in one grid cell lets the taller one define the height and keeps the
+     cross-fade. Desktop (>768px) still uses the absolute layout untouched. */
+  /* `minmax(0, 1fr)`, not the implicit `auto`: an auto track's growth limit is
+     its items' MAX-CONTENT size, and `.fl-hero__copy` carries `max-width:610px`
+     — so the single stack column resolved to 610 + 40px of inner padding = 650px
+     inside a 390px viewport. Everything then centred inside that 650px box and
+     `overflow:clip` sheared off the right-hand third: the lifestyle cutout, the
+     end of the headline, the proof row. Capping the track at the container width
+     is the whole fix — no geometry, type or colour below this line changes. */
+  .figma-landing .fl-hero {
+    height: auto;
+    min-height: 0;
+    display: grid;
+    grid-template-areas: "stack";
+    grid-template-columns: minmax(0, 1fr);
+    overflow: clip;
+  }
+
+  /* Grid items default to `min-width:auto`, which floors them at min-content and
+     would re-open the same overflow from below. */
+  .figma-landing .fl-hero__scene {
+    grid-area: stack;
+    position: relative;
+    inset: auto;
+    min-height: 0;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .figma-landing .fl-hero__background {
+    grid-area: stack;
+    position: absolute;
+    inset: 0;
+  }
+
+  .figma-landing .fl-hero__inner {
+    height: auto;
+    min-height: 0;
+  }
+
+  /* The inactive scene keeps its box on purpose — dropping it out of flow would
+     resize the hero every 6 seconds and shove the page around. It is still
+     opacity:0 (so it paints nothing), pointer-events:none (figma-landing.css)
+     and `inert` in the markup, so it cannot be seen, tapped or tabbed to. The
+     cross-fade is therefore intact here, unlike a visibility/display swap. */
+
+  /* Auto-placed into the implicit second row, under the tallest scene, instead
+     of floating over whichever CTA happens to be at the bottom. */
+  .figma-landing .fl-hero__pager {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    justify-content: center;
+    margin: 8px auto 20px;
+  }
+
+  .figma-landing .fl-hero::after {
+    top: -150px;
+    right: -190px;
+    width: 390px;
+  }
+
+  /* `minmax(0, 1fr)` for the same reason as the stack track above: a bare `1fr`
+     is `minmax(auto, 1fr)`, whose auto minimum lets a wide child (the product
+     shot, a long unbroken word) push the single column past the viewport. */
+  .figma-landing .fl-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: start;
+    gap: 18px;
+    padding: 86px 20px 52px;
+  }
+
+  .figma-landing .fl-hero__visual {
+    order: -1;
+    min-height: 230px;
+  }
+
+  .figma-landing .fl-hero__visual::after {
+    bottom: 12px;
+    width: min(250px, 76%);
+    height: 28px;
+  }
+
+  .figma-landing .fl-hero__product {
+    width: min(300px, 82vw);
+  }
+
+  .figma-landing .fl-hero__lifestyle {
+    width: min(285px, 78vw);
+    border-radius: 22px;
+  }
+
+  .figma-landing .fl-hero h1,
+  .figma-landing .fl-hero h2 {
+    max-width: 12ch;
+    font-size: 38px;
+    line-height: 1.08;
+  }
+
+  /* The 12ch cap above was only ever reset for the lifestyle slide, so the
+     product slide's heading was squeezed into ~178px of a 320px column. */
+  .figma-landing .fl-hero__scene--first h1,
+  .figma-landing .fl-hero__scene--first h2 {
+    max-width: 100%;
+    text-wrap: balance;
+  }
+
+  .figma-landing .fl-hero__copy > p,
+  .figma-landing .fl-hero__copy--second > p {
+    max-width: 330px;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .figma-landing .fl-hero__actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .figma-landing .fl-hero__actions .fl-btn--gold {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figma-landing .fl-hero__scene,
+  .figma-landing .fl-hero__background,
+  .figma-landing .fl-hero__copy,
+  .figma-landing .fl-hero__visual,
+  .figma-landing .fl-hero__pager button {
+    transition: none;
+  }
+}
+
+/* Figma Hero / Variant 1: purple lifestyle frame with the seated woman. */
+.figma-landing .fl-hero__background--second,
+.figma-landing .fl-hero__scene--second {
+  background:
+    radial-gradient(58% 70% at 76% 34%, rgba(194, 184, 231, .38) 0%, rgba(126, 111, 184, .08) 64%, transparent 78%),
+    linear-gradient(180deg, #a79bd3 0%, #6657aa 48%, #2e2568 100%);
+}
+
+.figma-landing .fl-hero__scene--second {
+  color: #fff;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__inner {
+  max-width: 1520px;
+  grid-template-columns: minmax(0, 56fr) minmax(430px, 44fr);
+  gap: 0;
+  padding: 38px clamp(58px, 6.2vw, 96px) 50px;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__copy--second {
+  position: relative;
+  z-index: 5;
+  max-width: 700px;
+  color: #fff;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__card-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__flower-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 0 12px;
+  align-self: flex-start;
+}
+
+.figma-landing .fl-hero__scene--second :is(h1, h2) {
+  max-width: 700px;
+  color: #fff !important;
+  font-size: clamp(50px, 4.15vw, 64px);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  text-align: left;
+}
+
+.figma-landing .fl-hero__scene--second :is(h1, h2) span {
+  color: #21184d;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__card-panel > p {
+  max-width: 650px;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, .7);
+  font-size: 17px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__proof--light {
+  margin: 20px 0 0;
+  color: #fff;
+  align-self: flex-start;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__proof--light .fl-hero__proof-divider {
+  color: rgba(255, 255, 255, .42);
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__actions {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__actions .fl-btn--gold {
+  align-self: flex-start;
+  margin-left: 0;
+  box-shadow: 0 10px 28px rgba(229, 184, 66, 0.32);
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__visual--second {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  min-height: 650px;
+  display: block;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__visual--second::after {
+  display: none;
+}
+
+.figma-landing .fl-hero__scene--second .fl-hero__lifestyle {
+  position: absolute;
+  z-index: 3;
+  right: -2%;
+  bottom: -32px;
+  width: clamp(540px, 46vw, 680px);
+  max-width: none;
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 28px 40px rgba(25, 17, 63, .28));
+}
+
+.figma-landing .fl-hero__girl-pad {
+  position: absolute;
+  z-index: 2;
+  right: -30px;
+  bottom: 50px;
+  width: clamp(360px, 28vw, 460px);
+  height: auto;
+  transform: rotate(7deg);
+  filter: drop-shadow(0 24px 38px rgba(31, 22, 70, .28));
+}
+
+.figma-landing .fl-hero__girl-clouds {
+  position: absolute;
+  z-index: 3;
+  right: -5%;
+  bottom: -25%;
+  width: 74%;
+  height: 116%;
+  object-fit: cover;
+  object-position: center;
+  opacity: .92;
+  pointer-events: none;
+}
+
+.figma-landing .fl-hero__girl-flower-outline {
+  position: absolute;
+  z-index: 3;
+  top: 24%;
+  left: 2.5%;
+  width: 132px;
+  height: 132px;
+  opacity: .2;
+  pointer-events: none;
+}
+
+.figma-landing .fl-hero.is-second .fl-hero__pager button {
+  background: rgba(255, 255, 255, .28);
+}
+
+.figma-landing .fl-hero.is-second .fl-hero__pager button.is-active {
+  background: rgba(255, 255, 255, .62);
+}
+
+@media (max-width: 1080px) {
+  .figma-landing .fl-hero__scene--second .fl-hero__inner {
+    grid-template-columns: minmax(0, 57fr) minmax(330px, 43fr);
+    padding-inline: 48px;
+  }
+
+  .figma-landing .fl-hero__scene--second :is(h1, h2) {
+    font-size: 48px;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__visual--second {
+    min-height: 560px;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__lifestyle {
+    right: -20px;
+    width: min(420px, 43vw);
+  }
+}
+
+@media (max-width: 768px) {
+  .figma-landing .fl-hero__scene--second .fl-hero__inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: center !important;
+    padding: 72px 20px 48px !important;
+    gap: 16px !important;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__visual--second {
+    order: -1 !important;
+    width: 100% !important;
+    min-height: 260px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 8px !important;
+    position: relative !important;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__lifestyle {
+    position: relative !important;
+    inset: auto !important;
+    margin: 0 auto !important;
+    display: block !important;
+    width: min(340px, 82vw) !important;
+    max-width: 360px !important;
+    height: auto !important;
+    z-index: 5 !important;
+    filter: drop-shadow(0 20px 32px rgba(25, 17, 63, .35)) !important;
+  }
+
+  /* No `.fl-hero__girl-pad` / `.fl-hero__girl-clouds` rules here on purpose:
+     Home.tsx gates both out of the markup below 769px (useMediaGate), so a
+     display:none rule would match nothing. They earn nothing on a phone anyway
+     — the pad sits at z-index 4 under a cutout 43% wider than it, and the cloud
+     wash is painted over by everything above it. */
+
+  .figma-landing .fl-hero__girl-flower-outline {
+    top: 15%;
+    left: 4%;
+    width: 80px;
+    height: 80px;
+    opacity: 0.25;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__copy--second {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__card-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__flower-icon {
+    width: 48px !important;
+    height: 48px !important;
+    margin: 0 auto 12px !important;
+    align-self: center !important;
+  }
+
+  .figma-landing .fl-hero__scene--second :is(h1, h2) {
+    max-width: 100% !important;
+    font-size: clamp(28px, 7.5vw, 36px) !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__card-panel > p {
+    max-width: 480px !important;
+    margin: 12px auto 0 !important;
+    font-size: 14.5px !important;
+    line-height: 1.45 !important;
+    text-align: center !important;
+  }
+
+  .fl-hero__scene--second .fl-hero__proof--light {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px 14px !important;
+    margin: 14px auto 0 !important;
+    font-size: 14px !important;
+    align-self: center !important;
+  }
+
+  .fl-hero__scene--second .fl-hero__proof-divider {
+    display: inline-block !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__actions {
+    margin-top: 18px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-self: center !important;
+    width: 100% !important;
+  }
+
+  .figma-landing .fl-hero__scene--second .fl-hero__actions .fl-btn--gold {
+    width: auto !important;
+    min-width: 160px !important;
+    align-self: center !important;
+  }
+}
+
+/* Hero pager: 44x44 hit box, unchanged 10px painted dot.
+   Gated on `pointer: coarse` rather than a width query so touch tablets are
+   covered and the mouse-driven desktop rendering is byte-identical. */
+@media (pointer: coarse) {
+  .figma-landing .fl-hero__pager {
+    gap: 4px;
+  }
+
+  .figma-landing .fl-hero__pager button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+    background: none;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+  }
+
+  .figma-landing .fl-hero__pager button::before {
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(74, 66, 134, .22);
+    transition: width 800ms ease-in-out, background-color 800ms ease-in-out;
+  }
+
+  .figma-landing .fl-hero__pager button.is-active {
+    width: 60px;
+  }
+
+  .figma-landing .fl-hero__pager button.is-active::before {
+    width: 40px;
+    background: rgba(74, 66, 134, .66);
+  }
+
+  .figma-landing .fl-hero.is-second .fl-hero__pager button {
+    background: none;
+  }
+
+  .figma-landing .fl-hero.is-second .fl-hero__pager button::before {
+    background: rgba(255, 255, 255, .28);
+  }
+
+  .figma-landing .fl-hero.is-second .fl-hero__pager button.is-active::before {
+    background: rgba(255, 255, 255, .62);
+  }
+}
+
+/* =============================================================================
+   UNIVERSAL MICRO-INTERACTIONS & MOBILE RESPONSIVE ENHANCEMENTS
+   ============================================================================= */
+
+/* 1. Spring Button & CTA Micro-Interactions */
+.fl-btn,
+.btn,
+.fl-btn--gold,
+.fl-btn--outline,
+.fl-btn--primary {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease,
+              color 0.2s ease !important;
+  will-change: transform, box-shadow;
+  position: relative;
+  overflow: hidden;
+}
+
+.fl-btn:hover,
+.btn:hover,
+.fl-btn--gold:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(229, 184, 66, 0.38) !important;
+}
+
+.fl-btn:active,
+.btn:active,
+.fl-btn--gold:active {
+  transform: translateY(0) scale(0.96) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Shimmer pass on hover */
+.fl-btn--gold::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: rotate(30deg) translateX(-100%);
+  transition: transform 0.65s ease;
+  pointer-events: none;
+}
+
+.fl-btn--gold:hover::after {
+  transform: rotate(30deg) translateX(100%);
+}
+
+/* 2. Card Elevation Micro-Interactions.
+   `.fl-product-card`, `.fl-journal__card` and `.fl-partner__stat` (singular)
+   are not rendered anywhere — the live classes are `.card`, `.fl-blog` and
+   `.fl-partner__stats span`. The lift is left on the two elements that do
+   exist, and gated on a real pointer so it cannot fire as a tap-highlight. */
+.fl-review,
+.cyc-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  will-change: transform, box-shadow;
+}
+
+@media (hover: hover) {
+  .fl-review:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 42px -12px rgba(39, 35, 85, 0.16) !important;
+  }
+}
+
+/* 3. Gentle Ambient Floating Flowers */
+@keyframes flGentleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(4deg); }
+}
+
+.fl-hero__flower-icon,
+.fl-flower img {
+  animation: flGentleFloat 5s ease-in-out infinite;
+}
+
+/* The reduced-motion block 200 lines up covers a different, earlier set of
+   selectors and only cancels `transition` — it could never have reached this
+   animation. */
+@media (prefers-reduced-motion: reduce) {
+  .fl-hero__flower-icon,
+  .fl-flower img {
+    animation: none !important;
+  }
+}
+
+/* 4. Strict Mobile Layout & Touch-Screen Optimizations */
+@media (max-width: 768px) {
+  /* `clip`, never `hidden`, and never `!important`. `hidden` makes <body> a
+     scroll container, which silently kills `position: sticky` for every
+     descendant — the sticky nav on this page and the checkout order summary at
+     768px. `clip` suppresses the same horizontal bleed without creating a
+     scrollport. base.css:56 documents the same decision for <html>. */
+  html, body {
+    overflow-x: clip;
+    touch-action: manipulation;
+  }
+
+  /* Universal text line-height safeguard to prevent line collision */
+  h1, h2, h3, h4, .display {
+    line-height: 1.25 !important;
+    height: auto !important;
+    margin-bottom: 8px !important;
+  }
+
+  p, span, small {
+    line-height: 1.5 !important;
+  }
+
+  /* `height: auto` is forced on the BLOCK text elements only, never on <span>.
+     On a real (non-replaced, inline) text span `height` has no effect at all, so
+     including spans here bought nothing — but the landing markup also uses spans
+     as sized layout boxes (.fl-founder__portrait, .fl-flower,
+     .fl-founder__spark), and on those the `!important` beat their own
+     `height: 100%`. The founder portraits then collapsed to their images'
+     intrinsic aspect ratio and grew past the collage into the copy below it. */
+  p, small {
+    height: auto !important;
+  }
+
+  /* Hero section mobile copy */
+  .fl-hero h1,
+  .fl-hero h2 {
+    font-size: clamp(26px, 7.5vw, 36px) !important;
+    line-height: 1.22 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .fl-hero__copy > p,
+  .fl-hero__card-panel > p {
+    font-size: 14.5px !important;
+    line-height: 1.45 !important;
+    margin-top: 8px !important;
+  }
+
+  .fl-hero__proof {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px 12px !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    margin-top: 14px !important;
+  }
+
+  .fl-hero__proof-divider {
+    display: inline-block !important;
+    margin: 0 4px !important;
+    opacity: 0.5 !important;
+  }
+
+  /* Clean mobile pill buttons.
+     SCOPED to `.figma-landing` on purpose. This list used to include a bare
+     `.btn` with `width:auto!important;white-space:nowrap!important`, which
+     outranked even inline styles and collapsed the checkout pay button, the
+     cart drawer footer button and the cycle tracker CTA on every route at
+     <=768px. It never needed to reach past the landing page: `.fl-btn` is only
+     rendered by Home.tsx and About.tsx. The width/height/white-space clamps are
+     gone with it — a CTA that wants to be full width may now be full width. */
+  .figma-landing .fl-btn,
+  .figma-landing .fl-btn--gold,
+  .figma-landing .fl-btn--outline,
+  .figma-landing .fl-partner__actions .fl-btn {
+    min-height: 46px;
+    padding: 10px 24px;
+    font-size: 14.5px;
+    line-height: 1.2;
+    border-radius: 999px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fl-partner__actions {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-top: 18px !important;
+  }
+
+  .fl-partner__copy h2 {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: clamp(26px, 7vw, 34px) !important;
+    line-height: 1.22 !important;
+  }
+
+  .fl-partner__copy p {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 15px !important;
+    line-height: 1.48 !important;
+    margin-top: 14px !important;
+  }
+
+  .fl-partner__stats {
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    margin-top: 18px !important;
+  }
+
+  .fl-partner__stats strong {
+    font-size: 24px !important;
+    line-height: 1.1 !important;
+  }
+
+  .fl-partner__stats small {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Deleted here: a 24px `.fl-hero__pager button` that lost on specificity to
+     `.figma-landing .fl-hero__pager button` and so never shipped (the real
+     44x44 target is in the `pointer: coarse` block above), and the
+     `.fl-product` / `.fl-product__media` / `.fl-product__buy` trio, which is
+     the markup ProductCard replaced. Its `min-height:44px;width:100%` is the
+     one thing worth keeping and it now lives on `.add` in the 900px block. */
+
+  .fl-benefit {
+    height: auto !important;
+    min-height: 120px !important;
+    padding: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* This grid was flipped to a horizontal flex rail whose only item-sizing rule
+     targeted `.fl-journal__card` — a class the page does not render (the cards
+     are `.fl-blog`). With no flex-basis the three cards shrank to min-content,
+     about 140px each, one word per line. A single column is what the section
+     was designed to do on a phone; it also restores the `1fr` rule at the
+     900px breakpoint that this block was overriding. */
+  .fl-journal__grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    overflow: visible !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* =============================================================================
+   MOBILE REPAIR PASS — reveal safety net, touch affordances, type floors
+   ============================================================================= */
+
+/* 1. Reveal safety net.
+   Everything below the hero ships as opacity:0 in the server HTML and is only
+   revealed by a client-side IntersectionObserver, so on a slow phone the page
+   below the fold paints blank for the whole hydration window — and the journal
+   cards are parked 610-1233px down over the cycle tracker while they wait. On
+   a phone the entrance choreography is worth less than seeing the page, so
+   below 900px the sections simply start where they belong. This also
+   neutralises the 530px horizontal parking offset on `.fl-benefit--left/right`
+   (which is the reason a global overflow guard was needed at all) and the
+   421px desktop step that the testimonial arrows apply to the rail. */
+@media (max-width: 900px) {
+  .fl-why .fl-heading,
+  .fl-benefit,
+  .fl-why__product,
+  .fl-journal .fl-heading,
+  .fl-blog,
+  .fl-testimonials .fl-heading,
+  .fl-testimonials__track,
+  .fl-partner__copy,
+  .fl-partner__image,
+  .fl-founder {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* 2. Blog card: the "read" chip is a 78x17 box with `overflow:hidden` that only
+   opens to 40px on :hover, so on touch the arrow — the card's only "this is
+   tappable" cue — is permanently clipped out of view. */
+@media (hover: none) {
+  .fl-blog__meta {
+    align-items: flex-end;
+  }
+
+  .fl-blog__read {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    overflow: visible;
+  }
+
+  .fl-blog__arrow {
+    align-self: auto;
+  }
+}
+
+/* 3. #about-femi9 — the one landing section with no responsive coverage at all,
+   because every value was an inline style object that no media query can
+   reach. The desktop numbers below are the exact ones that were inline.
+   `--bg-light` and `--font-display` are NOT defined anywhere in this app: both
+   declarations are invalid at computed-value time and resolve to `unset`, which
+   is exactly what the inline styles did, so the desktop rendering is unchanged.
+   They are kept verbatim rather than "fixed" for that reason — giving them real
+   values would repaint the section. */
+.about-section {
+  padding: 80px 0;
+  background: var(--bg-light);
+}
+
+.about-section .fl-shell {
+  max-width: 800px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.about-section h2 {
+  margin-bottom: 24px;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+}
+
+.about-section p {
+  color: var(--ink);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.about-section p:first-of-type {
+  margin-bottom: 16px;
+}
+
+.about-section p:last-of-type {
+  margin-bottom: 32px;
+}
+
+@media (max-width: 620px) {
+  .about-section {
+    padding: 48px 0;
+  }
+
+  .about-section h2 {
+    margin-bottom: 16px;
+    font-size: clamp(26px, 7.5vw, 32px);
+  }
+
+  .about-section p {
+    font-size: 1rem;
+  }
+}
+
+/* 4. Cycle tracker: the fineprint is pinned to 12px by figma-landing.css with
+   `!important`, under the 14px floor, on muted grey. */
+@media (max-width: 900px) {
+  .fl-cycle .cyc-fineprint {
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .fl-cycle .cyc-form-title p {
+    font-size: 14px !important;
+  }
+
+  /* Four decorative blobs sized as percentages of a box that is ~1200px tall
+     once `.fl-cycle` goes height:auto — a round blob renders as a 6x vertical
+     streak. They are aria-hidden decoration, and unreadable at this size. */
+  .fl-cycle .cyc-fig-vectors {
+    display: none;
+  }
+}
+
+/* 5. About page decorative shapes. Below 900px they kept their desktop
+   coordinates: --bottom starts at x=676 and --edge at x=1012 on a 360px
+   viewport, so both were laid out entirely off-canvas and swallowed by
+   `.fl-about{overflow:hidden}`, while --top spread 849px of flat wash over a
+   360px section. (--edge is dropped from the markup below 901px.) */
+@media (max-width: 900px) {
+  .fl-about__shape {
+    opacity: .35;
+  }
+
+  .fl-about__shape--corner {
+    width: 220px;
+    left: -40px;
+    top: -20px;
+  }
+
+  .fl-about__shape--top {
+    width: 380px;
+    height: auto;
+    left: -60px;
+    top: -30px;
+  }
+
+  .fl-about__shape--bottom {
+    width: 320px;
+    height: auto;
+    left: auto;
+    right: -80px;
+    top: auto;
+    bottom: -40px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM REDESIGNED HERO SECTION — FEMI9
+   Deep Purple: #3C2A5E | Lavender: #B8A9D9 | Warm Yellow: #F2A93B
+   White: #FFFFFF | Muted: #E5DFF0
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.figma-landing .fl-hero--redesigned {
+  position: relative;
+  height: clamp(740px, 86vh, 880px);
+  min-height: 720px;
+  background-color: #3C2A5E !important;
+  background-image: 
+    radial-gradient(ellipse 70% 75% at 75% 35%, rgba(184, 169, 217, 0.22) 0%, rgba(60, 42, 94, 0) 65%),
+    linear-gradient(135deg, #4A3474 0%, #3C2A5E 48%, #2A1C44 100%) !important;
+  color: #FFFFFF !important;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  isolation: isolate;
+  padding: 0;
+}
+
+/* Remove figma-landing pseudo-glow that clashed with old beige background */
+.figma-landing .fl-hero--redesigned::after {
+  display: none !important;
+}
+
+/* Atmospheric subtle backdrop */
+.fl-hero--redesigned .fl-hero__backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.fl-hero--redesigned .fl-hero__glow-ambient {
+  position: absolute;
+  top: -10%;
+  right: 15%;
+  width: min(640px, 50vw);
+  height: min(640px, 50vw);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184, 169, 217, 0.18) 0%, rgba(184, 169, 217, 0.05) 50%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+/* Background Cloud decorative elements with slow horizontal drift */
+.fl-hero--redesigned .fl-hero__clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+  transform: translateY(calc(var(--hero-scroll-progress, 0) * -12px));
+  will-change: transform;
+}
+
+.fl-hero--redesigned .fl-hero__cloud-track {
+  position: absolute;
+  right: -6%;
+  bottom: -18%;
+  width: clamp(520px, 48vw, 840px);
+  height: auto;
+  opacity: 0.88;
+  pointer-events: none;
+  animation: heroCloudDrift 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.fl-hero--redesigned .fl-hero__cloud-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.fl-hero--redesigned .fl-hero__flower-decor {
+  position: absolute;
+  top: 18%;
+  left: 2%;
+  width: clamp(140px, 14vw, 200px);
+  height: auto;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+/* Hero Inner Grid Layout */
+.fl-hero--redesigned .fl-hero__inner {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 80px clamp(28px, 4.5vw, 64px) 70px;
+  display: grid;
+  grid-template-columns: minmax(0, 54fr) minmax(360px, 46fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 64px);
+}
+
+/* LEFT COLUMN: Copy */
+.fl-hero--redesigned .fl-hero__copy {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  max-width: 620px;
+  transform: translateY(calc(var(--hero-scroll-progress, 0) * -22px));
+  opacity: calc(1 - var(--hero-scroll-progress, 0) * 0.3);
+  transition: transform 0.08s linear, opacity 0.08s linear;
+}
+
+/* Headline: Comfort That Moves With You */
+.fl-hero--redesigned .fl-hero__title {
+  font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(42px, 4.6vw, 66px) !important;
+  line-height: 1.08 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 15ch !important;
+  text-wrap: balance;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: heroTitleEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtext */
+.fl-hero--redesigned .fl-hero__subtitle {
+  font-family: inherit;
+  font-size: clamp(17px, 1.35vw, 20px) !important;
+  line-height: 1.55 !important;
+  color: #E5DFF0 !important;
+  margin: 22px 0 0 !important;
+  padding: 0 !important;
+  max-width: 500px !important;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: heroSubEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+}
+
+/* CTA Container & Button */
+.fl-hero--redesigned .fl-hero__actions {
+  margin-top: 32px !important;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: heroCtaEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.28s forwards;
+}
+
+.fl-hero--redesigned .fl-hero__cta.fl-btn--gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #F2A93B !important;
+  color: #21183C !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+  padding: 16px 44px !important;
+  min-height: 52px !important;
+  border-radius: 999px !important;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -4px rgba(242, 169, 59, 0.42) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease !important;
+  will-change: transform, box-shadow;
+}
+
+.fl-hero--redesigned .fl-hero__cta.fl-btn--gold:hover {
+  transform: scale(1.03) translateY(-1px) !important;
+  background-color: #f7b247 !important;
+  box-shadow: 0 16px 32px -4px rgba(242, 169, 59, 0.55) !important;
+}
+
+.fl-hero--redesigned .fl-hero__cta.fl-btn--gold:active {
+  transform: scale(0.99) !important;
+}
+
+.fl-hero--redesigned .fl-hero__cta:focus-visible {
+  outline: 3px solid #B8A9D9 !important;
+  outline-offset: 4px;
+}
+
+/* Trust Badges */
+.fl-hero--redesigned .fl-hero__proof {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px !important;
+  font-size: 15px;
+  font-weight: 500;
+  color: #E5DFF0 !important;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: heroBadgesEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+
+.fl-hero--redesigned .fl-hero__proof span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #E5DFF0 !important;
+}
+
+.fl-hero--redesigned .fl-hero__proof span img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.fl-hero--redesigned .fl-hero__proof-divider {
+  color: rgba(229, 223, 240, 0.42) !important;
+  font-weight: 300;
+  font-size: 15px;
+}
+
+/* RIGHT COLUMN: Visual Area */
+.fl-hero--redesigned .fl-hero__visual {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 520px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: heroVisualEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
+}
+
+/* Lavender Glow behind product / model (#B8A9D9) */
+.fl-hero--redesigned .fl-hero__lavender-glow {
+  position: absolute;
+  top: 48%;
+  left: 52%;
+  transform: translate(-50%, -50%);
+  width: clamp(380px, 38vw, 560px);
+  height: clamp(380px, 38vw, 560px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184, 169, 217, 0.32) 0%, rgba(184, 169, 217, 0.12) 48%, rgba(60, 42, 94, 0) 72%);
+  filter: blur(48px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Floating Product / Model Container with Scroll Parallax */
+.fl-hero--redesigned .fl-hero__float-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transform: translateY(calc(var(--hero-scroll-progress, 0) * -30px));
+  transition: transform 0.08s linear;
+  animation: heroProductFloat 6s ease-in-out 0.88s infinite alternate;
+  will-change: transform;
+}
+
+.fl-hero--redesigned .fl-hero__lifestyle-model {
+  position: relative;
+  z-index: 3;
+  width: clamp(480px, 44vw, 660px);
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 44px rgba(25, 17, 63, 0.35));
+}
+
+.fl-hero--redesigned .fl-hero__pad-product {
+  position: absolute;
+  z-index: 2;
+  right: -25px;
+  bottom: 25px;
+  width: clamp(320px, 26vw, 440px);
+  height: auto;
+  transform: rotate(6deg);
+  filter: drop-shadow(0 20px 36px rgba(25, 17, 63, 0.3));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes heroTitleEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroSubEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroCtaEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroBadgesEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroVisualEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroCloudDrift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-36px, -6px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes heroProductFloat {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STUDIO LAVENDER PRODUCT HERO (REFERENCE IMAGE 1 VISUAL REDESIGN)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.figma-landing .fl-hero--studio {
+  background: linear-gradient(135deg, #FAF7FD 0%, #F4EEFB 35%, #E9DEFA 70%, #E1D3F7 100%) !important;
+  color: #3C2A5E !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.fl-hero--studio .fl-hero__backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.fl-hero--studio .fl-hero__glow-ambient {
+  position: absolute;
+  top: 20%;
+  right: 15%;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184, 169, 217, 0.45) 0%, rgba(214, 194, 236, 0.15) 55%, transparent 75%);
+  filter: blur(50px);
+  animation: studioGlowPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes studioGlowPulse {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+.fl-hero--studio .fl-hero__watermark {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+  font-family: var(--fl-font-display, serif);
+  font-size: clamp(120px, 16vw, 240px);
+  font-weight: 700;
+  color: rgba(60, 42, 94, 0.04);
+  letter-spacing: -0.02em;
+  user-select: none;
+  z-index: 0;
+}
+
+.fl-hero--studio .fl-hero__copy {
+  color: #3C2A5E !important;
+  position: relative;
+  z-index: 5;
+}
+
+.fl-hero--studio .fl-hero__title {
+  color: #2A1D45 !important;
+  font-family: var(--fl-font-display, serif) !important;
+  font-size: clamp(44px, 4.4vw, 64px) !important;
+  font-weight: 700 !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.015em !important;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.6);
+  animation: heroTitleEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fl-hero--studio .fl-hero__subtitle {
+  color: #5A487A !important;
+  font-size: clamp(16px, 1.35vw, 19px) !important;
+  line-height: 1.55 !important;
+  margin-top: 18px !important;
+  font-weight: 400 !important;
+  max-width: 580px !important;
+  animation: heroSubtitleEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
+}
+
+.fl-hero--studio .fl-hero__cta.fl-btn--gold {
+  background: linear-gradient(135deg, #F2A93B 0%, #E59828 100%) !important;
+  color: #2A1D45 !important;
+  font-weight: 700 !important;
+  border-radius: 9999px !important;
+  padding: 16px 44px !important;
+  font-size: 17px !important;
+  box-shadow: 0 10px 26px rgba(242, 169, 59, 0.38) !important;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.fl-hero--studio .fl-hero__cta.fl-btn--gold:hover {
+  transform: scale(1.03) translateY(-2px) !important;
+  box-shadow: 0 14px 32px rgba(242, 169, 59, 0.48) !important;
+}
+
+.fl-hero--studio .fl-hero__proof {
+  color: #4E3C6D !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+.fl-hero--studio .fl-hero__proof-divider {
+  color: rgba(60, 42, 94, 0.25) !important;
+}
+
+.fl-hero--studio .fl-hero__visual {
+  position: relative !important;
+  z-index: 4 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.fl-hero--studio .fl-hero__float-container {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  animation: studioProductFloat 6s ease-in-out infinite alternate !important;
+  transform: translateY(calc(var(--hero-scroll-progress, 0) * -22px));
+}
+
+@keyframes studioProductFloat {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-6px);
+  }
+}
+
+.fl-hero--studio .fl-hero__studio-product {
+  width: 100% !important;
+  max-width: 680px !important;
+  height: auto !important;
+  border-radius: 20px !important;
+  filter: drop-shadow(0 22px 42px rgba(60, 42, 94, 0.16)) !important;
+  animation: studioProductEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+}
+
+@keyframes studioProductEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes heroTitleEntrance {
+  0% { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroSubtitleEntrance {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE LAYOUT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1080px) {
+  .figma-landing .fl-hero--studio {
+    height: auto;
+    min-height: 680px;
+  }
+  .fl-hero--studio .fl-hero__inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    padding-top: 60px;
+    padding-bottom: 50px;
+  }
+  .fl-hero--studio .fl-hero__studio-product {
+    max-width: 520px !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .figma-landing .fl-hero--studio {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 36px 0 24px !important;
+    display: block !important;
+  }
+  .fl-hero--studio .fl-hero__inner {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 28px !important;
+    padding: 24px 20px 0 !important;
+    text-align: left !important;
+    min-height: 0 !important;
+  }
+  .fl-hero--studio .fl-hero__copy {
+    max-width: 100% !important;
+    width: 100% !important;
+    align-items: flex-start !important;
+    order: 1 !important;
+    transform: none !important;
+  }
+  .fl-hero--studio .fl-hero__title {
+    font-size: clamp(34px, 7vw, 44px) !important;
+    line-height: 1.12 !important;
+    max-width: 100% !important;
+  }
+  .fl-hero--studio .fl-hero__subtitle {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    margin-top: 14px !important;
+    max-width: 100% !important;
+  }
+  .fl-hero--studio .fl-hero__actions {
+    margin-top: 24px !important;
+    width: 100% !important;
+  }
+  .fl-hero--studio .fl-hero__cta.fl-btn--gold {
+    min-width: 180px !important;
+    font-size: 16px !important;
+    padding: 14px 38px !important;
+  }
+  .fl-hero--studio .fl-hero__proof {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-top: 20px !important;
+    font-size: 14px !important;
+  }
+  .fl-hero--studio .fl-hero__visual {
+    order: 2 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    justify-content: center !important;
+    margin: 12px 0 0 !important;
+    transform: none !important;
+  }
+  .fl-hero--studio .fl-hero__float-container {
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  .fl-hero--studio .fl-hero__studio-product {
+    width: min(380px, 90vw) !important;
+    max-width: 400px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .fl-hero--studio .fl-hero__inner {
+    padding: 20px 16px 0 !important;
+    gap: 24px !important;
+  }
+  .fl-hero--studio .fl-hero__title {
+    font-size: 32px !important;
+    line-height: 1.15 !important;
+  }
+  .fl-hero--studio .fl-hero__cta.fl-btn--gold {
+    width: 100% !important;
+    max-width: 260px !important;
+    padding: 14px 32px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREFERS REDUCED MOTION (ACCESSIBILITY)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FULL-SCREEN DISPLAY PRODUCT HERO METHOD (REFERENCE IMAGE 1 IMMERSIVE)
+   ─────────────────────────────────────────────────────────────────────────
+   Art direction: the studio shot is the stage, the copy sits in a pool of soft
+   lavender light to its left.
+
+   • The photo is nudged right (`translate`) and its left edge feathered with a
+     mask, so the headline, sub-copy and proof row read on a calm field instead
+     of across the pack and the cotton. `translate` (not `transform`) carries the
+     offset AND the scroll parallax, because the entrance animation owns
+     `transform` and its `forwards` fill used to freeze the parallax at zero.
+   • The bottom edge fades into the white band below, so the hero no longer ends
+     on a hard line.
+   • Type is the brand display serif (Newsreader, as every other section
+     heading). The old `var(--fl-font-display, serif)` pointed at a token that is
+     never defined, which rendered the browser's default Times.
+   • Entrance motion only ENHANCES visible copy: `both` fill + no resting
+     `opacity:0`, so if the animation never runs the copy is still on screen.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.figma-landing .fl-hero--fullscreen-studio {
+  --hero-field: #f4effa;
+  --hero-ink: #2a1d45;
+  --hero-ink-soft: #5a4a78;
+  --hero-gold: #f0c14e;
+  --hero-gold-deep: #d8a22f;
+  /* The photo is drawn wider than the hero and pinned to its left edge: that
+     crops open sky off the right and lands the product in the right half, while
+     the image still fills the whole section edge to edge. */
+  --hero-img-w: 131%;
+
+  position: relative !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: min(clamp(640px, 100svh, 1100px), 75vw) !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(180deg, #f7f3fc 0%, var(--hero-field) 62%, #ffffff 100%) !important;
+  padding: 120px 0 72px !important;
+}
+
+.fl-hero--fullscreen-studio .fl-hero__fullscreen-bg {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  overflow: hidden !important;
+}
+
+.fl-hero--fullscreen-studio .fl-hero__fullscreen-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--hero-img-w) !important;
+  max-width: none !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 0% 62% !important;
+  translate: 0 calc(var(--hero-scroll-progress, 0) * -14px);
+  transition: translate 0.1s linear;
+  animation: heroBgZoomIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes heroBgZoomIn {
+  0% {
+    transform: scale(1.04);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* A pool of light behind the copy column — legibility without a panel. */
+.fl-hero--fullscreen-studio .fl-hero__gradient-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    linear-gradient(90deg, rgba(248, 244, 252, 0.78) 0%, rgba(248, 244, 252, 0.5) 30%, rgba(248, 244, 252, 0) 52%) !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.fl-hero--fullscreen-studio .fl-hero__inner {
+  position: relative !important;
+  z-index: 5 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 52fr) minmax(0, 48fr) !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 1600px !important;
+  margin: 0 auto !important;
+  padding: 0 clamp(24px, 5vw, 88px) !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__copy {
+  width: auto !important;
+  max-width: 40rem !important;
+  position: relative !important;
+  z-index: 6 !important;
+}
+
+@keyframes heroCopyEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__title {
+  max-width: 100% !important;
+  color: var(--hero-ink) !important;
+  font-family: 'Newsreader', Georgia, serif !important;
+  font-optical-sizing: auto;
+  font-size: clamp(2.125rem, 1rem + 3vw, 4rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.022em !important;
+  text-wrap: balance;
+  text-shadow: none !important;
+  animation: heroCopyEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+/* One phrase per line: "Made For Comfort," then the second phrase, balanced
+   so it breaks as "Designed For / Everyday Confidence" rather than orphaning a word. */
+.fl-hero--fullscreen-studio .fl-hero__title > span {
+  display: block;
+  text-wrap: balance;
+  /* A site-wide phone rule sets every span to line-height 1.5 !important. */
+  line-height: inherit !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__subtitle {
+  max-width: 30rem !important;
+  margin: clamp(22px, 2.4vw, 30px) 0 0 !important;
+  color: var(--hero-ink-soft) !important;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+  font-size: clamp(1.125rem, 0.95rem + 0.55vw, 1.375rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  letter-spacing: -0.005em !important;
+  text-shadow: none !important;
+  animation: heroCopyEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both !important;
+}
+
+/* The brand's short gold rule — the same mark the eyebrow system uses. */
+.fl-hero--fullscreen-studio .fl-hero__subtitle::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  margin-bottom: clamp(18px, 2vw, 24px);
+  border-radius: 2px;
+  background: var(--hero-gold-deep);
+}
+
+/* Two parallel phrases, one per line: "feel" settles, "carry" lands. */
+.fl-hero--fullscreen-studio .fl-hero__subtitle > span {
+  display: block;
+  line-height: inherit !important;
+}
+
+.fl-hero--fullscreen-studio .fl-hero__subtitle > span + span {
+  color: var(--hero-ink);
+  font-weight: 600;
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__actions {
+  margin-top: clamp(28px, 3vw, 40px) !important;
+  animation: heroCopyEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__cta.fl-btn--gold {
+  width: auto !important;
+  height: auto !important;
+  min-height: 56px !important;
+  padding: 0 34px 0 38px !important;
+  background: linear-gradient(180deg, #f4cb62 0%, var(--hero-gold) 55%, #ebb843 100%) !important;
+  color: var(--hero-ink) !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  border-radius: 9999px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 4px 10px -4px rgba(58, 33, 88, 0.18),
+    0 16px 32px -16px rgba(216, 162, 47, 0.7) !important;
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@media (hover: hover) {
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__cta.fl-btn--gold:hover {
+    transform: translateY(-3px) !important;
+    filter: brightness(1.04);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      0 8px 16px -8px rgba(58, 33, 88, 0.22),
+      0 24px 44px -18px rgba(216, 162, 47, 0.85) !important;
+  }
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__cta.fl-btn--gold:active {
+  transform: translateY(-1px) scale(0.985) !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__cta.fl-btn--gold:focus-visible {
+  outline: 3px solid rgba(58, 33, 88, 0.45) !important;
+  outline-offset: 4px !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio .fl-hero__proof {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 12px 18px !important;
+  margin: clamp(30px, 3.4vw, 44px) 0 0 !important;
+  color: #3c2a5e !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.005em !important;
+  text-shadow: none !important;
+  animation: heroCopyEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both !important;
+}
+
+.fl-hero--fullscreen-studio .fl-hero__proof > span:not(.fl-hero__proof-divider) {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* The icons are white glyphs drawn for the old purple slide; seat each in a
+   deep-plum disc so it reads on the light field. */
+.fl-hero--fullscreen-studio .fl-hero__proof span img {
+  box-sizing: border-box;
+  width: 30px !important;
+  height: 30px !important;
+  padding: 6px;
+  border-radius: 50%;
+  background: #4a3a78;
+  box-shadow: 0 6px 14px -8px rgba(58, 33, 88, 0.6);
+  object-fit: contain !important;
+}
+
+/* The pipe (aria-hidden) becomes a small lilac dot. */
+.fl-hero--fullscreen-studio .fl-hero__proof-divider {
+  width: 4px;
+  height: 4px;
+  margin: 0 !important;
+  border-radius: 50%;
+  background: #c9aee4;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+/* ── Tablet & phone: copy first, the stage below ─────────────────────────── */
+@media (max-width: 960px) {
+  .figma-landing .fl-hero--fullscreen-studio {
+    min-height: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    /* The fixed nav ends 124px down at these widths. */
+    padding: 152px 0 0 !important;
+    background: linear-gradient(180deg, #f7f3fc 0%, var(--hero-field) 58%, #ffffff 100%) !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__fullscreen-bg {
+    position: relative !important;
+    inset: auto !important;
+    order: 2 !important;
+    height: clamp(300px, 62vw, 540px) !important;
+    margin-top: clamp(4px, 2vw, 16px) !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__fullscreen-img {
+    width: 100% !important;
+    object-position: 50% 60% !important;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%);
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__gradient-overlay {
+    display: none !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__inner {
+    display: block !important;
+    order: 1 !important;
+    padding: 0 clamp(20px, 6vw, 48px) !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__copy {
+    max-width: 34rem !important;
+    margin-inline: auto !important;
+    text-align: center;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__title,
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__subtitle {
+    margin-inline: auto !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__subtitle::before {
+    margin-inline: auto;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__actions {
+    justify-content: center !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__proof {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .figma-landing .fl-hero--fullscreen-studio {
+    padding-top: 148px !important;
+  }
+
+  /* A taller crop so the pack reads at phone width, not as a thumbnail. */
+  .fl-hero--fullscreen-studio .fl-hero__fullscreen-bg {
+    height: clamp(340px, 88vw, 420px) !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__cta.fl-btn--gold {
+    width: min(100%, 22rem) !important;
+  }
+
+  /* Both badges don't fit one line at phone width; stack them, centred. */
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__proof {
+    flex-direction: column !important;
+    gap: 10px !important;
+    font-size: 14px !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__proof-divider {
+    display: none !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__proof span img {
+    width: 26px !important;
+    height: 26px !important;
+    padding: 5px;
+  }
+}
+
+/* ── Entrance: the product first, then the words, word by word ────────────
+   Home.tsx drives data-hero-reveal: "wait" (server HTML) -> "image" once the
+   photo is decoded -> "all" HERO_WORDS_DELAY_MS later.
+     0s         the product settles in
+     0.15-1.7s  headline, one word after another
+     ~1.0s      the gold rule draws
+     1.2-2.6s   sub-copy, one word after another
+     2.2-3.4s   the CTA, then the proof row
+   The product rule matches "image" AND "all" with the same animation, so the
+   flip to "all" starts the words without replaying the product.
+   Not data-reveal: motion.css hides every [data-reveal] element until it
+   scrolls in. While "wait", parts are held back only by DELAYED animations: if
+   the script never runs, the product fades in at 2.5s and the copy at 4.5s. */
+@keyframes heroRevealFailsafe {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes heroWordRise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes heroRuleDraw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes heroProductIn {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.fl-hero--fullscreen-studio .fl-hero__word {
+  display: inline-block;
+  /* A site-wide phone rule sets every span to line-height 1.5 !important. */
+  line-height: inherit !important;
+}
+
+/* The words, the rule and the rows carry the motion now, not the blocks. */
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal] .fl-hero__title,
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal] .fl-hero__subtitle {
+  animation: none !important;
+}
+
+/* Held back until the script takes over (or the failsafe fires). */
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="wait"] .fl-hero__fullscreen-img {
+  animation: heroRevealFailsafe 0.8s cubic-bezier(0.16, 1, 0.3, 1) 2.5s both !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="wait"] .fl-hero__word,
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="wait"] .fl-hero__subtitle::before,
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="wait"] .fl-hero__actions,
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="wait"] .fl-hero__proof {
+  animation: heroRevealFailsafe 0.8s cubic-bezier(0.16, 1, 0.3, 1) 4.5s both !important;
+}
+
+/* While the product plays, the words wait; the late failsafe only matters if
+   the flip to "all" never arrives. */
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="image"] .fl-hero__word,
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="image"] .fl-hero__subtitle::before,
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="image"] .fl-hero__actions,
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="image"] .fl-hero__proof {
+  animation: heroRevealFailsafe 0.8s cubic-bezier(0.16, 1, 0.3, 1) 6s both !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio:not([data-hero-reveal="wait"]) .fl-hero__fullscreen-img {
+  animation: heroProductIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="all"] .fl-hero__title .fl-hero__word {
+  animation: heroWordRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  animation-delay: calc(0.15s + var(--w, 0) * 0.11s) !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="all"] .fl-hero__subtitle::before {
+  transform-origin: left center;
+  animation: heroRuleDraw 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="all"] .fl-hero__subtitle .fl-hero__word {
+  animation: heroWordRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  animation-delay: calc(1.2s + var(--w, 0) * 0.09s) !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="all"] .fl-hero__actions {
+  animation: heroCopyEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) 2.2s both !important;
+}
+
+.figma-landing .fl-hero--fullscreen-studio[data-hero-reveal="all"] .fl-hero__proof {
+  animation: heroCopyEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) 2.45s both !important;
+}
+
+/* Centred copy on tablet/phone: the rule draws out from its middle. */
+@media (max-width: 960px) {
+  .figma-landing .fl-hero--fullscreen-studio:not([data-hero-reveal="wait"]) .fl-hero__subtitle::before {
+    transform-origin: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__fullscreen-img,
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__copy,
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__copy > *,
+  .figma-landing .fl-hero.fl-hero--fullscreen-studio[data-hero-reveal] .fl-hero__fullscreen-img,
+  .figma-landing .fl-hero.fl-hero--fullscreen-studio[data-hero-reveal] .fl-hero__copy :is(.fl-hero__word, .fl-hero__actions, .fl-hero__proof),
+  .figma-landing .fl-hero.fl-hero--fullscreen-studio[data-hero-reveal] .fl-hero__copy .fl-hero__subtitle::before {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__fullscreen-img {
+    translate: none;
+    transition: none;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__cta.fl-btn--gold {
+    transition: none !important;
+  }
+}
+
+
+

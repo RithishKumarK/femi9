@@ -1,0 +1,369 @@
+/* ============================================================
+   IMMERSIVE LAYER — spec pieces §1–§5
+   Loaded after the base/component CSS so its overrides win.
+   ============================================================ */
+
+:root {
+  /* Display face. Urbanist stays the body/UI face; the serif+sans pairing
+     carries hierarchy. Newsreader runs lighter than a geometric slab at the
+     same weight, so display weights sit at 600/700 rather than 500/600. */
+  --display: "Newsreader", "Georgia", "Times New Roman", serif;
+
+  /* cycle-mode tokens (spec §3) — default = active/menstrual phase (plum) */
+  --cycle-accent: #563184;
+  --cycle-soft: #EDE7F9;
+}
+
+:root[data-cycle="menstrual"] { --cycle-accent: #563184; --cycle-soft: #EDE7F9; }
+:root[data-cycle="planning"]  { --cycle-accent: #D8A22F; --cycle-soft: #FBEFC8; }
+
+/* ---------- display typography ---------- */
+.display {
+  font-family: var(--display);
+  font-weight: 600;
+  font-optical-sizing: auto;
+  letter-spacing: -.01em;
+  line-height: 1.08;
+}
+/* flagship hero headline */
+.hero h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-optical-sizing: auto;
+  letter-spacing: -.015em;
+  line-height: 1.06;
+}
+/* Roman, not italic. A roman headline with one word flipped to italic is a
+   reliable generated-UI tell; emphasis rides on the accent colour (--forest-2,
+   set in Hero.css) plus a small weight step instead. Matches how .story h2 em
+   already handles it. The line-height reserve stays: the "g" in "nothing" still
+   descends and would clip against the h1's tight 1.06. */
+.hero h1 .accent { font-style: normal; font-weight: 700; line-height: 1.12; padding-bottom: .04em; }
+
+/* ---------- liquid background (spec §1) ----------
+   The fixed canvas sits at z-index:-1, so the page must be transparent for it
+   to read through. Move the cream base onto <html>; opaque sections (cards,
+   forest panels) still mask it where needed. */
+html { background: var(--cream); }
+body { background: transparent; }
+
+/* When Lenis is driving, kill the native CSS smooth-scroll from base.css so the
+   two don't fight (this is what makes the wheel feel janky). */
+html.lenis { scroll-behavior: auto; }
+
+.liquid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Intended lavender field painted behind the WebGL canvas. The opaque canvas
+     covers it when healthy; if the GPU context is ever lost, this shows through
+     instead of a blank white page. */
+  background:
+    radial-gradient(60vw 55vw at 78% 12%, rgba(201,174,228,.32), transparent 62%),
+    radial-gradient(55vw 50vw at 12% 82%, rgba(240,193,78,.20), transparent 64%),
+    var(--cream);
+}
+.liquid-bg canvas { display: block; width: 100% !important; height: 100% !important; }
+.liquid-bg--fallback {
+  background:
+    radial-gradient(60vw 55vw at 78% 12%, rgba(201,174,228,.32), transparent 62%),
+    radial-gradient(55vw 50vw at 12% 82%, rgba(240,193,78,.20), transparent 64%),
+    var(--cream);
+}
+
+/* The fluid-cursor rules lived here (spec §1). Removed with the component: a
+   trailing dot that lags the pointer is a named tell, it was hover-only, and it
+   was the page's only z-index: 9998. */
+
+/* ---------- cycle-mode toggle (spec §3) ---------- */
+.cycle-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  transition: transform .25s var(--ease);
+}
+.cycle-toggle:hover { transform: translateY(-2px); }
+.cycle-toggle__track {
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--cycle-soft);
+  position: relative;
+  flex-shrink: 0;
+  transition: background .45s var(--ease);
+}
+.cycle-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cycle-accent);
+  transition: transform .45s var(--ease), background .45s var(--ease);
+}
+.cycle-toggle[data-mode="planning"] .cycle-toggle__thumb { transform: translateX(22px); }
+.cycle-toggle__text { display: flex; flex-direction: column; line-height: 1.12; }
+.cycle-toggle__text b { font-size: .9rem; color: var(--navy); font-weight: 600; }
+.cycle-toggle__text small { font-size: .74rem; color: var(--muted); }
+
+/* ---------- pad selector (spec §2) ---------- */
+.pad-selector {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: clamp(22px, 3.4vw, 46px);
+  align-items: center;
+  background: var(--cycle-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(20px, 3vw, 34px);
+  transition: background .45s var(--ease);
+}
+.pad-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.pad-svg { width: 100%; max-width: 170px; height: auto; }
+.pad-svg rect[fill="var(--core)"] { transition: fill .12s linear; }
+.pad-readout { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.pad-name {
+  font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--cycle-accent); font-weight: 600;
+}
+.pad-mm { font-family: var(--display); font-size: 2rem; color: var(--navy); font-weight: 600; margin-top: 6px; }
+.pad-mm i { font-size: .9rem; font-style: normal; color: var(--muted); margin-left: 2px; }
+
+.pad-controls { display: flex; flex-direction: column; gap: 22px; }
+.pad-meta { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.pad-drops { display: inline-flex; gap: 6px; }
+.pad-drops .drop {
+  width: 12px; height: 16px; border-radius: 0 0 999px 999px;
+  background: var(--line); position: relative;
+  clip-path: path("M6 0 C 10 6, 12 10, 12 12 A 6 6 0 0 1 0 12 C 0 10, 2 6, 6 0 Z");
+  transition: background .2s;
+}
+.pad-drops .drop.on { background: var(--cycle-accent); }
+.pad-note { font-size: .9rem; color: var(--muted); }
+
+.pad-thick { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+.pad-thick-label { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pad-thick-bar {
+  height: 30px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line-soft);
+  display: flex; align-items: center; justify-content: center; padding: 0 8px;
+}
+.pad-thick-fill {
+  display: block; width: 100%; background: var(--cycle-accent); border-radius: 6px;
+  transition: height .12s linear; opacity: .85;
+}
+
+.pad-slider { display: block; }
+.pad-slider input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 8px; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(90deg, var(--cycle-accent) calc(var(--v) * 100%), var(--line) 0);
+}
+.pad-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--surface); border: 3px solid var(--cycle-accent);
+  box-shadow: var(--shadow-sm); cursor: grab; margin-top: -1px;
+}
+.pad-slider input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.06); }
+.pad-slider input[type="range"]::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface); border: 3px solid var(--cycle-accent); box-shadow: var(--shadow-sm); cursor: grab;
+}
+.pad-slider input[type="range"]::-moz-range-track { height: 8px; border-radius: 999px; background: var(--line); }
+.pad-slider-ends {
+  display: flex; justify-content: space-between; margin-top: 10px;
+  font-size: .78rem; color: var(--muted); font-weight: 400;
+}
+
+/* ---------- immersive showcase layout (spec §5 editorial) ---------- */
+.immersive { position: relative; }
+.immersive-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 24px; flex-wrap: wrap; margin-bottom: clamp(28px, 4vw, 52px);
+}
+.immersive-title {
+  font-size: clamp(2.2rem, 5.6vw, 4rem); line-height: 1.02; margin-top: 14px; color: var(--navy);
+}
+/* Roman + accent colour, not italic (see .hero h1 .accent above). */
+.immersive-title em { font-style: normal; font-weight: 700; color: var(--cycle-accent); transition: color .45s var(--ease); }
+
+.immersive-grid {
+  display: grid; grid-template-columns: 1.5fr 1fr;
+  gap: clamp(24px, 4vw, 56px); align-items: center;
+}
+.immersive-copy p { color: var(--ink); font-size: 1.06rem; line-height: 1.65; }
+.immersive-points { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-direction: column; gap: 12px; }
+.immersive-points li { display: flex; gap: 12px; align-items: flex-start; color: var(--ink); }
+.immersive-points li::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cycle-accent); margin-top: 9px; flex-shrink: 0; transition: background .45s var(--ease);
+}
+
+/* ---------- <pad-exploder> host hooks ----------
+   The component styles itself inside its own Shadow DOM; these are the only two
+   things the page needs to say. The nav is a 70px sticky bar, so the pinned
+   stage starts below it and shortens to match (see --pe-stick-top in
+   public/pad-exploder.js). */
+pad-exploder { --pe-stick-top: 70px; display: block; }
+
+/* Fade bands that dissolve the seam between the page and the pinned lavender
+   field. The stage gradient runs #c4adda -> #af95c2 (sampled from the frames),
+   so each band starts from that exact edge colour and ramps to its own
+   TRANSPARENT version. Two reasons it fades to transparent rather than to a
+   site token: the section above has no background of its own (the liquid canvas
+   shows through it), and rgba(...,0) of the same hue avoids the grey cast you
+   get interpolating through the `transparent` keyword, which is transparent
+   BLACK. The extra midpoints stop the alpha ramp from banding.
+
+   Each band also holds its edge colour SOLID for the last stretch before it
+   meets the stage. Ramping all the way to the seam leaves a kink in the alpha
+   curve exactly at the join, which reads as a faint line (a Mach band) even
+   though both sides are the same colour.
+
+   The 1px overlap is not cosmetic padding: the stage height is a calc() on svh,
+   so it lands on a fractional pixel and leaves a hairline where the page shows
+   through. Measured as a full-width light line at the lower join. */
+.pe-fade { pointer-events: none; height: clamp(160px, 26vh, 300px); }
+.pe-fade--in {
+  margin-bottom: -1px;
+  background: linear-gradient(180deg,
+    rgba(196,173,218,0) 0%, rgba(196,173,218,.28) 42%, rgba(196,173,218,.75) 72%,
+    rgba(196,173,218,1) 88%, rgba(196,173,218,1) 100%);
+}
+.pe-fade--out {
+  margin-top: -1px;
+  background: linear-gradient(180deg,
+    rgba(175,149,194,1) 0%, rgba(175,149,194,1) 12%, rgba(175,149,194,.7) 34%,
+    rgba(175,149,194,.24) 66%, rgba(175,149,194,0) 100%);
+}
+/* Until the script upgrades the element it has no Shadow DOM, so it renders its
+   light-DOM copy. Give that readable padding rather than a bare run of text. */
+pad-exploder:not(:defined) { padding: clamp(48px, 8vw, 96px) 24px; }
+pad-exploder:not(:defined) dl { margin-top: 18px; }
+pad-exploder:not(:defined) dt { font-weight: 600; margin-top: 12px; color: var(--navy); }
+pad-exploder:not(:defined) dd { color: var(--muted); margin-left: 0; }
+
+/* ---------- exploded pad (spec §4) ----------
+   Superseded by <pad-exploder> above. The rules below still serve
+   ExplodedPad.tsx, which is kept on disk but is no longer mounted anywhere. */
+.exploded { position: relative; height: 180vh; }
+.exploded-sticky {
+  position: sticky; top: 0; height: 100vh;
+  display: grid; grid-template-columns: 1.4fr 1fr; align-items: center; gap: 3vw;
+  max-width: var(--maxw); margin-inline: auto; padding-inline: clamp(18px, 4vw, 40px);
+}
+.exploded-stage { height: 72vh; }
+.exploded-stage canvas { width: 100% !important; height: 100% !important; }
+.exploded-fallback { display: flex; flex-direction: column; gap: 16px; justify-content: center; height: 100%; }
+.exploded-fallback-layer { height: 28px; border-radius: 8px; box-shadow: var(--shadow-sm); }
+
+.exploded-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 20px; }
+.exploded-legend li {
+  display: flex; gap: 14px; align-items: flex-start;
+  opacity: calc((var(--p) - var(--i) * .18) * 3);
+  transform: translateX(calc((1 - min(1, (var(--p) - var(--i) * .18) * 3)) * 16px));
+}
+.exploded-swatch { width: 16px; height: 16px; border-radius: 5px; margin-top: 3px; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(52,32,78,.14), var(--shadow-sm); }
+.exploded-legend-text b { display: block; color: var(--navy); font-weight: 600; font-size: 1.02rem; }
+.exploded-legend-text small { color: var(--muted); font-size: .86rem; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px) {
+  .immersive-grid { grid-template-columns: 1fr; }
+  .pad-selector { grid-template-columns: 1fr; }
+  .exploded { height: auto; }
+  .exploded-sticky {
+    position: relative; height: auto; grid-template-columns: 1fr;
+    gap: 26px; padding-block: 44px;
+  }
+  .exploded-stage { height: 56vh; }
+}
+
+/* ---------- testimonial video wall ---------- */
+.tvids { padding-block: clamp(48px, 7vw, 96px); overflow: hidden; }
+.tvids-head { margin-bottom: clamp(22px, 3vw, 38px); }
+.tvids-title { font-size: clamp(1.9rem, 4.6vw, 3rem); color: var(--navy); margin-top: 10px; }
+
+.tvids-viewport { overflow: hidden; width: 100%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.tvids-track { display: flex; gap: 20px; width: max-content; will-change: transform; padding-inline: clamp(18px, 4vw, 40px); padding-block: 22px; }
+.tvids-viewport.is-static { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.tvids-viewport.is-static .tvids-track { width: max-content; }
+.tvids-viewport.is-static .tvid-card { scroll-snap-align: center; }
+
+/* wrapper that slides the whole row left by HALF the hover growth, so the
+   hovered card grows symmetrically from its centre and gaps stay equal.
+   It's a separate element from the marquee track, so its transform composes
+   with (never fights) the JS-driven scroll transform. */
+.tvids-shift { width: max-content; transform: translateX(0); will-change: transform; transition: transform .22s var(--ease); }
+.tvids-shift:has(.tvid-card:hover) { transform: translateX(-26px); }
+
+.tvid-card {
+  position: relative; flex: 0 0 auto;
+  /* fixed HEIGHT + animated WIDTH = it expands sideways only, never pops up.
+     Growth is a constant +52px so the -26px row shift always re-centres it. */
+  --w: clamp(210px, 22vw, 248px);
+  width: var(--w);
+  height: clamp(300px, 31vw, 344px);
+  border-radius: 22px; overflow: hidden; cursor: pointer; padding: 0;
+  box-shadow: var(--shadow); text-align: left; color: var(--navy);
+  transition: width .22s var(--ease), box-shadow .22s var(--ease);
+}
+.tvid-card:hover { width: calc(var(--w) + 52px); box-shadow: 0 36px 74px -30px rgba(11,42,91,.5); }
+.tvid-card.is-active { width: calc(var(--w) + 52px); }
+.tvid-card:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+
+.tvid-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
+
+.tvid-duration {
+  position: absolute; top: 12px; right: 12px; z-index: 3;
+  font-size: .72rem; font-weight: 600; color: #fff;
+  background: rgba(11,42,91,.55); backdrop-filter: blur(4px);
+  padding: 3px 8px; border-radius: 999px; letter-spacing: .02em;
+}
+.tvid-avatar {
+  position: absolute; top: 26px; left: 50%; transform: translateX(-50%); z-index: 2;
+  width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(255,255,255,.9); color: var(--navy); font-weight: 700; font-size: 1.2rem;
+  box-shadow: 0 8px 20px -10px rgba(11,42,91,.5); font-family: var(--display);
+}
+.tvid-wave { position: absolute; top: 104px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; align-items: flex-end; gap: 3px; height: 18px; }
+.tvid-wave i { width: 3px; height: 100%; border-radius: 2px; background: rgba(11,42,91,.4); transform-origin: bottom; animation: tvidWave 1.1s ease-in-out infinite; animation-delay: calc(var(--b) * .13s); }
+@keyframes tvidWave { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+
+.tvid-play {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3;
+  width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(255,255,255,.92); color: var(--navy);
+  box-shadow: 0 10px 26px -10px rgba(11,42,91,.6); transition: transform .3s var(--ease), background .3s;
+}
+.tvid-play svg { width: 22px; height: 22px; margin-left: 2px; }
+.tvid-card:hover .tvid-play { transform: translate(-50%, -50%) scale(1.12); background: var(--surface); }
+
+.tvid-meta {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 16px 16px 15px;
+  background: linear-gradient(to top, rgba(11,42,91,.82), rgba(11,42,91,.28) 62%, transparent);
+  color: #fff; display: block;
+}
+.tvid-meta b { font-size: 1rem; font-weight: 600; line-height: 1.1; }
+.tvid-meta small { display: block; font-size: .74rem; opacity: .85; margin-top: 1px; }
+.tvid-meta p { font-size: .82rem; line-height: 1.35; margin-top: 8px; color: rgba(255,255,255,.94); }
+
+@media (max-width: 560px) { .tvid-card { --w: 66vw; height: 88vw; } }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .exploded-legend li { opacity: 1; transform: none; }
+  .cycle-toggle,
+  .cycle-toggle__thumb,
+  .cycle-toggle__track,
+  .immersive-title em { transition: none; }
+  .tvid-wave i { animation: none; }
+  .tvids-viewport { -webkit-mask-image: none; mask-image: none; }
+}

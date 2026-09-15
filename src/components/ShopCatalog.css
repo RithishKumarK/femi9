@@ -1,0 +1,762 @@
+/* ===== SHOP — filter + sort rail, and the catalog grid beside it =====
+   Built entirely from the lavender tokens in base.css (plum ink, lilac tints,
+   the golden accent) and the site body face, so the rail reads as part of the
+   storefront rather than a bolted-on facet widget. No new colours are declared
+   here beyond the rgba() shadows/rings, which are all tints of --navy. */
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 268px minmax(0, 1fr);
+  gap: clamp(22px, 2.6vw, 38px);
+  /* Start, not stretch — the rail must be free to be shorter than the grid, or
+     `position: sticky` on it has no room to travel and silently does nothing. */
+  align-items: start;
+}
+
+/* ── the rail ───────────────────────────────────────────────────────────── */
+
+.shop-rail {
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+}
+
+/* No max-height and no overflow on this breakpoint, ON PURPOSE. The rail is
+   built to fit inside one screen (four pill facets and a slider), so it needs
+   no scrollbar of its own — and a nested scroller here would have its wheel
+   events eaten by Lenis, which smooths the ROOT scroller and preventDefault()s
+   on the way up. That is the /admin fault described in SmoothScroll.tsx. If a
+   facet is ever added back, shorten something else rather than reintroducing
+   `overflow-y: auto` here. */
+.shop-rail__inner {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--panel-r);
+  box-shadow: var(--shadow-sm);
+  padding: 15px 15px 16px;
+}
+
+.shop-rail__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.shop-rail__title {
+  font-family: var(--display);
+  font-size: 1.06rem;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: -.01em;
+  margin: 0;
+}
+.shop-rail__clear {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--yellow-deep);
+  transition: color .2s var(--ease), opacity .2s var(--ease);
+}
+.shop-rail__clear:hover:not(:disabled) { color: var(--navy) }
+.shop-rail__clear:disabled { color: var(--muted); opacity: .5; cursor: default }
+
+/* ── one facet ──────────────────────────────────────────────────────────── */
+
+/* A plain block with role="group", NOT a <fieldset>. A <legend> is laid out
+   against the fieldset's border box rather than as a normal child, and the
+   dead space it opened above each pill row was most of what made the rail
+   overrun the fold. */
+.shop-facet {
+  border-bottom: 1px solid var(--line-soft);
+  padding: 12px 0;
+}
+.shop-facet--last { border-bottom: 0; padding-bottom: 2px }
+
+.shop-facet__label {
+  display: block;
+  padding: 0;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.shop-facet__row { display: flex; flex-wrap: wrap; gap: 6px }
+
+/* The pill toggle. Chosen over a column of checkbox rows because four facets of
+   rows ran ~600px tall — past the fold, and past the height a sticky rail can
+   show without a scrollbar. Wrapped pills put the same options in a third of
+   the space, and read as a scannable set rather than a form. */
+.shop-pill {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: var(--r-chip);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: .81rem;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .2s var(--ease), border-color .2s var(--ease),
+    color .2s var(--ease);
+}
+.shop-pill:hover:not(:disabled):not(.is-on) {
+  border-color: var(--sage);
+  background: var(--lilac-tint);
+  color: var(--navy);
+}
+.shop-pill.is-on {
+  background: var(--forest-2);
+  border-color: var(--forest-2);
+  color: #fff;
+  font-weight: 600;
+}
+.shop-pill:focus-visible {
+  outline: 2px solid var(--forest-2);
+  outline-offset: 2px;
+}
+/* Nothing left behind this option — greyed rather than removed, so the shape of
+   the catalog stays legible while she narrows it. */
+.shop-pill:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* ── sort ───────────────────────────────────────────────────────────────── */
+
+.shop-sort__field { position: relative; display: block }
+.shop-sort__select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 500;
+  color: var(--navy);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 32px 8px 11px;
+  cursor: pointer;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.shop-sort__select:hover { border-color: var(--sage) }
+.shop-sort__select:focus-visible {
+  outline: none;
+  border-color: var(--forest-2);
+  box-shadow: 0 0 0 3px rgba(86, 49, 132, .14);
+}
+.shop-sort__chev {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 11px;
+  color: var(--forest-2);
+  pointer-events: none;
+}
+.shop-sort__chev svg { display: block; width: 100% }
+
+/* ── price ──────────────────────────────────────────────────────────────── */
+
+.shop-price__read {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: .78rem;
+  color: var(--muted);
+}
+.shop-price__read b {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The filled part of the track is painted from --fill, which the component sets
+   inline from the current value — a range input gives CSS no other way to know
+   how far along the thumb is. */
+.shop-price__range {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 18px;
+  background: none;
+  cursor: pointer;
+}
+.shop-price__range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--yellow-deep) 0 var(--fill, 100%),
+    var(--line-soft) var(--fill, 100%) 100%
+  );
+}
+.shop-price__range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--line-soft);
+}
+.shop-price__range::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--yellow-deep);
+}
+.shop-price__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--yellow);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(52, 32, 78, .28);
+  transition: transform .18s var(--ease);
+}
+.shop-price__range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--yellow);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(52, 32, 78, .28);
+}
+.shop-price__range:hover::-webkit-slider-thumb { transform: scale(1.12) }
+.shop-price__range:focus-visible { outline: none }
+.shop-price__range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(86, 49, 132, .2);
+}
+.shop-price__range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgba(86, 49, 132, .2);
+}
+.shop-price__ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: .72rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── results column ─────────────────────────────────────────────────────── */
+
+.shop-results__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.shop-results__count { margin: 0; font-size: .86rem; color: var(--muted) }
+.shop-results__count b { color: var(--navy); font-weight: 600 }
+
+.shop-chips { display: flex; flex-wrap: wrap; gap: 8px }
+.shop-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--sage-tint);
+  color: var(--forest-2);
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s var(--ease), color .2s var(--ease);
+}
+.shop-chip svg { width: 9px; flex: none; opacity: .75 }
+.shop-chip:hover { background: var(--lilac); color: #3a2350 }
+.shop-chip:focus-visible { outline: 2px solid var(--forest-2); outline-offset: 2px }
+
+.shop-empty {
+  padding: clamp(40px, 7vw, 76px) 0;
+  text-align: center;
+  color: var(--muted);
+}
+.shop-empty p { margin: 0 0 18px; font-size: .95rem }
+
+/* The grid loses a column to the rail. This selector is more specific than the
+   Products.css rules it replaces, so it wins wherever the two overlap — which
+   means every breakpoint has to be restated here, including the ones that would
+   otherwise have been inherited. */
+.shop-layout .grid-products { grid-template-columns: repeat(3, 1fr); gap: 20px }
+
+/* Skip rendering cards that are off-screen.
+   Each card in this grid carries TWO full-size photos — the pack shot and the
+   "inside the pack" shot revealed on hover, which sits there at `opacity: 0`
+   (Products.css). Opacity zero still decodes and composites, so a catalog of N
+   products was painting 2N images on every scroll frame, and that — not the
+   rail — is what made the page feel heavy. `auto` keeps the cards focusable,
+   findable by in-page search, and reachable by anchor links; it only skips the
+   paint while they are outside the viewport.
+
+   `contain-intrinsic-size: auto <h>` makes the browser remember each card's
+   real height once measured, so the scrollbar does not jump as cards enter and
+   leave. The 560px seed is only used before a card has been laid out once.
+   Scoped to .shop-layout: the home page's short product strip is fully on
+   screen anyway and gains nothing from the extra containment. */
+.shop-layout .grid-products .card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}
+
+/* ── phone/tablet: the rail becomes a sheet ─────────────────────────────── */
+
+.shop-bar { display: none }
+.shop-rail__close { display: none }
+.shop-rail__apply { display: none }
+.shop-scrim { display: none }
+
+.shop-layout .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .shop-layout { grid-template-columns: 240px minmax(0, 1fr) }
+  .shop-layout .grid-products { grid-template-columns: repeat(2, 1fr) }
+}
+
+@media (max-width: 980px) {
+  .shop-layout { grid-template-columns: 1fr }
+
+  .shop-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .shop-bar__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-chip);
+    background: var(--surface);
+    color: var(--navy);
+    font: inherit;
+    font-size: .88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .shop-bar__btn svg { width: 15px; color: var(--forest-2) }
+  .shop-bar__badge {
+    display: grid;
+    place-items: center;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--forest-2);
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 700;
+  }
+  .shop-bar__count { font-size: .82rem; color: var(--muted) }
+  /* The bar already carries the count on this side of the breakpoint — printing
+     it again immediately underneath was the same number twice in 40px. */
+  .shop-results__count { display: none }
+
+  .shop-rail {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(86vw, 330px);
+    z-index: 120;
+    transform: translateX(-102%);
+    visibility: hidden;
+    transition: transform .38s var(--ease), visibility 0s linear .38s;
+  }
+  .shop-rail.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform .38s var(--ease), visibility 0s;
+  }
+  /* The sheet is the one place the rail may need to scroll (short landscape
+     phones). It carries `data-lenis-prevent` in the markup so the wheel is not
+     swallowed on the way to the root scroller. */
+  .shop-rail__inner {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    padding: 54px 20px calc(20px + env(safe-area-inset-bottom));
+    box-shadow: 0 24px 70px rgba(52, 32, 78, .26);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .shop-rail__close {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--line-soft);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--navy);
+    cursor: pointer;
+    z-index: 1;
+  }
+  .shop-rail__close svg { width: 12px }
+  .shop-rail__apply {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 13px 20px;
+    border: 0;
+    border-radius: var(--r-chip);
+    background: var(--navy);
+    color: #fff;
+    font: inherit;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .shop-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 119;
+    background: rgba(52, 32, 78, .42);
+  }
+}
+
+@media (max-width: 620px) {
+  .shop-layout .grid-products { grid-template-columns: 1fr; gap: 16px }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-rail,
+  .shop-pill { transition: none }
+}
+
+/* ===== Touch targets =====
+   This sheet had no `pointer: coarse` block at all, which is why its controls
+   were the smallest in the app: the filter sheet's only dismiss button measured
+   34x34, every filter pill 30px tall, and the sort <select> 13.76px — small
+   enough that iOS Safari zooms the layout viewport on focus and never zooms
+   back out. None of it showed up in the existing mobile gate because the rail
+   is `visibility: hidden` until it is opened, and the audit only measures what
+   getComputedStyle can see.
+
+   Scoped the way the rest of the codebase scopes this — width OR coarse pointer,
+   so touch tablets are covered too. */
+@media (max-width: 900px), (pointer: coarse) {
+  .shop-rail__close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .shop-pill,
+  .shop-chip,
+  .shop-bar__btn,
+  .shop-rail__apply,
+  .shop-rail__clear {
+    min-height: 44px;
+  }
+
+  /* The remove "x" was a 9px icon inside a 29px chip. */
+  .shop-chip svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .shop-sort__select {
+    /* 16px is a floor, not a preference: below it iOS zooms on focus. */
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  /* The price slider thumb is the target here, and the input itself was 13.3px. */
+  .shop-price__range {
+    font-size: 16px;
+    min-height: 44px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EDITORIAL CATALOG — presentation only, scoped to the /shop grid.
+   Sharp rectangular tiles with hairline borders on the lavender ground, an
+   inset photo, understated labels, and a thin "add to cart" strip along each
+   tile's foot. Every selector carries `.shop-layout`, so the home page's
+   product rail (same ProductCard) is untouched, and this sheet loads after
+   Products.css / craft-buttons.css (app/layout.tsx), so equal specificity wins;
+   `!important` appears only where craft-buttons.css already used it.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body:has(.shop-layout) {
+  background: var(--cream-2);
+}
+
+.shop-page .eyebrow {
+  color: var(--muted);
+  font-size: .75rem;
+  letter-spacing: .24em;
+}
+
+.shop-page h1.display {
+  font-weight: 400;
+  letter-spacing: -.015em;
+}
+
+/* ── Rail: flat and square on desktop (the sheet below 980px keeps its panel) ── */
+@media (min-width: 981px) {
+  .shop-layout .shop-rail__inner {
+    background: transparent;
+    border: 0;
+    border-top: 1px solid rgba(52, 32, 78, .28);
+    border-radius: 0;
+    box-shadow: none;
+    padding: 14px 0 0;
+  }
+}
+
+.shop-layout .shop-rail__title {
+  font-weight: 400;
+  font-size: 1.15rem;
+}
+
+.shop-layout .shop-pill,
+.shop-layout .shop-chip,
+.shop-layout .shop-sort__select,
+.shop-layout .shop-bar__btn,
+.shop-layout .shop-rail__apply {
+  border-radius: 0;
+}
+
+.shop-layout .shop-pill {
+  background: transparent;
+  border-color: rgba(52, 32, 78, .2);
+  font-size: .76rem;
+  letter-spacing: .02em;
+}
+
+.shop-layout .shop-pill.is-on {
+  background: var(--navy);
+  border-color: var(--navy);
+}
+
+.shop-layout .shop-sort__select {
+  background: transparent;
+}
+
+.shop-layout .shop-results__count {
+  font-size: .7rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+/* ── Grid ─────────────────────────────────────────────────────────────── */
+.shop-layout .grid-products {
+  gap: clamp(20px, 2.4vw, 32px) clamp(14px, 1.6vw, 22px);
+}
+
+/* Every tile the same size: no stagger, and all rows share one height (the
+   tallest tile's), so a short description never makes a shorter tile. The
+   price and add strip stay on the tile's baseline via `.card-foot{margin-top:auto}`. */
+.shop-layout .grid-products {
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+}
+
+/* ── Tile ─────────────────────────────────────────────────────────────── */
+.shop-layout .card {
+  position: relative; /* the add-to-cart strip anchors to the tile */
+  /* base.css's lavender white. Not var(--cream): app.css redefines that token
+     site-wide as a warm #FBF6EF, which read as beige tiles on the lavender page. */
+  background: #fbf9ff;
+  border: 1px solid rgba(52, 32, 78, .16);
+  border-radius: 0;
+  box-shadow: none;
+  transition: border-color .3s ease;
+}
+
+.shop-layout .card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(52, 32, 78, .42);
+}
+
+/* Static, so the strip below positions against the whole tile, not the photo. */
+.shop-layout .card-media-wrap {
+  position: static;
+  padding: 12px 12px 0;
+}
+
+.shop-layout .card-media {
+  border-radius: 0;
+  background: var(--sage-tint);
+}
+
+.shop-layout .tag {
+  top: 10px;
+  left: 10px;
+  padding: 5px 9px;
+  border: 1px solid rgba(52, 32, 78, .22);
+  border-radius: 0;
+  background: #fbf9ff;
+  color: var(--navy);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.shop-layout .tag.pink {
+  background: var(--lilac-tint);
+  border-color: rgba(86, 49, 132, .24);
+  color: var(--forest-2);
+}
+
+.shop-layout .card-body {
+  padding: 16px 16px 0;
+  gap: 6px;
+}
+
+.shop-layout .card-flow {
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  color: var(--muted);
+}
+
+.shop-layout .card h3 {
+  font-size: .98rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: .005em;
+  color: var(--navy);
+}
+
+.shop-layout .card-desc {
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+.shop-layout .card-foot {
+  padding: 14px 0 16px;
+}
+
+.shop-layout .price b {
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-layout .price span {
+  font-size: .75rem;
+  letter-spacing: .02em;
+}
+
+/* ── Add to cart, catalog style ───────────────────────────────────────────
+   Pointer devices: the existing hover "Add to cart" becomes a permanent thin
+   strip across the tile's foot with an arrow, like a printed order line.
+   Touch devices keep the existing "Buy Now" (Products.css swaps the two by
+   media query) — restyled below as the same thin-bordered action. */
+@media (hover: hover) and (pointer: fine) {
+  .shop-layout .card:has(> .card-media-wrap > .card-quick-add) {
+    padding-bottom: 48px;
+  }
+
+  .shop-layout .card-quick-add,
+  .shop-layout .card:hover .card-quick-add,
+  .shop-layout .card:focus-within .card-quick-add,
+  .shop-layout .card-quick-add:active {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    min-height: 48px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border: 0;
+    border-top: 1px solid rgba(52, 32, 78, .16);
+    border-radius: 0;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 10'%3E%3Cpath d='M0 5h20M16 1l4 4-4 4' fill='none' stroke='%2334204E' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat right 16px center / 22px 10px;
+    box-shadow: none;
+    color: var(--navy);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: background-color .25s ease, color .25s ease;
+  }
+
+  .shop-layout .card-quick-add:hover,
+  .shop-layout .card-quick-add:focus-visible {
+    background: var(--navy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 10'%3E%3Cpath d='M0 5h20M16 1l4 4-4 4' fill='none' stroke='%23FFFFFF' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat right 16px center / 22px 10px;
+    color: #fff;
+  }
+
+  .shop-layout .card-quick-add.is-added::after {
+    border-radius: 0;
+  }
+}
+
+.shop-layout .card-foot .add {
+  min-height: 44px;
+  border-radius: 0 !important;
+  border: 1px solid rgba(52, 32, 78, .32) !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  color: var(--navy) !important;
+  font-size: .7rem;
+  font-weight: 600 !important;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.shop-layout .card-foot .add:hover,
+.shop-layout .card-foot .add:focus-visible,
+.shop-layout .card-foot .add:active {
+  background-color: var(--navy) !important;
+  color: #fff !important;
+}
+
+@media (max-width: 620px) {
+  .shop-layout .card-media-wrap { padding: 10px 10px 0 }
+  .shop-layout .card h3 { font-size: 1.02rem }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-layout .card,
+  .shop-layout .card-quick-add { transition: none }
+}

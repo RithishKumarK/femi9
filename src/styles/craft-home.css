@@ -1,0 +1,561 @@
+/* craft-home.css — de-slab polish overrides for the home.
+   Loaded after the base styles so these win. Uses tokens from craft.css.
+   Keep the layout; add depth, soft geometry, organic transitions, motion.
+
+   Restraint plan. ONE memorable moment: the product grid flowing into the
+   purple "Why" band — a soft warm-cream mass, cards that lift with real
+   elevation, and a curved purple sweep that rises out of the grid so the two
+   bands stop butting at a hard white→purple line. Everywhere else stays quiet.
+
+   Two-tier geometry, so radii read as a system, not a grab-bag:
+     · content cards (product / blog / review) → var(--cr-r-md)  (20px)
+     · large framed surfaces (benefit panels, partner image) → var(--cr-r-lg)
+   ONE translate-motion, and only on the static product grid (the signature).
+   Every other elevated element hovers DEPTH-ONLY — a shadow deepen, never a
+   translate — because they all sit in reveal/auto-scroll contexts that already
+   own a transform, and a second one there reads as scattered/AI. */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIGNATURE — Products grid + its transition into the Why band
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* (1) The flat #fff slab becomes a barely-there warm cream wash: the mass gains
+   a soft top-to-bottom fall so it no longer reads as a printed rectangle. It
+   also brackets the purple Why band with the same warm cream as the Journal. */
+.fl-products {
+  background: #ffffff;
+}
+
+/* (2) Curved sweep — the same motif as .fl-why::after, mirrored, with matched
+   proportions (same -2% overhang, same shallow arc) so it reads as one family.
+   The purple of the Why band directly below rises as a wide, shallow hill out
+   of the bottom of the cream grid, so white→purple is a soft curve, not a hard
+   line. z-index 0, beneath .fl-products > .fl-shell (z-index 1); the grid's
+   80px bottom padding keeps it clear of the last card row. */
+.fl-products::after {
+  content: "";
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  bottom: 0;
+  height: 72px;
+  background: #4a4286; /* exactly the top of the Why gradient below → seamless */
+  border-radius: 50% 50% 0 0 / 38% 38% 0 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* (3) Product cards — the elevation signature, and the one place a hover
+   translate lives. Scoped to .fl-products so the shared .card on the /shop
+   page (another area) is untouched. Card radius unified to var(--cr-r-md), the
+   media top corners follow, one layered navy-tinted shadow at rest, a single
+   calm lift on hover. The base .card already carries a -6px/flat-shadow hover;
+   this replaces it with a softer -4px on the craft shadow + easing vocabulary. */
+.fl-products .card {
+  border-radius: var(--cr-r-md);
+  border-color: var(--cr-hairline);
+  box-shadow: var(--cr-shadow-md);
+  transition: transform var(--cr-dur) var(--cr-ease),
+    box-shadow var(--cr-dur) var(--cr-ease);
+}
+.fl-products .card-media {
+  border-radius: var(--cr-r-md) var(--cr-r-md) 0 0;
+}
+.fl-products .card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--cr-shadow-lg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRODUCT DISCOVERY — the heading above the product carousel
+   ═══════════════════════════════════════════════════════════════════════════
+   Hierarchy, in the order a shopper should meet it: a small gold label, the
+   serif headline (two lines at most), one supporting line in the cards' muted
+   plum, then the products, and last a generous "Explore All" centred under the
+   carousel. The heading is centred over the showcased card at every width.
+   Selectors carry .fl-heading--discovery so the other .fl-heading sections
+   (Why, Journal, Testimonials) are untouched, and are specific enough to beat
+   craft-home-type.css, which loads after this sheet. */
+.figma-landing .fl-products .fl-heading--discovery {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.figma-landing .fl-products .fl-heading--discovery > div:first-child {
+  justify-items: center;
+  gap: clamp(10px, 1.1vw, 16px);
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+.figma-landing .fl-products .fl-heading--discovery .fl-kicker {
+  justify-content: center;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+}
+
+/* The purple hill at the foot of this section (.fl-products::after, 72px)
+   rises into its bottom padding. With Explore All now the last thing in the
+   section, keep a clear band between the button and that curve. */
+.figma-landing section.fl-products {
+  padding-bottom: calc(72px + clamp(32px, 4vw, 56px));
+}
+
+/* The section-level CTA, under the carousel and its controls: larger than a
+   card's Buy Now, so it reads as "see the whole range", not another product. */
+.figma-landing .fl-products .fl-products__explore {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(28px, 3.2vw, 44px);
+}
+
+.figma-landing .fl-products .fl-products__explore .fl-btn {
+  width: auto;
+  min-width: 260px;
+  min-height: 62px;
+  padding: 0 48px;
+  font-size: 19px;
+  gap: 12px;
+}
+
+@media (max-width: 620px) {
+  .figma-landing .fl-products .fl-products__explore .fl-btn {
+    width: min(100%, 22rem);
+    min-height: 58px;
+    font-size: 18px;
+  }
+}
+
+.figma-landing .fl-products .fl-heading--discovery > div:first-child > h2 {
+  max-width: 20ch;
+  margin: 0 auto;
+  font-size: clamp(2.125rem, 1.3rem + 2.5vw, 3.5rem);
+  line-height: 1.06;
+  /* A step above the 400 every other section heading gets from craft-home-type.css. */
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.figma-landing .fl-products .fl-heading--discovery > div:first-child > p.fl-products__lede {
+  max-width: 42ch;
+  margin: 0;
+  color: #6b558c;
+  font-size: clamp(1rem, 0.92rem + 0.35vw, 1.1875rem);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Entrance: the heading, then the carousel, rise in once as the section is
+   revealed (Reveal in Home.tsx sets data-visible). Short and small. Before the
+   flag is set nothing is hidden, so the section never ships blank. */
+@keyframes flDiscoveryIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.figma-landing .fl-products[data-visible='true'] .fl-heading--discovery {
+  animation: flDiscoveryIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.figma-landing .fl-products[data-visible='true'] .f9-cf {
+  animation: flDiscoveryIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figma-landing .fl-products[data-visible='true'] .fl-heading--discovery,
+  .figma-landing .fl-products[data-visible='true'] .f9-cf {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WHY — de-slab the single biggest flat fill on the page
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* The largest solid mass on the home was flat #4a4286. A gentle vertical wash in
+   the same purple family gives it depth; the top stays #4a4286 so the curved
+   sweep above lands on it seamlessly, and the existing white ::after hill at the
+   bottom keeps working. Bottom stays dark enough for white text (AA). */
+.fl-why {
+  background: linear-gradient(180deg, #4a4286 0%, #443c7e 54%, #3f3878 100%);
+}
+
+/* Benefit chips read as recessed glass wells, not flat translucent slabs. The
+   chip fill (#14121d33) is DARKER than the band, so it already sits INTO the
+   surface — a faint white rim plus a single top inner highlight is the whole
+   glass read. No drop shadow: elevation implies the panel floats ABOVE the
+   band, which contradicts a darker-than-ground well, and on dark purple the
+   navy-tinted craft tokens vanish anyway. Rim + highlight, nothing more. */
+.fl-why .fl-benefit {
+  border-radius: var(--cr-r-lg);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ABOUT — the flat white slab between the purple Why and the Journal
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* .about-section paints `background: var(--bg-light)` — an undefined token, so
+   it resolved to transparent and showed the #fff of .figma-landing: a flat
+   white band with a centred 800px text column and dead white margins, the last
+   undressed slab on the page. The same warm cream wash as Products/Journal
+   turns it into a quiet reading ground and brackets it with them (cream ground,
+   purple/lavender/butter feature bands). No hill, no frame — the one curved
+   transition on the page stays the Products→Why signature; this section just
+   stops being a rectangle. The Why band's white ::after hill lands on the wash's
+   near-white top (#fdfaf4), so that seam stays soft. */
+.about-section {
+  background: #ffffff;
+}
+
+/* The Why band's ::after "hill" was still pure #fff (its original color, when the
+   section below was white). The About section is now the cream wash, so a white
+   hill left a hard WHITE BAND between the purple curve and the cream. Repaint the
+   hill in the wash's top cream (#fdfaf4) so the purple curves straight into the
+   cream with no seam. */
+.fl-why::after {
+  background: #ffffff;
+}
+
+/* Footer dome seam (site-wide): the dome was a WARM cream (#fbf6ef), but every
+   storefront page ends on a COOL near-white section (home Partner #faf6ff,
+   About #fff, …), so the warm dome left a visible band before the navy. Repaint
+   the dome a cool near-white across the whole storefront (.liquid-bg wraps every
+   store route; admin is a separate layout) so it blends into the light section
+   above it on every page. The footer is a top-level sibling (not inside
+   .liquid-bg), so target the dome by its own class, globally. Each page's
+   pre-footer wash is a slightly different near-white, so match the two known
+   ones exactly: default (/about's .fl-about) = #faf9ff; the home page's footer
+   nests inside .figma-landing above the Partner wash (#faf6ff), so scope that. */
+/* The footer edge now paints its page-coloured layer from this variable (see
+   craft-footer.css §2); a solid background here would cover the contour. */
+.footer-topcurve {
+  --footer-edge-fill: #ffffff;
+}
+.figma-landing .footer-topcurve {
+  --footer-edge-fill: #ffffff;
+}
+
+/* Remove ALL the decorative gold ribbon / blob shapes around the founders
+   section (the big yellow "X" ribbon top-left on /about, plus the pre-footer
+   blobs) — they were the loudest remaining "tail". Purely decorative
+   (pointer-events:none, absolute) so the founders layout is untouched. */
+.fl-about__shape {
+  display: none !important;
+}
+
+/* About page: the founders section was a fixed 980px but its content (the lowest
+   founder photo) ends ~808px, leaving a dead band before the footer — worse now
+   that the decorative ribbon is gone. Trim it on desktop so the footer sits just
+   below the founders (mobile keeps its auto height for the stacked layout). */
+@media (min-width: 901px) {
+  .figma-landing .fl-about {
+    height: 860px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UNIFORM WHITE GROUND — remove the warm cream / gold "tail" site-wide
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* The storefront ground (.liquid-bg--fallback, rendered by app/(store)/layout on
+   every store route) painted TWO radial glows over a cream base — a lavender one
+   top-right and, more visibly, a GOLD one bottom-left (rgba(240,193,78,.20)).
+   That gold glow was the yellow "tail" the user saw creeping into /blog,
+   /shop and /partner. Repaint the whole field a clean white so every page
+   reads uniform, clear and classy. Loaded after immersive.css → wins on equal
+   specificity; !important guards against the login/member fallbacks re-tinting. */
+.liquid-bg,
+.liquid-bg--fallback {
+  background: #ffffff !important;
+}
+
+/* Home hero (first scene) was a warm off-white (#FFFDF7); match it to the white
+   ground so the top of the page is white too, not cream. The second scene stays
+   its purple cloud gradient. */
+.fl-hero,
+.fl-hero__scene--first {
+  background: #ffffff;
+}
+
+/* Decorative brand ribbon / polygon / shape SVGs bled warm gold + lavender blobs
+   into the corners of the hero, shop, journal and partner bands — the other
+   half of the "tail". They are purely decorative (aria-hidden). Hide them for the
+   clean uniform-white look; the layout is untouched (all absolutely positioned). */
+.fl-hero__shape,
+.fl-products__ribbon,
+.fl-journal__ribbon,
+.fl-journal__polygon,
+.fl-partner__ribbon {
+  display: none !important;
+}
+
+/* /shop page (identified by its .grid-products grid): trim the dead space
+   before the footer now that the ground is white. */
+body:has(.grid-products) main.wrap.section {
+  padding-bottom: clamp(20px, 3vw, 44px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   JOURNAL — cards lift off the cream band; the fill gets a soft warm wash
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.fl-journal {
+  background: #ffffff;
+}
+
+/* Card radius unified to var(--cr-r-md) (base was 12px) so it matches the
+   product and review cards. A resting sm elevation sets the photo cards ON the
+   cream instead of pasting them to it; hover deepens by one step (sm → md),
+   depth only — the card's reveal already owns the translate, so this never adds
+   a second one. */
+.fl-journal .fl-blog {
+  border-radius: var(--cr-r-md);
+  box-shadow: var(--cr-shadow-sm);
+  /* Re-declare the reveal transition (opacity + transform, from figma-landing)
+     and ADD box-shadow to it, so the hover deepen EASES instead of snapping —
+     the base .fl-blog transition list has no box-shadow, so without this the
+     shadow jump was instant. */
+  transition: opacity 0.6s linear, transform 0.6s linear,
+    box-shadow var(--cr-dur) var(--cr-ease);
+}
+.fl-journal .fl-blog:hover,
+.fl-journal .fl-blog:focus-visible {
+  box-shadow: var(--cr-shadow-md);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TESTIMONIALS — cards gain elevation; buttery directional wash on the band
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Keep the butter-cream hue (base #fff8e5) but give the band a gentle wash in
+   its own butter family. Deepen only through the MIDDLE, then lift back toward
+   the foot (#fff9e6 ≈ the base) so the band eases into the white Partner below
+   instead of hitting it at its most saturated edge — depth without a harder
+   seam. No new hue. */
+.fl-testimonials {
+  background: #ffffff;
+}
+
+/* The `.fl-review` card polish that used to sit here went with the cards: the
+   testimonial band is the video rail now, and its elevation comes from
+   video-testimonials.css so the product page and the landing page stay in step. */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PARTNER — soften the white slab and frame the monolithic image block
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* A whisper of lavender at the foot eases the last band toward the footer
+   instead of ending on a flat white rectangle. */
+.fl-partner {
+  background: #ffffff;
+}
+
+/* The big pre-baked photo becomes a softly framed panel: the large-surface
+   radius, a lav wash behind it (so a slow load shows a tinted surface, never a
+   blank slab), and a layered shadow so it lifts off the page. No hover — it is a
+   static hero image, not an interactive card. */
+.fl-partner .fl-partner__image {
+  border-radius: var(--cr-r-lg);
+  background: var(--cr-wash-lav);
+  box-shadow: var(--cr-shadow-md);
+}
+
+/* The heading ran UNDER the image panel on desktop. Both halves of this section
+   are absolutely positioned inside the shell: the copy at left:80px (685px wide)
+   and the image at left:793px — so the copy column has 713px of clear space. The
+   Figma export gave the h2 its own `width:757px`, measured to fit
+   "Turn Better Periods Into Your Livelihood" on one line in Newsreader at 44px
+   (the text lands at 836px). The image is the later sibling and its wash is
+   opaque, so it painted over the tail of the word instead of the text simply
+   overlapping.
+   Capping every child at the column width keeps the copy inside its own lane —
+   the heading now wraps to two lines, `balance` splitting it evenly rather than
+   dropping a lone "Livelihood". Scoped to the two-column layout: below 901px the
+   halves stack and figma-landing-responsive.css already releases these widths. */
+@media (min-width: 901px) {
+  .fl-partner .fl-partner__copy > * {
+    max-width: 100%;
+  }
+  .fl-partner .fl-partner__copy h2 {
+    width: 100%;
+    text-wrap: balance;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   JOURNAL — pinned notes on a thread (Home.tsx `Journal`)
+   The three blog cards hang from one draped thread, each held by a gold pin,
+   with a paper border and a slight tilt pivoting on the pin. STATIC: the
+   Figma entrance (cards parked 610–1233px down, sliding up on data-visible)
+   is switched off, so the cards are simply there. Hover shade is kept.
+   Selectors carry `.figma-landing .fl-journal` so they outrank the base
+   `.fl-blog:nth-child(n)` parking offsets without relying on sheet order.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.figma-landing .fl-journal .fl-heading {
+  opacity: 1;
+  transition: none;
+}
+
+.figma-landing .fl-journal .fl-journal__note {
+  position: relative;
+  min-width: 0;
+}
+
+.figma-landing .fl-journal .fl-journal__note .fl-blog {
+  opacity: 1;
+  border: 8px solid #fffdf9;
+  border-radius: 6px;
+  box-shadow:
+    0 1px 2px rgba(52, 32, 78, 0.08),
+    0 26px 40px -24px rgba(52, 32, 78, 0.45);
+  transform-origin: 50% 0;
+  transform: rotate(var(--note-tilt, -1.6deg));
+  /* No opacity/transform transition — nothing animates in. */
+  transition: box-shadow var(--cr-dur) var(--cr-ease);
+}
+
+.figma-landing .fl-journal .fl-journal__note:nth-of-type(2) .fl-blog { --note-tilt: 1.2deg; }
+.figma-landing .fl-journal .fl-journal__note:nth-of-type(3) .fl-blog { --note-tilt: -0.9deg; }
+
+.figma-landing .fl-journal .fl-journal__note .fl-blog:hover,
+.figma-landing .fl-journal .fl-journal__note .fl-blog:focus-visible {
+  box-shadow:
+    0 1px 2px rgba(52, 32, 78, 0.08),
+    0 34px 52px -24px rgba(52, 32, 78, 0.52);
+}
+
+/* The pin: brand gold, sitting on the card's top edge above the paper. */
+.figma-landing .fl-journal .fl-journal__pin {
+  position: absolute;
+  left: 50%;
+  top: -11px;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  margin-left: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffe7a6 0%, #f0c14e 42%, #b98614 100%);
+  box-shadow:
+    0 5px 7px -2px rgba(28, 14, 48, 0.4),
+    inset 0 -2px 3px rgba(90, 58, 6, 0.28);
+  pointer-events: none;
+}
+
+.figma-landing .fl-journal .fl-journal__pin::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  width: 7px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+/* The shared thread: drapes across the row and through each pin. Pins sit at
+   the column centres (15.8% · 50% · 84.1% of the grid), which is where the
+   path passes y=24 of its 60-unit box. */
+.figma-landing .fl-journal .fl-journal__thread {
+  position: absolute;
+  left: -40px;
+  right: -40px;
+  top: -24px;
+  z-index: 2;
+  width: calc(100% + 80px);
+  height: 60px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.figma-landing .fl-journal .fl-journal__thread path {
+  fill: none;
+  stroke: #3a2158;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+/* ── Tablet / phone: one column, so each note gets its own short thread ─── */
+@media (max-width: 900px) {
+  .figma-landing .fl-journal .fl-journal__thread {
+    display: none;
+  }
+
+  .figma-landing .fl-journal .fl-journal__grid {
+    gap: 44px !important;
+    padding-top: 22px;
+  }
+
+  .figma-landing .fl-journal .fl-journal__note::before {
+    content: '';
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    top: 0;
+    z-index: 2;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(58, 33, 88, 0.6);
+    transform: rotate(-1.2deg);
+    pointer-events: none;
+  }
+
+  /* The mobile reveal safety net forces `transform: none !important`; the
+     tilt is restated with the same weight, scaled down for a narrow card. */
+  .figma-landing .fl-journal .fl-journal__note .fl-blog {
+    transform: rotate(calc(var(--note-tilt, -1.6deg) * 0.5)) !important;
+    border-width: 6px;
+  }
+}
+
+/* Fluid row above 900px. The Figma grid was three fixed 429px columns (1352px)
+   at every desktop width, so below ~1440px the third card ran off the right
+   edge (clipped by the section's overflow). Pre-existing, but the thread made
+   it obvious. Span the section's inner width instead, matching the heading's
+   own left/right insets, and let each real blog photo fill its card. */
+@media (min-width: 901px) {
+  .figma-landing .fl-journal .fl-journal__grid {
+    left: 80px;
+    right: 80px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .figma-landing .fl-journal .fl-blog__photo--dynamic {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .figma-landing .fl-journal .fl-journal__grid {
+    left: 48px;
+    right: 48px;
+    gap: 24px;
+  }
+}
+
+/* Below ~1100px the heading's title wraps to two lines and the heading ends at
+   ~328px — past the thread (~313px), which then ran through the subtitle.
+   Drop the row so the thread clears it; 372 + the 461px card still ends well
+   inside the section's fixed 900px. The margin above 1100 covers font/wrap
+   variance. */
+@media (min-width: 901px) and (max-width: 1140px) {
+  .figma-landing .fl-journal .fl-journal__grid {
+    top: 372px;
+  }
+}

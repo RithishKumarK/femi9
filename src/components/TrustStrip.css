@@ -1,0 +1,8 @@
+/* ===== TRUST STRIP ===== */
+.trust{background:var(--forest);color:#eaf3ee}
+.trust-in{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;text-align:left}
+.trust .t{padding:26px clamp(14px,2vw,30px);display:flex;gap:14px;align-items:flex-start}
+.trust .t + .t{border-left:1px solid rgba(255,255,255,.12)}
+.trust .t svg{width:26px;height:26px;color:var(--yellow);flex-shrink:0;margin-top:2px}
+.trust .t b{display:block;color:#fff;font-weight:500;font-size:1rem}
+.trust .t span{font-size:.85rem;color:rgba(234,243,238,.72);font-weight:300}

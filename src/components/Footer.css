@@ -1,0 +1,410 @@
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  overflow: hidden;
+  background-color: #35234e;
+  color: #d4cbe6;
+  padding-top: clamp(70px, 8vw, 96px);
+  padding-bottom: 28px;
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
+}
+
+/* Watermark background: spans full width & height */
+.footer-watermark {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-watermark-img {
+  width: 110%;
+  min-width: 1400px;
+  height: 120%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0) invert(1);
+  opacity: 0.08;
+  pointer-events: none;
+  transform: translateY(-2%);
+}
+
+.footer-in {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1280px);
+  margin-inline: auto;
+  padding-inline: clamp(18px, 4vw, 40px);
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: 1.85fr 1fr 1fr 1fr;
+  gap: clamp(32px, 4vw, 64px);
+  align-items: start;
+}
+
+/* Brand column */
+.footer-brand {
+  max-width: 420px;
+}
+
+.footer-logo-white {
+  height: 44px;
+  width: auto;
+  display: block;
+  margin-bottom: 16px;
+  filter: brightness(0) invert(1); /* Ensures logo is pure white */
+}
+
+/* `.footer` scope: app.css declares a bare `.footer-tagline` at 10px that loads
+   later and was winning, leaving the tagline at 10px on desktop and tablet. */
+.footer .footer-tagline {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #9d90b7;
+  margin-bottom: 20px;
+}
+
+.footer-desc {
+  color: #c9c0da;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 400;
+  margin-bottom: 30px;
+}
+
+/* Newsletter row */
+.footer-newsletter {
+  margin-bottom: 30px;
+}
+
+.nl-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e3b846; /* Gold header */
+  margin-bottom: 14px;
+}
+
+.nl-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 8px;
+  max-width: 380px;
+}
+
+.nl-form input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+/* iOS Safari zooms the entire layout viewport whenever a focused text field
+   computes under 16px, and never zooms back out. The footer renders on every
+   non-home route, so a 14px field here meant tapping "subscribe" left the whole
+   site at ~114% with no way back but a pinch. The field is transparent and
+   borderless, so 14px→16px is visually a non-event; it is scoped to coarse
+   pointers and narrow viewports, so the desktop rendering is untouched.
+   The input also had no height of its own — its hit area was the ~22px line box.
+
+   Both halves of the query are load-bearing: `pointer: coarse` catches touch
+   tablets and phones in landscape at >900px, and the width query catches a
+   phone-sized viewport in a fine-pointer context — which is exactly what the
+   Playwright mobile-quality gate runs (Desktop Chrome resized to 390px). */
+@media (max-width: 900px), (pointer: coarse) {
+  .nl-form input {
+    font-size: 16px;
+    min-height: 44px;
+    padding-block: 10px;
+  }
+}
+
+.nl-form input::placeholder {
+  color: #9d90b7;
+  font-weight: 400;
+}
+
+.nl-submit {
+  background: transparent;
+  border: none;
+  color: #ffffff; /* White SUBSCRIBE text like reference image */
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0 0 0 16px;
+  white-space: nowrap;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+/* The submit was a bare 12px text run with zero vertical padding inside a
+   `align-items:center` flex row — a ~19px-tall tap target on the only control
+   that sends the form. Give it a real box. */
+@media (max-width: 900px), (pointer: coarse) {
+  .nl-submit {
+    padding: 12px 0 12px 16px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .nl-form {
+    padding-bottom: 4px;
+  }
+}
+
+.nl-submit:hover {
+  color: #e3b846;
+}
+
+.nl-submit:disabled,
+.nl-form input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Inline signup failure. The form used to report success unconditionally; a
+   real error needs somewhere to land that is not a toast the shopper may miss. */
+.nl-error {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #f2c9d3;
+}
+
+/* Social icons */
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-social a {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: transparent;
+  transition: background 0.25s, border-color 0.25s, transform 0.2s;
+}
+
+.footer-social a:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+}
+
+.footer-social svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Link columns */
+.footer-col h4 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  margin-bottom: 22px;
+}
+
+.footer-col a {
+  display: block;
+  color: #c9c0da;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 16px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover {
+  color: #ffffff;
+}
+
+.footer-addr {
+  color: #9d90b7;
+  font-size: 13px;
+  line-height: 1.55;
+  margin-top: 10px;
+  max-width: 22ch;
+}
+
+/* Bottom Bar */
+.footer-bottom {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(52px, 6vw, 80px);
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: #9d90b7;
+  font-size: 13px;
+}
+
+.footer-bottom a {
+  color: #9d90b7;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-bottom a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* ===== Mobile Responsive =====
+   Footer.css owns footer layout at every width now. src/styles/responsive.css
+   used to re-declare `.footer-main` at 1000px (3 columns) and 560px (2 columns)
+   and win purely on import order, so the collapse below never actually ran and
+   the SUPPORT column tried to fit "Contact us via WhatsApp" into 146px. Those
+   rules are deleted; the tablet step is reproduced here, in the sheet that owns
+   the component, so nothing changes between 901px and 1000px. */
+@media (max-width: 1000px) {
+  .footer-main {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+    max-width: none;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .footer-brand {
+    max-width: 100%;
+  }
+  .footer-watermark-img {
+    width: 160%;
+    min-width: 800px;
+  }
+}
+
+/* Two columns of links rather than one tall stack: the three link columns are
+   short (4-5 rows each) and a single column pushes the copyright bar ~600px
+   down. The brand block stays full width above them. */
+@media (max-width: 900px) and (min-width: 561px) {
+  .footer-main {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 40px;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  /* was `.nl-form{max-width:none}` in responsive.css */
+  .nl-form {
+    max-width: none;
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  /* 5 icons x 44px + 4 gaps x 10px = 260px, comfortably inside the 324px
+     content box at 360px — the 36px target was never a space constraint. */
+  .footer-social {
+    gap: 10px;
+  }
+  .footer-social a {
+    width: 44px;
+    height: 44px;
+  }
+  .footer-social svg {
+    width: 18px;
+    height: 18px;
+  }
+  /* Belt and braces. Footer.tsx already gates the watermark out of the JSX
+     below 561px (via useMediaGate) so the SVG is never fetched — CSS alone
+     would have hidden a file the phone had already paid for. This covers the
+     frame between first paint and the gate resolving. */
+  .footer-watermark {
+    display: none;
+  }
+}
+
+/* Typography floor. These selectors are duplicated in src/styles/app.css, which
+   loads AFTER this sheet and drops them further (tagline 10px, col heads 11px,
+   col links 13px) — so these carry an extra `.footer` to out-specify it rather
+   than relying on order. 10-11px uppercase at 0.14-0.16em tracking is past the
+   edge of legibility on a 360px screen, and `.nl-error` is the only place a
+   failed subscription is ever reported. */
+@media (max-width: 560px) {
+  .footer .footer-tagline,
+  .footer .nl-label {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+  .footer .footer-col h4 {
+    font-size: 13px;
+  }
+  .footer .footer-desc,
+  .footer .footer-col a,
+  .footer .footer-addr,
+  .footer .footer-bottom,
+  .footer .nl-error {
+    font-size: 14px;
+  }
+  .footer .footer-addr {
+    max-width: none;
+  }
+}
+
+/* Tap targets for the link columns. These are ~22px line boxes separated by
+   margin, and margin is not tappable — three columns of them are the only
+   in-footer navigation. `align-items:center` keeps the text where it was inside
+   the taller box. Desktop above 900px with a mouse is unchanged. */
+@media (max-width: 900px), (pointer: coarse) {
+  .footer .footer-col a,
+  .footer .footer-bottom a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  /* The 44px box already supplies the separation the old margin was faking, so
+     pull the margin back or the column grows by ~150px for nothing. */
+  .footer .footer-col a {
+    margin-bottom: 4px;
+  }
+  .footer-social a {
+    width: 44px;
+    height: 44px;
+  }
+  .footer-social svg {
+    width: 18px;
+    height: 18px;
+  }
+}

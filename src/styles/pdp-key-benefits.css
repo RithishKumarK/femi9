@@ -1,0 +1,426 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   pdp-key-benefits.css — the "Key Benefits" section on the product page.
+
+   An editorial figure: the pack suspended at the centre, tilted, floating
+   gently above a soft shadow, with thin curved threads leading out to three
+   claims on each side. Colour from base.css's plum/lavender ink; type from the
+   page's Newsreader + body sans.
+
+   The pack floats without an edited image — see KeyBenefits.tsx: a CSS crop,
+   an edge mask, and `mix-blend-mode: multiply` over a white glow, so the studio
+   shot's white background disappears and the pack's colours stay true.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.kb-section {
+  --kb-tilt: -12deg; /* mirrors TILT_DEG in KeyBenefits.tsx */
+
+  margin: clamp(48px, 7vw, 88px) 0;
+  padding: clamp(36px, 5.5vw, 76px) clamp(20px, 4vw, 56px);
+  /* A pure-white glow where the pack floats (multiply over white = true colour),
+     easing out to the brand's pale lavender at the edges. */
+  background:
+    radial-gradient(ellipse 34% 46% at 50% 55%, #ffffff 0%, #ffffff 55%, rgba(255, 255, 255, 0) 100%),
+    linear-gradient(180deg, #fcfbfe 0%, #f5f0fb 100%);
+  border: 1px solid var(--cr-hairline);
+  border-radius: var(--cr-r-lg);
+  box-shadow: var(--cr-shadow-md);
+  overflow-x: clip;
+}
+
+.kb-heading {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.4vw, 3.1rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--navy);
+  margin: 0 0 clamp(24px, 3.5vw, 44px);
+}
+
+/* ── The figure ─────────────────────────────────────────────────────────── */
+.kb-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 520px) minmax(0, 1fr);
+  gap: clamp(24px, 3.5vw, 56px);
+  align-items: center;
+}
+
+.kb-col {
+  position: relative;
+  z-index: 2;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(44px, 6vw, 88px);
+}
+
+.kb-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kb-item--left {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.kb-item--right {
+  text-align: left;
+  align-items: flex-start;
+}
+
+/* The middle claim on each side stands a little further out, so the six read
+   as an arc around the pack rather than two straight lists. */
+.kb-col--left .kb-item:nth-child(2) {
+  margin-right: clamp(16px, 2.4vw, 36px);
+}
+
+.kb-col--right .kb-item:nth-child(2) {
+  margin-left: clamp(16px, 2.4vw, 36px);
+}
+
+.kb-item-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Where each thread begins. */
+.kb-dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--forest-2);
+  /* --forest-2 (#563184) at 12%, as a soft halo. */
+  box-shadow: 0 0 0 4px rgba(86, 49, 132, 0.12);
+}
+
+.kb-item-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--navy);
+  margin: 0;
+}
+
+/* base.css gives every heading `margin-bottom: 8px` below 768px (!important),
+   which made the title row taller than the title and pushed the dot 4px low. */
+.kb-section .kb-item-title {
+  margin-bottom: 0 !important;
+}
+
+.kb-item-body {
+  font-size: clamp(0.88rem, 1.05vw, 0.96rem);
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+  max-width: 28ch;
+}
+
+/* Body lines up under the title text, not under the dot beside it. */
+.kb-item--left .kb-item-body {
+  margin-right: 21px;
+}
+
+.kb-item--right .kb-item-body {
+  margin-left: 21px;
+}
+
+/* ── The floating pack ──────────────────────────────────────────────────── */
+.kb-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Room for the tilted corners and the float travel. */
+  padding-block: clamp(40px, 6vw, 84px) clamp(28px, 4vw, 52px);
+}
+
+/* Untransformed on purpose: it is what gets measured, and a transform here
+   would isolate the blend below from the section background. */
+.kb-float-box {
+  width: 100%;
+  /* The crop's own ratio: (0.72 × 2400) / (0.62 × 1792). */
+  aspect-ratio: 1728 / 1111;
+}
+
+.kb-float {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  mix-blend-mode: multiply;
+  transform: rotate(var(--kb-tilt));
+  transform-origin: center;
+  /* Fade the white crop margin only — the pack sits well inside these bands. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  mask-composite: intersect;
+  will-change: transform;
+}
+
+/* The crop: CROP = { x: .14, y: .2, w: .72, h: .62 } in KeyBenefits.tsx.
+   width = 1 / .72 · left = −.14 / .72 · height = 1 / .62 · top = −.2 / .62 */
+.kb-float img {
+  position: absolute;
+  left: -19.4444%;
+  top: -32.2581%;
+  width: 138.8889%;
+  height: 161.2903%;
+  max-width: none;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The pack's shadow on the "floor" beneath it — breathes with the float. */
+.kb-float-shadow {
+  display: block;
+  width: 62%;
+  height: 22px;
+  margin-top: clamp(26px, 3.5vw, 44px);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(52, 32, 78, 0.22) 0%, rgba(52, 32, 78, 0) 70%);
+  filter: blur(4px);
+}
+
+/* The float itself is driven from KeyBenefits.tsx (requestAnimationFrame), so
+   the threads that touch the pack can move with it frame for frame. Without JS
+   the pack simply rests at its tilt above the shadow. */
+
+/* ── Threads ────────────────────────────────────────────────────────────── */
+.kb-threads {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.kb-thread {
+  fill: none;
+  stroke: var(--forest-2);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+/* Where a thread meets the pack: a small plum point with a white ring, so the
+   join reads as deliberate on the busy packaging. */
+.kb-touch {
+  fill: var(--forest-2);
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+.kb-section.is-armed .kb-touch {
+  opacity: 0;
+}
+
+.kb-section.is-armed.is-in .kb-touch {
+  animation: kb-touch-in 360ms ease-out calc(var(--kb-delay, 0ms) + 1100ms) forwards;
+}
+
+@keyframes kb-touch-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Entrance ───────────────────────────────────────────────────────────────
+   Only once JS has armed the section — if the bundle never runs, nothing is
+   hidden. Threads draw, then the claims settle in, one side at a time. */
+.kb-section.is-armed .kb-thread {
+  /* pathLength=1 on the element, so one dash unit is the whole thread. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.kb-section.is-armed.is-in .kb-thread {
+  animation: kb-draw 1300ms cubic-bezier(0.4, 0, 0.2, 1) var(--kb-delay, 0ms) forwards;
+}
+
+.kb-section.is-armed .kb-item {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.kb-section.is-armed.is-in .kb-item {
+  animation: kb-item-in 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(450ms + var(--kb-i, 0) * 120ms);
+}
+
+.kb-section.is-armed.is-in .kb-col--right .kb-item {
+  animation-delay: calc(510ms + var(--kb-i, 0) * 120ms);
+}
+
+@keyframes kb-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes kb-item-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.kb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Laptop ─────────────────────────────────────────────────────────────── */
+@media (max-width: 1180px) and (min-width: 901px) {
+  .kb-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 380px) minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .kb-item-body {
+    max-width: 24ch;
+  }
+
+  .kb-col--left .kb-item:nth-child(2) {
+    margin-right: 12px;
+  }
+
+  .kb-col--right .kb-item:nth-child(2) {
+    margin-left: 12px;
+  }
+}
+
+/* ── Tablet: pack first, claims beneath in two columns, no threads ──────── */
+@media (max-width: 900px) {
+  .kb-section {
+    --kb-tilt: -8deg;
+    background:
+      radial-gradient(ellipse 60% 26% at 50% 26%, #ffffff 0%, #ffffff 55%, rgba(255, 255, 255, 0) 100%),
+      linear-gradient(180deg, #fcfbfe 0%, #f5f0fb 100%);
+  }
+
+  .kb-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 5vw, 44px) clamp(20px, 4vw, 36px);
+    max-width: 680px;
+    margin-inline: auto;
+    align-items: start;
+  }
+
+  .kb-stage {
+    grid-column: 1 / -1;
+    order: -1;
+    width: 100%;
+    max-width: 480px;
+    margin-inline: auto;
+    padding-block: 28px 8px;
+  }
+
+  .kb-col {
+    gap: clamp(24px, 4vw, 32px);
+  }
+
+  .kb-item--left,
+  .kb-item--right {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .kb-col--left .kb-item:nth-child(2),
+  .kb-col--right .kb-item:nth-child(2) {
+    margin: 0;
+  }
+
+  .kb-item--left .kb-item-head {
+    flex-direction: row-reverse;
+  }
+
+  .kb-item-head {
+    gap: 10px;
+  }
+
+  .kb-item--left .kb-item-body,
+  .kb-item--right .kb-item-body {
+    margin: 0 0 0 19px;
+    max-width: none;
+  }
+
+  .kb-threads {
+    display: none;
+  }
+}
+
+/* ── Phone ──────────────────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .kb-section {
+    padding: 30px 18px 34px;
+    border-radius: var(--cr-r-md);
+  }
+
+  .kb-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kb-stage {
+    max-width: 92%;
+    padding-block: 22px 4px;
+  }
+
+  .kb-float-shadow {
+    margin-top: 22px;
+  }
+
+  .kb-item-title {
+    font-size: 1.2rem;
+  }
+
+  .kb-item-body {
+    font-size: 0.92rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The JS float loop does not start under this preference. */
+  .kb-section.is-armed .kb-thread {
+    stroke-dashoffset: 0;
+  }
+
+  .kb-section.is-armed .kb-touch {
+    opacity: 1;
+  }
+
+  .kb-section.is-armed.is-in .kb-touch {
+    animation: none;
+  }
+
+  .kb-section.is-armed .kb-item {
+    opacity: 1;
+    transform: none;
+  }
+
+  .kb-section.is-armed.is-in .kb-thread,
+  .kb-section.is-armed.is-in .kb-item {
+    animation: none;
+  }
+}

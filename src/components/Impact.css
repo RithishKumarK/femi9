@@ -1,0 +1,22 @@
+/* ===== IMPACT ===== */
+.impact{background:var(--sage-tint)}
+.impact-in{display:grid;grid-template-columns:1fr .92fr;gap:clamp(32px,6vw,76px);align-items:center}
+.impact h2{font-size:clamp(2rem,3.6vw,2.9rem);font-weight:600}
+.impact .impact-copy p{color:var(--ink);margin-top:18px;max-width:46ch;opacity:.85}
+
+/* One figure carries the section. The material claims below it are product
+   facts, not statistics, so they read as lines rather than as metric cards. */
+.impact-figure{display:flex;flex-direction:column;align-items:flex-start}
+.impact-num{
+  font-family:var(--display);font-optical-sizing:auto;
+  font-size:clamp(3.4rem,6.5vw,5.2rem);font-weight:600;
+  color:var(--forest-2);letter-spacing:-.03em;line-height:.92;
+}
+.impact-num-label{margin-top:14px;max-width:32ch;color:var(--ink);font-size:1.02rem;opacity:.85}
+.impact-facts{margin:28px 0 0;padding:0;list-style:none;width:100%;max-width:36ch}
+.impact-facts li{padding:14px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.94rem}
+
+@media (max-width:860px){
+  .impact-in{grid-template-columns:1fr;gap:34px}
+  .impact-facts{max-width:none}
+}

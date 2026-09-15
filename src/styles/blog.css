@@ -1,0 +1,306 @@
+/* ============================================================
+   BLOG / JOURNAL — listing + article detail
+   Font stack: Instrument Sans for headlines (matches landing page),
+   Urbanist for body & metadata.
+   ============================================================ */
+
+.blog { position: relative; font-family: "Urbanist", system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+/* Enforce landing page Instrument Sans font on all blog display titles */
+.blog h1,
+.blog h2,
+.blog h3,
+.blog .display,
+.blog-hero-title,
+.article-title,
+.mtile-scrim h3,
+.bcard-body h3 {
+  font-family: "Instrument Sans", "Urbanist", system-ui, -apple-system, sans-serif !important;
+}
+
+/* ---------- generated editorial cover (BlogCover) ---------- */
+.bcover { position: absolute; inset: 0; display: block; overflow: hidden; z-index: 0; }
+.bcover-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* soft overhead sheen for depth (SVG covers only) */
+.bcover:not(.bcover--has-image)::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(130% 80% at 50% -18%, rgba(255,255,255,.45), transparent 58%);
+}
+.bcover--deep:not(.bcover--has-image)::before { background: radial-gradient(130% 92% at 50% -10%, rgba(255,255,255,.16), transparent 60%); }
+/* deep: bottom scrim so overlaid white text always reads */
+.bcover--deep:not(.bcover--has-image)::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(18,10,32,.74) 0%, rgba(28,16,46,.3) 36%, transparent 68%);
+}
+
+/* ---------- listing hero ---------- */
+.blog-hero { padding-block: clamp(40px, 6vw, 80px) clamp(24px, 3vw, 40px); max-width: 820px; }
+.blog-hero-title {
+  font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif !important;
+  font-size: clamp(2.4rem, 6vw, 4.4rem); font-weight: 600; line-height: 1.06;
+  letter-spacing: -0.01em; color: var(--navy); margin-top: 14px;
+}
+.blog-hero-sub {
+  margin-top: 20px; font-family: "Urbanist", system-ui, -apple-system, sans-serif;
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem); font-weight: 400; line-height: 1.55;
+  letter-spacing: 0; color: var(--muted); max-width: 60ch;
+}
+
+/* ---------- meta (shared) ---------- */
+/* `.bcat` / `.bcat--dark` / `.mtile-cat` lived here for a category pill that no
+   component has rendered for a long time (the CatChip that emitted them was
+   imported but never mounted). Removed rather than left "just in case". */
+.bmeta { display: inline-flex; align-items: center; gap: 8px; font-family: "Urbanist", system-ui, -apple-system, sans-serif; font-size: .82rem; font-weight:400; letter-spacing:0; color: var(--muted); flex-wrap: wrap; }
+.bmeta b { font-weight: 500; color: var(--ink); }
+.bmeta i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .5; }
+
+/* ---------- featured mosaic ---------- */
+.bmosaic {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+  height: min(76vh, 620px);
+}
+.mtile {
+  position: relative; display: block; border-radius: var(--r-card); overflow: hidden;
+  background-size: cover; background-position: center; box-shadow: var(--shadow-sm);
+  min-height: 0; background-color: var(--forest);
+}
+.mtile--big { grid-column: 1; grid-row: 1 / span 2; }
+.mtile-scrim {
+  position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column;
+  justify-content: flex-end; align-items: flex-start; gap: 8px; padding: clamp(16px, 1.8vw, 26px);
+  /* Clear over the top of the photo; a light brand-plum wash only where the
+     title sits. The title's own text-shadow carries legibility where the wash
+     is thinnest. */
+  background: linear-gradient(180deg, rgba(52, 32, 78, 0) 0%, rgba(52, 32, 78, 0) 35%, rgba(52, 32, 78, 0.45) 65%, rgba(52, 32, 78, 0.8) 100%);
+  pointer-events: none;
+}
+.mtile-scrim h3 {
+  color: #ffffff !important; font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif !important;
+  font-weight: 600; letter-spacing: 0; font-size: clamp(1.02rem, 1.4vw, 1.35rem); line-height: 1.15;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+.mtile--big .mtile-scrim h3 { font-size: clamp(1.5rem, 2.6vw, 2.4rem); }
+/* The small tiles' four-line titles climb to mid-height, over the busiest part
+   of the cover art, so their wash starts higher and runs a touch deeper. The top
+   of the photo still stays clear. */
+.mtile:not(.mtile--big) .mtile-scrim {
+  background: linear-gradient(180deg, rgba(52, 32, 78, 0) 0%, rgba(52, 32, 78, 0) 22%, rgba(52, 32, 78, 0.55) 55%, rgba(52, 32, 78, 0.85) 100%);
+}
+.mtile-read { font-family: "Urbanist", system-ui, sans-serif; font-size: .78rem; font-weight:500; letter-spacing:0; color: rgba(255,255,255,.9); }
+.mtile img, .mtile { transition: transform .5s var(--ease); }
+/* Hover is gated: on iOS the :hover state latches after a tap and survives a
+   back-navigation, leaving one tile permanently lifted. Touch gets :active. */
+@media (hover: hover) {
+  .mtile:hover { transform: translateY(-2px); }
+}
+.mtile:active { transform: scale(.985); }
+.mtile:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+/* ---------- latest + filter ---------- */
+.blog-latest { padding-block: clamp(48px, 7vw, 92px); }
+.blog-latest-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+.blog-latest-head h2 { font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif !important; font-size: clamp(1.7rem, 3.4vw, 2.6rem); font-weight:600; letter-spacing:0; color: var(--navy); }
+
+.bchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.bchip {
+  padding: 8px 15px; border-radius: 999px; font-family: "Urbanist", system-ui, -apple-system, sans-serif; font-size: .84rem; font-weight: 500; letter-spacing:0;
+  color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+  transition: background .2s, color .2s, border-color .2s, transform .2s var(--ease);
+}
+@media (hover: hover) {
+  .bchip:hover { border-color: var(--navy); transform: translateY(-1px); }
+}
+.bchip:active { transform: scale(.97); }
+.bchip:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.bchip.is-active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* ---------- article grid + card ---------- */
+/* min() lets the track floor collapse with the container: at 320px the .wrap
+   content box is 284px and a hard 288px minimum sheared the card off-gutter. */
+.bgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(288px, 100%), 1fr)); gap: clamp(18px, 2vw, 26px); }
+
+.bcard {
+  display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line-soft);
+  border-radius: var(--r-card); overflow: hidden; box-shadow: var(--shadow-sm);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+@media (hover: hover) {
+  .bcard:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+}
+.bcard:active { transform: scale(.985); }
+.bcard:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+.bcard-poster {
+  position: relative; display: block; aspect-ratio: 16 / 10; width: 100%;
+  background-size: cover; background-position: center; overflow: hidden;
+}
+.bcard-body { display: flex; flex-direction: column; gap: 10px; padding: clamp(16px, 1.6vw, 22px); flex: 1; }
+.bcard-body h3 { font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif !important; font-size: 1.12rem; font-weight: 600; color: var(--navy); line-height: 1.22; letter-spacing: 0; }
+.bcard-body p { font-family: "Urbanist", system-ui, -apple-system, sans-serif; font-size: .92rem; font-weight:400; letter-spacing:0; color: var(--muted); line-height: 1.5; flex: 1; }
+.bcard-body .bmeta { margin-top: 4px; }
+
+/* ---------- newsletter ---------- */
+.blog-news {
+  display: flex; align-items: center; justify-content: space-between; gap: 26px; flex-wrap: wrap;
+  background: var(--forest); color: #fff9ea; border-radius: var(--r-card);
+  padding: clamp(28px, 4vw, 48px); margin-bottom: clamp(50px, 8vw, 100px);
+}
+.blog-news h2 { color: #fff; font-size: clamp(1.5rem, 3vw, 2.3rem); font-family: "Instrument Sans", sans-serif !important; }
+.blog-news p { color: rgba(255, 249, 234, .8); margin-top: 8px; max-width: 46ch; }
+.blog-news-form { display: flex; gap: 10px; flex-wrap: wrap; }
+.blog-news-form input {
+  flex: 1; min-width: 220px; padding: 13px 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.08); color: #fff; font-family: inherit; font-size: .95rem;
+}
+.blog-news-form input::placeholder { color: rgba(255, 249, 234, .55); }
+.blog-news-form input:focus { outline: none; border-color: var(--yellow); }
+.blog-news-form input:disabled,
+.blog-news-form button:disabled { opacity: .55; cursor: not-allowed; }
+/* A real signup failure needs somewhere to land — this form used to confirm
+   unconditionally without ever sending the address anywhere. */
+.blog-news-error { margin-top: 10px; font-size: .84rem; line-height: 1.45; color: #f2c9d3; }
+
+/* The home teaser used to live here (.journal-head/.journal-title/.journal-all/
+   .journal-grid) along with a scroll-stack variant (.journal--stack/.jstack*)
+   and its own max-width:720px breakpoint. None of those class names appear in
+   any component any more, so the whole block — including the breakpoint that
+   made this file look mobile-aware — has been removed. */
+
+/* ---------- article (detail) ---------- */
+/* The 84px clamp floor was the desktop artboard figure and never scaled: under
+   the 76px sticky nav it pushed the back link 160px down an 800px screen.
+   Desktop is untouched — 10vw >= 84px from 840px wide up. */
+.article-top { padding-block: clamp(28px, 10vw, 120px) 0; }
+.article-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: "Urbanist", sans-serif; font-size: .95rem; font-weight: 600;
+  color: var(--muted); margin-bottom: 22px; transition: color .2s, transform .2s var(--ease);
+}
+@media (hover: hover) {
+  .article-back:hover { color: var(--navy); transform: translateX(-3px); }
+}
+.article-back:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; border-radius: 8px; }
+.article-head { max-width: 860px; display: flex; flex-direction: column; gap: 14px; }
+.article-title {
+  font-size: clamp(2.2rem, 4.8vw, 3.6rem); line-height: 1.1; color: var(--navy);
+  font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif !important;
+  font-weight: 600; letter-spacing: -.01em; margin-top: 4px;
+}
+.article-meta {
+  font-family: "Urbanist", sans-serif; font-size: clamp(0.92rem, 1.1vw, 1.02rem);
+  color: var(--muted); margin-top: 6px;
+}
+.article-meta b { color: var(--navy); font-weight: 600; }
+.article-cover {
+  position: relative; overflow: hidden;
+  height: clamp(300px, 46vw, 540px); border-radius: var(--r-card);
+  max-width: var(--maxw); margin: clamp(28px, 4vw, 48px) auto 0;
+  margin-inline: auto; width: calc(100% - 2 * clamp(18px, 4vw, 40px));
+  box-shadow: var(--shadow-sm);
+}
+.article-body { max-width: 720px; padding-block: clamp(32px, 5vw, 56px); }
+/* Body blocks are stored as single strings with embedded newlines. `pre-line`
+   honours those authored breaks (it still collapses runs of spaces and still
+   wraps, so single-line paragraphs are unaffected) — a safety net for any list
+   shape the renderer's list detection in BlogPost.tsx does not catch. */
+.article-body p { font-size: 1.12rem; line-height: 1.75; color: var(--ink); margin-bottom: 1.3em; white-space: pre-line; }
+/* Real lists, emitted by Body() when a block starts with a bullet or "1. ". */
+.article-body-list { margin: 0 0 1.3em; padding-left: 1.2em; list-style: disc; }
+.article-body-list--num { list-style: decimal; }
+.article-body-list li { font-size: 1.12rem; line-height: 1.75; color: var(--ink); margin-bottom: .5em; }
+.article-body-list li::marker { color: var(--accent, var(--yellow-deep)); }
+.article-body h2 { font-family: "Instrument Sans", sans-serif !important; font-size: clamp(1.4rem, 2.4vw, 1.9rem); color: var(--navy); margin: 1.6em 0 .5em; }
+.article-body blockquote {
+  position: relative; margin: 1.8em 0; padding: 30px 0 6px;
+  font-family: "Instrument Sans", sans-serif !important; font-size: clamp(1.3rem, 2.2vw, 1.7rem); font-style: italic;
+  line-height: 1.34; color: var(--navy); text-wrap: pretty;
+}
+.article-body blockquote::before {
+  content: "\201C"; position: absolute; top: -.28em; left: -.04em;
+  font-size: 3.2em; line-height: 1; font-style: normal;
+  color: var(--accent, var(--yellow-deep)); opacity: .28;
+}
+.article-body-img { margin: 2.2em 0; border-radius: var(--r-card); overflow: hidden; box-shadow: var(--shadow-sm); }
+.article-body-img img { width: 100%; height: auto; display: block; object-fit: cover; border-radius: var(--r-card); }
+.article-body-img figcaption { font-size: .88rem; color: var(--muted); text-align: center; margin-top: 10px; font-family: "Urbanist", sans-serif; }
+.article-cta { padding-bottom: clamp(40px, 6vw, 72px); }
+.article-related { padding-bottom: clamp(56px, 8vw, 104px); }
+.article-related h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); color: var(--navy); margin-bottom: 26px; font-family: "Instrument Sans", sans-serif !important; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .bmosaic { grid-template-columns: 1fr 1fr; grid-template-rows: auto; height: auto; }
+  .mtile { aspect-ratio: 4 / 3; }
+  .mtile--big { grid-column: 1 / span 2; grid-row: auto; aspect-ratio: 16 / 10; }
+
+  /* The scrim is absolute + justify-content:flex-end inside an overflow:hidden
+     ratio box, so a long title overflows out of the TOP and is silently cut
+     with no ellipsis. Clamp it so length can never clip; below 560px the big
+     tile's face also shrinks, which buys the 90-character titles their 3 lines.
+     Desktop keeps the full title — a 2.4rem hero headline has the room. */
+  .mtile-scrim h3 {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  /* Touch targets — chips are the listing's only navigation control. */
+  .bchips { gap: 10px; }
+  .bchip { min-height: 44px; padding-block: 11px; padding-inline: 16px; font-size: .9rem; }
+  /* The negative inline margin keeps the arrow optically flush with the gutter
+     while the tap box grows to 44px. */
+  .article-back { min-height: 44px; padding: 10px 8px; margin-left: -8px; }
+
+  /* Type floors: none of these may sit under 14px on a phone. */
+  .bmeta { font-size: .875rem; }
+  .mtile-read { font-size: .875rem; }
+  .blog-news-error { font-size: .9rem; }
+  /* var(--muted) on var(--surface) is 3.76:1 — below AA at this size. */
+  .bcard-body .bmeta { color: #6E6288; }
+  .bcard-body p { color: #6E6288; }
+
+  /* h2 inherits base.css line-height:1.05; at the clamp floor that is a 23.5px
+     line box for a 22.4px face, so wrapped headings collide with themselves. */
+  .article-body h2 { line-height: 1.2; letter-spacing: -.01em; }
+  .blog-news h2 { line-height: 1.15; }
+}
+@media (max-width: 720px) {
+  /* clamp(300px, 46vw, 540px) pins to its 300px floor below 652px, giving a
+     324x300 near-square that object-fit:cover fills by throwing away ~39% of
+     the photo's width. Drive it off the ratio instead. Desktop keeps the clamp. */
+  .article-cover { height: auto; aspect-ratio: 16 / 10; }
+}
+@media (max-width: 560px) {
+  .bmosaic { grid-template-columns: 1fr; }
+  .mtile--big { grid-column: 1; }
+  .blog-news { flex-direction: column; align-items: flex-start; }
+  .blog-news-form { width: 100%; }
+
+  /* The audit proposed `aspect-ratio:auto; min-height:300px` so the tiles could
+     grow with their titles — but every child of .mtile is absolutely positioned
+     (the cover and the scrim both), so there is no in-flow content to push the
+     box and the tile would simply sit at the min-height while cropping the photo
+     harder. Shrinking the overlay face instead, with the 3-line clamp above as
+     the hard stop, keeps the 16/10 framing the source image was shot for. */
+  .mtile--big .mtile-scrim h3 { font-size: 1.35rem; }
+
+  /* Display faces never sit under 1.15 leading on a phone. Named individually
+     rather than as `.blog h1,h2,h3` so this does not clobber the headings that
+     already declare a workable leading (.bcard-body h3, .mtile-scrim h3). */
+  .blog-hero-title { line-height: 1.14; }
+  .blog-latest-head h2 { line-height: 1.18; }
+  .article-related h2 { line-height: 1.18; }
+  .article-title { line-height: 1.14; }
+}
+
+/* Touch, not width: a 1024px iPad has fingers too, and these are the only
+   controls on the journal. Pointer-fine devices are untouched. */
+@media (pointer: coarse) {
+  .bchip { min-height: 44px; padding-block: 11px; padding-inline: 16px; }
+  .article-back { min-height: 44px; padding: 10px 8px; margin-left: -8px; }
+  .blog-news-form input,
+  .blog-news-form button { min-height: 44px; }
+  /* Under 16px, iOS Safari zooms the viewport on focus and never zooms back. */
+  .blog-news-form input { font-size: 1rem; }
+}

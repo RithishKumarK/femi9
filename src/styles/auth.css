@@ -1,0 +1,428 @@
+/* ===== AUTH SCREENS (/login, /welcome) — T2 owns this file. Prefix: .auth-*
+   Layout only: the centred card, the step indicator, the code-input grid.
+   Every primitive (.m-form/.m-field/.m-input/.btn) comes from member.css.
+   Never declare a .m-* rule here. =====
+
+   Both screens render inside <div class="m-area auth-area">, so they inherit
+   member.css's sanctioned !important counter-overrides for the two unscoped
+   blocks in figma-landing-responsive.css, and its prefers-reduced-motion block.
+   Neither is re-declared here.
+
+   The composition is one card split in two: a dark --forest panel carrying the
+   brand and the reason to be here, and a warm --surface panel carrying the form.
+   Below 900px the card stacks and the dark panel becomes a slim brand band —
+   the form is what matters on a phone.                                        */
+
+/* --------------------------------------------------------------------------
+   1. SCREEN + SHELL
+   -------------------------------------------------------------------------- */
+.auth-area {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: clamp(16px, 4vw, 48px);
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(0, .88fr) minmax(0, 1fr);
+  width: min(100%, 1040px);
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--panel-r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   2. BRAND PANEL
+   One flat --forest ground with the single faint gold radial from .m-band —
+   no gradient hero, no glass. The only imagery is real product photography.
+   -------------------------------------------------------------------------- */
+.auth-aside {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.4vw, 26px);
+  padding: clamp(28px, 3.4vw, 44px);
+  background: var(--forest);
+  color: #FFF9EA;
+}
+.auth-aside::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -22%;
+  top: -30%;
+  width: min(420px, 88%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(240, 193, 78, .16) 0%, rgba(240, 193, 78, 0) 68%);
+}
+
+/* The footer lockup is the art file drawn for a dark ground; the filter is the
+   same one Footer.css uses to force it to pure white. */
+/* align-self keeps the tap target the width of the lockup: .auth-aside is a
+   column flex container, so a stretched link would be clickable across the
+   whole panel. */
+.auth-aside__brand { display: inline-flex; align-items: center; align-self: flex-start; }
+.auth-aside__brand img {
+  height: 30px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
+/* The lockup is 30px tall, so the link that wraps it was a 30px tap target — the
+   only route home from the auth panel. Pad it to 44px vertically rather than
+   scaling the mark, and pull the padding back out with a negative margin so the
+   panel's spacing is unchanged. */
+@media (pointer: coarse) {
+  .auth-aside__brand { padding-block: 7px; margin-block: -7px; }
+}
+
+.auth-aside .eyebrow { color: var(--yellow); }
+.auth-aside .eyebrow::before { background: var(--yellow); }
+
+.auth-aside__title {
+  font-family: var(--display);
+  font-size: clamp(24px, 2.6vw, 33px);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -.015em;
+  color: #fff;
+  text-wrap: balance;
+}
+.auth-aside__copy {
+  max-width: 34ch;
+  font-size: clamp(14.5px, 1vw, 16px);
+  line-height: 1.55;
+  color: rgba(255, 249, 234, .74);
+}
+
+/* Reasons to be on this screen. Icon, then a bold lead and one line of copy —
+   never an icon tile above a heading above two lines of grey. */
+.auth-points {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;   /* base.css ships no list reset */
+}
+.auth-point { display: flex; align-items: flex-start; gap: 12px; }
+.auth-point__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: rgba(255, 249, 234, .09);
+  color: var(--yellow);
+}
+.auth-point__icon svg { width: 17px; height: 17px; }
+.auth-point__text { min-width: 0; }
+.auth-point__text b {
+  display: block;
+  font-size: .93rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #fff;
+}
+.auth-point__text span {
+  display: block;
+  margin-top: 3px;
+  font-size: .84rem;
+  line-height: 1.5;
+  color: rgba(255, 249, 234, .66);
+}
+
+.auth-aside__art {
+  position: absolute;
+  right: -8%;
+  bottom: -9%;
+  z-index: -1;
+  width: min(230px, 52%);
+  height: auto;
+  opacity: .88;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   3. FORM PANEL
+   -------------------------------------------------------------------------- */
+.auth-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: clamp(26px, 3.4vw, 44px);
+}
+.auth-head { display: flex; flex-direction: column; gap: 8px; }
+.auth-sub { font-size: .93rem; line-height: 1.55; color: var(--muted); max-width: 44ch; }
+
+/* The submit button spans the form column. `.btn--block` (member.css) already
+   carries the !important that beats figma-landing-responsive.css below 768px;
+   this covers every width above it, where no !important is in play. */
+.auth-submit { width: 100%; }
+
+/* --------------------------------------------------------------------------
+   4. PROVIDER BUTTON + DIVIDER
+   Deliberately NOT .btn-primary: --yellow is reserved for the one primary
+   action per view, which is the submit button.
+   -------------------------------------------------------------------------- */
+.auth-provider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-chip);
+  background: var(--surface);
+  color: var(--navy);
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: border-color .2s var(--ease), background .2s var(--ease), transform .2s var(--ease);
+}
+.auth-provider:hover { border-color: var(--navy); background: var(--butter-soft); transform: translateY(-2px); }
+.auth-provider:active { transform: translateY(0) scale(.98); }
+.auth-provider:focus-visible { outline: 2px solid rgba(86, 49, 132, .45); outline-offset: 2px; }
+.auth-provider svg { flex: none; width: 18px; height: 18px; }
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.auth-or::before,
+.auth-or::after { content: ""; flex: 1; height: 1px; background: var(--line-soft); }
+
+/* --------------------------------------------------------------------------
+   5. METHOD SWITCH
+   Reuses the global .seg pill track from app.css; only the width is adjusted so
+   the two options split the column evenly.
+   -------------------------------------------------------------------------- */
+.auth-methods .seg { display: flex; width: 100%; padding: 4px; }
+.auth-methods .seg button { flex: 1 1 0; min-height: 42px; padding: 9px 12px; font-size: .9rem; }
+/* app.css gives .seg no focus treatment, and this one is a primary control on a
+   keyboard-only sign-in. Same ring recipe as every other focusable surface. */
+.auth-methods .seg button:focus-visible { outline: 2px solid rgba(86, 49, 132, .45); outline-offset: 2px; }
+/* 42px is 2px under the touch minimum, on the first decision of the sign-in
+   screen. 48px + the track's own 4px padding makes the control 56px, matching
+   the 48px .m-input rhythm below it. Touch only — the desktop card keeps 42px. */
+@media (pointer: coarse) {
+  .auth-methods .seg button { min-height: 48px; padding: 12px; }
+}
+
+/* --------------------------------------------------------------------------
+   6. FIELDS
+   -------------------------------------------------------------------------- */
+
+/* Mobile number: an inert +91 affix welded to the input. The affix is aria-hidden
+   and the real country code is stated in the field hint, so a screen reader is
+   not read a stray "plus nine one" between the label and the value. */
+.auth-phone { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
+.auth-prefix {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream-2);
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.auth-phone .m-input { min-width: 0; }
+
+/* One field, not six boxes: a single input keeps native paste, SMS autofill and
+   screen-reader behaviour intact — a split grid loses all three. */
+.auth-code {
+  text-align: center;
+  font-size: clamp(1.25rem, 3.4vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: .42em;
+  text-indent: .42em;          /* re-centres the glyphs against the trailing gap */
+  font-variant-numeric: tabular-nums;
+}
+.auth-code::placeholder { letter-spacing: .42em; font-weight: 400; }
+
+/* Resend / change-number row under the code field. */
+.auth-resend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Where the code was sent / which address the link went to. */
+.auth-sentto {
+  font-size: .88rem;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.auth-sentto b { color: var(--navy); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* --------------------------------------------------------------------------
+   7. NOTES
+   The calm notice is .m-note from member.css; these add only the two things it
+   does not know about — a dev-mode payload and a rate-limit countdown.
+   -------------------------------------------------------------------------- */
+.auth-dev { font-variant-numeric: tabular-nums; }
+.auth-dev code {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 8px;
+  background: rgba(52, 32, 78, .08);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .92em;
+  letter-spacing: .12em;
+  color: var(--navy);
+}
+.auth-dev a { color: var(--forest-2); font-weight: 600; text-decoration: underline; overflow-wrap: anywhere; }
+.auth-count { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* --------------------------------------------------------------------------
+   8. STEP INDICATOR (/welcome)
+   Lives in the form column, not the brand panel, so it survives the mobile
+   stack. The connector is drawn between items, never after the last one.
+   -------------------------------------------------------------------------- */
+.auth-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 2px 0;      /* room for the focus ring / dot borders when scrolled */
+  list-style: none;    /* base.css ships no list reset */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.auth-steps::-webkit-scrollbar { display: none; }
+
+.auth-step { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+.auth-step + .auth-step::before {
+  content: "";
+  flex: none;
+  width: clamp(14px, 3vw, 28px);
+  height: 2px;
+  margin: 0 10px;
+  border-radius: 2px;
+  background: var(--line-soft);
+}
+.auth-step__dot {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.auth-step__dot svg { width: 13px; height: 13px; }
+.auth-step__label {
+  font-size: .82rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.auth-step.is-done .auth-step__dot { border-color: #3D8B5C; background: #E1F0E7; color: #3D8B5C; }
+.auth-step.is-current .auth-step__dot { border-color: var(--forest-2); background: var(--forest-2); color: #fff; }
+.auth-step.is-current .auth-step__label { color: var(--navy); font-weight: 600; }
+
+/* --------------------------------------------------------------------------
+   9. FOOT
+   -------------------------------------------------------------------------- */
+.auth-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+}
+.auth-foot__end { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.auth-legal { flex: 1 1 220px; font-size: .8rem; line-height: 1.5; color: var(--muted); max-width: 42ch; }
+.auth-legal a { color: var(--forest-2); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.auth-foot .btn { padding: .6em 1.15em; font-size: .88rem; }
+
+/* --------------------------------------------------------------------------
+   10. RESPONSIVE
+   900px stacks the card; 560px trims the brand panel to a band; 360px is the
+   floor and must not overflow.
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .auth-area { align-items: start; padding: 0; }
+  .auth-shell {
+    grid-template-columns: 1fr;
+    /* The form row takes the slack, so its .auth-foot still sits at the bottom
+       of a short screen instead of leaving a band of dead surface under it. */
+    grid-template-rows: auto 1fr;
+    width: 100%;
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .auth-aside {
+    gap: 16px;
+    /* The shell is edge-to-edge and 100dvh from here down, so the brand band is
+       the thing under the notch — pad the top out by the inset. */
+    padding: clamp(22px, 6vw, 32px);
+    padding-top: calc(clamp(22px, 6vw, 32px) + env(safe-area-inset-top, 0px));
+  }
+  .auth-aside__title { font-size: clamp(21px, 5vw, 26px); }
+  /* The three value lines are the first thing scrolled past on a phone and the
+     form is the point of the screen, so they fold away. (The artwork is not
+     hidden here — it is gated out of the JSX instead, because display:none does
+     not cancel a 1.2 MB download.) */
+  .auth-points { display: none; }
+  .auth-main { padding: clamp(22px, 6vw, 32px); }
+}
+
+@media (max-width: 560px) {
+  .auth-aside { padding: 20px; }
+  .auth-aside__copy { display: none; }
+  /* .auth-foot is margin-top:auto inside a panel that is exactly 100dvh and
+     edge-to-edge, so "Back to shop" / "Keep shopping" / Sign out land on the
+     iPhone home indicator. The env() term is the only thing between them. */
+  .auth-main { gap: 18px; padding: 22px 20px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .auth-foot { flex-direction: column; align-items: stretch; }
+  .auth-foot__end { justify-content: space-between; }
+  .auth-foot .btn { flex: 1 1 auto; }
+  .auth-step__label { display: none; }
+  .auth-step + .auth-step::before { margin: 0 6px; }
+}
+
+/* Below the fold of a 360px phone the affix + input still has to fit. */
+@media (max-width: 380px) {
+  .auth-prefix { padding: 0 10px; font-size: .95rem; }
+  .auth-code { letter-spacing: .3em; text-indent: .3em; }
+}

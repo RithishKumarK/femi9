@@ -1,0 +1,28 @@
+/* ===== WHY / BENTO ===== */
+.why{background:linear-gradient(180deg,var(--cream),#FFF7E4)}
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+/* Cells stretch to the tallest tile in their row, so content is optically
+   centred rather than bottom-anchored. Anchoring to the bottom left a large
+   dead zone above the icon whenever an image tile set the row height. */
+.bento .cell{border-radius:var(--r-card);padding:30px;display:flex;flex-direction:column;justify-content:center;
+  min-height:230px;border:1px solid var(--line-soft);position:relative;overflow:hidden}
+/* Icon sits inline with the heading, sized to the type, with no coloured tile
+   behind it. The tile-above-heading-above-two-lines stack is the universal
+   generated-feature-card shape; inline the mark reads as part of the heading. */
+.cell h3{font-size:1.4rem;font-weight:600;margin-bottom:8px;display:flex;align-items:baseline;gap:.45em}
+.cell p{font-size:.92rem;color:var(--muted)}
+.cell .ico{flex:none;width:.82em;height:.82em;display:block;transform:translateY(.04em)}
+.cell .ico svg{width:100%;height:100%}
+.cell-butter{background:var(--butter-soft)} .cell-butter .ico{color:#8a5a00}
+.cell-sage{background:var(--sage-tint)} .cell-sage .ico{color:var(--forest-2)}
+.cell-lilac{background:var(--lilac-tint)} .cell-lilac .ico{color:#5a3a80}
+/* Square keeps the photo from driving the row far taller than the text tiles
+   beside it, which is what opened the dead zone in the first place.
+   Needs `.bento` in the selector to outrank `.bento .cell{padding:30px}` -
+   without it the photo sits inset inside its own tile. */
+.bento .cell-img{padding:0;min-height:230px;aspect-ratio:1/1}
+.cell-img img{width:100%;height:100%;object-fit:cover}
+.cell-wide{grid-column:span 2}
+.cell-tall{grid-row:span 2}
+.cell-cap{position:absolute;left:0;right:0;bottom:0;padding:20px 22px;
+  background:linear-gradient(to top,rgba(52,32,78,.82),transparent);color:#fff;font-weight:400;font-size:.95rem}

@@ -1,0 +1,244 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM FLOATING GLASSMORPHISM NAVBAR (FEMI9 BRAND)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Floating Position & Rounded Glass Structure */
+.nav {
+  position: fixed !important;
+  top: 16px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(1340px, calc(100% - 32px)) !important;
+  margin: 0 auto !important;
+  border-radius: 28px !important;
+
+  /* Glassmorphism Surface */
+  background: rgba(60, 42, 94, 0.65) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+
+  /* Glass Border & Elevation Shadow */
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 10px 32px rgba(20, 10, 45, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+
+  z-index: 100 !important;
+  animation: navFloatEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, top 0.3s ease, transform 0.3s ease !important;
+}
+
+@keyframes navFloatEntrance {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* 2. Scrolled Glass State */
+.nav.scrolled {
+  top: 12px !important;
+  background: rgba(40, 27, 72, 0.82) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 14px 40px rgba(15, 8, 35, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+/* 3. Navigation Container Inner Padding */
+.nav-in {
+  padding: 10px 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+/* 4. Logo Positioning */
+.nav-logo {
+  display: flex !important;
+  align-items: center !important;
+  padding-right: 12px !important;
+}
+
+/* 5. Navigation Links (Center Alignment & Hover Effect) */
+.nav-links {
+  display: flex !important;
+  align-items: center !important;
+  gap: clamp(16px, 2.2vw, 32px) !important;
+}
+
+.nav-links a {
+  color: #E5DFF0 !important;
+  font-weight: 500 !important;
+  font-size: 15px !important;
+  letter-spacing: 0.01em !important;
+  padding: 6px 14px !important;
+  border-radius: 16px !important;
+  opacity: 0.92 !important;
+  transition: color 0.22s ease, opacity 0.22s ease, background 0.22s ease, transform 0.22s ease !important;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: #FFFFFF !important;
+  opacity: 1 !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  transform: translateY(-1px) !important;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 6. Icon Action Chips (Right Side Buttons) */
+.nav-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.cart-btn,
+.burger {
+  width: 44px !important;
+  height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+  transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease !important;
+}
+
+.cart-btn:hover,
+.burger:hover {
+  background: rgba(255, 255, 255, 0.28) !important;
+  border-color: rgba(255, 255, 255, 0.48) !important;
+  transform: scale(1.05) translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.cart-btn:active,
+.burger:active {
+  transform: scale(0.98) translateY(0) !important;
+}
+
+/* 7. Cart Badge */
+.cart-count {
+  background: linear-gradient(135deg, #F2A93B 0%, #E59828 100%) !important;
+  color: #2A1D45 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(242, 169, 59, 0.5) !important;
+}
+
+/* 8. Mobile Glass Menu Drawer */
+.mobile-menu {
+  top: calc(100% + 10px) !important;
+  border-radius: 24px !important;
+  background: rgba(45, 32, 85, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 16px 40px rgba(20, 10, 45, 0.38) !important;
+  padding: 16px !important;
+}
+
+@media (max-width: 860px) {
+  .nav {
+    top: 12px !important;
+    width: calc(100% - 24px) !important;
+    border-radius: 20px !important;
+  }
+  .nav-in {
+    padding: 8px 16px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav {
+    animation: none !important;
+    transition: none !important;
+  }
+  .cart-btn,
+  .burger,
+  .nav-links a {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   9. Pill bar + gold link hover
+   A fully rounded bar at every width (mobile-polish.css already pills ≤960px),
+   no underline, and a gold hover: the text warms to the brand yellow while a
+   soft gold-tinted pill grows in behind it. Placed last so it wins over the
+   rules above at equal !important weight.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nav,
+.nav.scrolled {
+  border-radius: 999px !important;
+}
+
+@media (max-width: 860px) {
+  .nav {
+    border-radius: 999px !important;
+  }
+}
+
+/* The white underline Nav.css grows under each link on hover — removed. */
+.nav-links a::after {
+  content: none !important;
+  display: none !important;
+}
+
+.nav-links a {
+  position: relative !important;
+  isolation: isolate;
+  border-radius: 999px !important;
+  background: transparent !important;
+}
+
+/* The hover pill, behind the text. */
+.nav-links a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgba(240, 193, 78, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(240, 193, 78, 0.38);
+  opacity: 0;
+  transform: scale(0.82);
+  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: #F0C14E !important;
+  background: transparent !important;
+  text-shadow: 0 0 14px rgba(240, 193, 78, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.nav-links a:hover::before,
+.nav-links a:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.nav-links a:focus-visible {
+  outline: 2px solid rgba(240, 193, 78, 0.75) !important;
+  outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links a::before {
+    transition: none;
+    transform: none;
+  }
+}

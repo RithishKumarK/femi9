@@ -1,0 +1,92 @@
+/* craft-checkout.css — de-slab polish overrides for the checkout.
+   Loaded after base.css + checkout.css, so these plain selectors win at equal
+   specificity. Tokens/utilities come from craft.css. Layout, every field, and
+   the whole money-path logic are untouched — this only adds depth, soft
+   geometry, warmth and one calm motion vocabulary.
+
+   Signature: the order summary as a soft, trustworthy raised card. */
+
+/* ── Shipping-details card ────────────────────────────────────────────────
+   Was a flat var(--surface) slab (its inline styles now live here, referenced
+   by className from CheckoutForm.tsx). A warm cream wash, a larger consistent
+   radius and layered navy-tinted elevation lift it off the page. Padding stays
+   the exact value the mobile .co-paybar's negative margins still reference. */
+.co-form {
+  background: var(--cr-wash-cream);
+  border: 1px solid var(--cr-hairline);
+  border-radius: var(--cr-r-md);
+  box-shadow: var(--cr-shadow-sm);
+  padding: clamp(20px, 3vw, 32px);
+}
+
+/* ── Fields ───────────────────────────────────────────────────────────────
+   Crisp white wells on the warm card, with a hairline inner recess so they
+   read as soft insets rather than flat cut-outs. The focus / invalid rings
+   from checkout.css are left intact — they outrank these on specificity, so
+   the accessible focus treatment and error state are unchanged. */
+.co-input,
+.co-select {
+  background-color: #fff;
+  box-shadow: inset 0 1px 2px rgba(52, 32, 78, 0.06);
+}
+
+/* ── Order summary — the signature ────────────────────────────────────────
+   The trust surface. Its slab look was locked in by inline styles on the
+   <aside> in page.tsx (a file outside this area), so overriding it is the one
+   place !important is genuinely forced. The flat fill becomes a soft lavender
+   wash; the radius softens to match the form; the layered navy-tinted depth
+   plus the hairline edge do all the lifting — no bright inset seam, which on a
+   pale wash reads artificial. Padding + sticky behaviour are left as page.tsx /
+   checkout.css set them. */
+.co-summary {
+  background: var(--cr-wash-lav) !important;
+  border: 1px solid var(--cr-hairline) !important;
+  border-radius: var(--cr-r-md) !important;
+  box-shadow: var(--cr-shadow-md) !important;
+}
+
+/* Line-item thumbnails: a soft hairline frame so they stop reading as pasted-on
+   monolithic blocks. The ring follows the wrapper's own 12px radius and paints
+   outside the clipped image box, so overflow:hidden doesn't swallow it — and it
+   needs no !important, since the wrapper carries no inline box-shadow to beat. */
+.co-summary li > div:first-child {
+  box-shadow: 0 0 0 1px var(--cr-hairline);
+}
+
+/* ── Pay button ───────────────────────────────────────────────────────────
+   Keeps the locked brand gold glow but layers a navy-tinted elevation beneath
+   it, so the CTA reads as lifted rather than only lit. On hover only that navy
+   elevation deepens (sm → md) while the gold glow holds steady — one calm move,
+   not a second louder glow. The transform + easing come from the base .btn;
+   scoped to the paybar so no other button on the page is affected. A disabled
+   ("Preparing payment…") button neither lifts nor glows. */
+.co-paybar .btn-primary {
+  box-shadow: var(--cr-shadow-sm), var(--shadow-yel);
+}
+.co-paybar .btn-primary:hover {
+  box-shadow: var(--cr-shadow-md), var(--shadow-yel);
+}
+.co-paybar .btn-primary:disabled,
+.co-paybar .btn-primary:disabled:hover {
+  transform: none;
+  box-shadow: var(--cr-shadow-xs);
+}
+
+/* The sticky mobile pay-bar is the foot of the shipping card, so it continues
+   the card's cream wash instead of the cool var(--surface) checkout.css gives
+   it — otherwise a warm card meets a cool footer at a hard band. The existing
+   border-top hairline (untouched) keeps the whisper of separation; the rounded
+   bottom is matched to the card's new radius so the footer closes the card. */
+@media (max-width: 720px) {
+  .co-paybar {
+    background: var(--cr-wash-cream);
+    border-bottom-left-radius: var(--cr-r-md);
+    border-bottom-right-radius: var(--cr-r-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .co-paybar .btn-primary:hover {
+    transform: none;
+  }
+}

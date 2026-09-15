@@ -1,0 +1,469 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   pdp-configurator.css — Apple-style product page: a large sliding gallery on
+   the left, sliding segmented pickers for size and pack on the right.
+
+   Loaded LAST of the PDP sheets. The gallery and pickers use their own class
+   names (`pdp-gallery*`, `pdp-slider*`) rather than the old `.pdp-hero-stage`
+   / `.pack-card` ones, so none of the legacy `!important` rules in app.css or
+   craft-product.css can reach them.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.pdp-page .pdp-main-content > .wrap {
+  max-width: 1440px;
+}
+
+/* ── Columns: the gallery gets the lion's share ─────────────────────────── */
+.pdp-page .pdp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(340px, 1fr);
+  gap: clamp(32px, 4.5vw, 72px);
+  align-items: start;
+}
+
+/* The nav floats 16px below the viewport edge, so --nav-h alone leaves the
+   photo's top edge tucked under it. Clear the float as well. */
+.pdp-page .pdp-stage-column {
+  top: calc(var(--nav-h) + 34px);
+}
+
+/* ── Gallery ────────────────────────────────────────────────────────────── */
+.pdp-page .pdp-gallery {
+  position: relative;
+  /* app.css still carries a legacy `.pdp-gallery { top: 90px }`, which on a
+     relatively positioned box pushed the photo down over the thumbnail rail. */
+  top: auto;
+  /* Sized to the pack photography (3:4) so the photo fills the stage exactly —
+     no backdrop around it. Height-led: as tall as the sticky column allows
+     (nav + its float above, a little air below), width follows from the ratio. */
+  height: min(calc(100svh - var(--nav-h) - 58px), 900px);
+  min-height: 420px;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 3 / 4;
+  margin-inline: auto;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow: 0 18px 40px rgba(33, 20, 55, 0.12);
+  overflow: hidden;
+  cursor: zoom-in;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pdp-page .pdp-gallery-track {
+  display: flex;
+  height: 100%;
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.pdp-page .pdp-gallery.is-dragging {
+  cursor: grabbing;
+}
+
+.pdp-page .pdp-gallery.is-dragging .pdp-gallery-track {
+  transition: none;
+}
+
+.pdp-page .pdp-gallery-slide {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+/* Absolutely inset rather than height:100% — a percentage height inside the
+   grid/flex cell resolved to the photo's natural height and cropped it. */
+.pdp-page .pdp-gallery-slide img,
+.pdp-page .pdp-gallery-slide svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* The stage already has the photo's ratio, so cover fills it without a
+     visible crop; the stage's radius rounds the photo's corners. */
+  object-fit: cover;
+  border-radius: 0;
+  filter: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition:
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 520ms ease;
+}
+
+/* Neighbouring slides recede as they slide out — the Apple "depth" feel. */
+.pdp-page .pdp-gallery-slide:not(.is-current) img,
+.pdp-page .pdp-gallery-slide:not(.is-current) svg {
+  transform: scale(0.92);
+  opacity: 0.35;
+}
+
+/* Switching size swaps the product: the new pack slides in from the side of
+   the size run it came from. Only after a client-side switch, never on load. */
+.pdp-page .pdp-gallery[data-enter='from-right'] .pdp-gallery-slide.is-current img {
+  animation: pdp-stage-from-right 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.pdp-page .pdp-gallery[data-enter='from-left'] .pdp-gallery-slide.is-current img {
+  animation: pdp-stage-from-left 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pdp-stage-from-right {
+  from { opacity: 0; transform: translateX(18%) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pdp-stage-from-left {
+  from { opacity: 0; transform: translateX(-18%) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+.pdp-page .pdp-gallery-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: #211437;
+  box-shadow: 0 6px 18px rgba(33, 20, 55, 0.12);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.9);
+  transition:
+    opacity 260ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 200ms ease;
+}
+
+.pdp-page .pdp-gallery-nav.is-prev { left: 16px; }
+.pdp-page .pdp-gallery-nav.is-next { right: 16px; }
+
+.pdp-page .pdp-gallery:hover .pdp-gallery-nav,
+.pdp-page .pdp-gallery-nav:focus-visible {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.pdp-page .pdp-gallery-nav:hover { background: #fff; }
+
+.pdp-page .pdp-gallery-nav:focus-visible {
+  outline: 2px solid #211437;
+  outline-offset: 2px;
+}
+
+.pdp-page .pdp-gallery-nav:disabled {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.pdp-page .pdp-gallery-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateX(-50%);
+}
+
+.pdp-page .pdp-gallery-dots i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(33, 20, 55, 0.25);
+  transition:
+    width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 300ms ease;
+}
+
+.pdp-page .pdp-gallery-dots i.is-active {
+  width: 20px;
+  background: #211437;
+}
+
+/* ── Sliding segmented pickers (size + pack) ────────────────────────────── */
+.pdp-page .pdp-slider-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pdp-page .pdp-slider-head .pdp-label {
+  margin-bottom: 0;
+}
+
+.pdp-page .pdp-slider-note {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6e6479;
+  animation: pdp-note-in 360ms ease both;
+}
+
+@keyframes pdp-note-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.pdp-page .pdp-slider-arrows {
+  display: flex;
+  gap: 6px;
+}
+
+.pdp-page .pdp-slider-arrow {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #d2d2d7;
+  border-radius: 50%;
+  background: #fff;
+  color: #211437;
+  cursor: pointer;
+  transition: border-color 200ms ease, opacity 200ms ease, transform 200ms ease;
+}
+
+.pdp-page .pdp-slider-arrow:hover:not(:disabled) {
+  border-color: #211437;
+}
+
+.pdp-page .pdp-slider-arrow:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.pdp-page .pdp-slider-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pdp-page .pdp-slider-track {
+  position: relative;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 22px;
+  background: #f5f5f7;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.pdp-page .pdp-slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* The white pill that slides under the chosen option. A slight overshoot on
+   the easing gives it a springy settle. */
+.pdp-page .pdp-slider-thumb {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  z-index: 0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1.5px #211437,
+    0 1px 2px rgba(33, 20, 55, 0.08),
+    0 8px 20px rgba(33, 20, 55, 0.1);
+  pointer-events: none;
+}
+
+.pdp-page .pdp-slider-thumb.is-live {
+  transition:
+    transform 560ms cubic-bezier(0.34, 1.3, 0.5, 1),
+    width 560ms cubic-bezier(0.34, 1.3, 0.5, 1),
+    opacity 200ms ease;
+}
+
+.pdp-page .pdp-slider-opt {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 auto;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 14px 12px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: #6e6479;
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  scroll-snap-align: center;
+  transition: color 320ms ease, transform 200ms ease;
+}
+
+.pdp-page .pdp-slider-opt:hover,
+.pdp-page .pdp-slider-opt.is-active {
+  color: #211437;
+}
+
+.pdp-page .pdp-slider-opt:active {
+  transform: scale(0.97);
+}
+
+.pdp-page .pdp-slider-opt:focus-visible {
+  outline: 2px solid #211437;
+  outline-offset: -2px;
+}
+
+.pdp-page .pdp-slider-opt b {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.pdp-page .pdp-slider-opt > span:not(.pdp-len) {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+/* Pad-length gauge: each size's bar is proportional to the longest pad. */
+.pdp-page .pdp-len {
+  display: block;
+  width: 100%;
+  max-width: 64px;
+  height: 4px;
+  margin-top: 5px;
+  border-radius: 999px;
+  background: rgba(33, 20, 55, 0.12);
+  overflow: hidden;
+}
+
+.pdp-page .pdp-len i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: rgba(33, 20, 55, 0.35);
+  transition: background 320ms ease;
+}
+
+.pdp-page .pdp-slider-opt.is-active .pdp-len i {
+  background: #f5bf3b;
+}
+
+/* Pack options are taller and carry a per-pad price. */
+.pdp-page .pdp-slider-track.is-pack .pdp-slider-opt {
+  min-width: 120px;
+  /* Top room for the pinned "Best value" tag, on every option so all align. */
+  padding: 30px 14px 16px;
+}
+
+.pdp-page .pdp-slider-track.is-pack .pdp-slider-opt b {
+  font-size: 18px;
+}
+
+/* Pinned to the top edge so a tagged option's text lines up with its siblings. */
+.pdp-page .pdp-slider-tag {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f5bf3b;
+  color: #211437;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Narrow ─────────────────────────────────────────────────────────────── */
+@media (max-width: 920px) {
+  .pdp-page .pdp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pdp-page .pdp-gallery {
+    height: auto;
+    min-height: 0;
+    /* Width-led on tablet/phone, capped so a 3:4 photo never outgrows the screen. */
+    width: min(100%, calc(78svh * 0.75));
+  }
+}
+
+/* Portrait tablets: at 78svh the gallery filled the whole first screen, so the
+   product name and price started below the fold behind the sticky add-to-bag
+   bar. A shorter cap leaves them in view. Phones stay width-led. */
+@media (min-width: 621px) and (max-width: 920px) {
+  .pdp-page .pdp-gallery {
+    width: min(100%, calc(58svh * 0.75));
+  }
+}
+
+@media (max-width: 620px) {
+  .pdp-page .pdp-gallery {
+    border-radius: 22px;
+  }
+
+  .pdp-page .pdp-slider-opt {
+    min-width: 88px;
+    padding: 12px 10px;
+  }
+
+  .pdp-page .pdp-slider-tag {
+    font-size: 12px;
+  }
+}
+
+/* Touch: the slider's prev/next arrows were 32px targets. */
+@media (max-width: 620px), (pointer: coarse) {
+  .pdp-page .pdp-slider-arrow {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (hover: none) {
+  .pdp-page .pdp-gallery-nav {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdp-page .pdp-gallery-track,
+  .pdp-page .pdp-gallery-slide img,
+  .pdp-page .pdp-gallery-slide svg,
+  .pdp-page .pdp-slider-thumb.is-live,
+  .pdp-page .pdp-slider-opt,
+  .pdp-page .pdp-gallery-dots i {
+    transition: none;
+  }
+
+  .pdp-page .pdp-gallery[data-enter] .pdp-gallery-slide.is-current img,
+  .pdp-page .pdp-slider-note {
+    animation: none;
+  }
+}

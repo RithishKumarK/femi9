@@ -1,0 +1,355 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   video-testimonials.css — the "Real Stories" video rail.
+
+   Shared by the product page and the landing page, so these selectors are NOT
+   scoped to `.pdp-page` (they used to live in pdp-motion.css, which is why they
+   were). The tokens they reference — --navy, --muted, --cr-* — are declared on
+   :root in base.css / craft.css, so the rail looks the same wherever it mounts.
+
+   Shape: a centre-focused rail. The active clip is a taller card in the middle
+   with the neighbours shrunk on either side, which is what tells the eye which
+   one is playing without needing a caption to say so. It is still a real
+   `overflow-x: auto` scroller, so it swipes on touch and scrolls by keyboard
+   even if the script never runs.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.vt-section {
+  margin: clamp(48px, 7vw, 88px) 0;
+}
+
+.vt-heading {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(1.9rem, 4vw, 2.85rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--navy);
+  margin: 0 0 6px;
+}
+
+.vt-sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 clamp(22px, 3vw, 36px);
+}
+
+.vt-rail {
+  /* One place to change the geometry. The active card is the same WIDTH as its
+     neighbours and simply taller — scaling it up in both axes would push the
+     neighbours off-centre every time the rail advanced. */
+  --vt-w: clamp(190px, 22vw, 400px);
+  --vt-h: clamp(300px, 29vw, 532px);
+  --vt-h-active: clamp(370px, 36vw, 670px);
+
+  position: relative;
+  list-style: none;
+
+  /* Full-bleed, whatever container it is dropped into. The rail runs to both
+     screen edges with the outer clips cropped by the edge, and that crop is a
+     load-bearing part of the design: it is what makes the middle card read as
+     the one being watched rather than as the first of a row.
+
+     `html, body { overflow-x: clip }` in base.css is what stops a 100vw child
+     from putting a horizontal scrollbar on the page — without that this would
+     need a clipping wrapper of its own. Both hosts centre their container
+     (`.wrap`, `.fl-shell`), so `50% - 50vw` is exactly the distance out to the
+     left edge of the viewport. */
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0 0 0 calc(50% - 50vw);
+
+  /* The side padding is what lets the ONLY card on a single-clip rail reach the
+     middle. Measured in vw to match the 100vw width above — a percentage here
+     would resolve against the CONTAINER, not the bled-out rail, and land the
+     clip off-centre.
+
+     A rail with more than one clip does NOT use this: see `.vt-rail--roll`. */
+  padding: 8px calc(50vw - var(--vt-w) / 2) 10px;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.4vw, 20px);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  /* The rail scrolls itself as clips advance; a scrollbar tracking that on its
+     own would read as a glitch. Swipe and keyboard scrolling still work. */
+  scrollbar-width: none;
+}
+
+.vt-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* The endless roll — every rail with more than one clip.
+
+   The half-screen lead-in above is replaced by a plain gutter, because on a
+   roll the space either side of the playing clip is filled with CARDS: the
+   track lays the clip list down several times over, so there are SIDE_CARDS
+   wrap-around copies before the first story and after the last one (see
+   VideoTestimonials.tsx). Padding that space instead meant a swipe to either
+   end of the track ran into half a screen of white — the rail looked like it
+   had stopped, which is the one thing an endless roll must never look like.
+
+   The shoulders are sized so the playing clip can still reach dead centre with
+   this gutter: five cards is over 2000px of lead at every width the card sizes
+   above can resolve to, comfortably past the widest half-screen. */
+.vt-rail--roll {
+  padding-inline: clamp(10px, 1.4vw, 20px);
+}
+
+/* On a phone the viewport-relative widths above collapse to their 180px floor,
+   which leaves the clip that is actually playing smaller than a thumbnail with
+   two slivers of neighbour beside it. Give the rail most of the screen there
+   and let the neighbours be the slivers. */
+@media (max-width: 620px) {
+  .vt-rail {
+    --vt-w: 66vw;
+    --vt-h: 92vw;
+    --vt-h-active: 118vw;
+  }
+}
+
+.vt-card {
+  flex: 0 0 var(--vt-w);
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vt-frame {
+  position: relative;
+  width: 100%;
+  height: var(--vt-h);
+  border-radius: var(--cr-r-md);
+  overflow: hidden;
+  background: var(--cr-wash-lav);
+  box-shadow: var(--cr-shadow-sm);
+  transition: height 0.5s var(--cr-ease), box-shadow 0.5s var(--cr-ease);
+}
+
+.vt-card.is-active .vt-frame {
+  height: var(--vt-h-active);
+  box-shadow: var(--cr-shadow-lg);
+}
+
+/* Swipe. With the script running, the rail follows the finger (or mouse) itself
+   and glides to the nearest story on release — see VideoTestimonials.tsx. Native
+   horizontal panning and snapping would fight both, so they are handed over;
+   vertical panning stays with the browser so the page still scrolls past. */
+.vt-rail--swipe {
+  scroll-snap-type: none;
+  touch-action: pan-y;
+}
+
+.vt-rail.is-dragging,
+.vt-rail.is-dragging .vt-hit {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.vt-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* The neighbours sit back a step so the middle of the rail is unambiguously
+   the thing being watched. */
+.vt-card:not(.is-active) .vt-video {
+  filter: saturate(0.92) brightness(0.94);
+  transition: filter var(--cr-dur) var(--cr-ease);
+}
+
+.vt-card:not(.is-active) .vt-frame:hover .vt-video {
+  filter: none;
+}
+
+/* Full-bleed click target. It sits UNDER the controls (z-index) so the pause
+   and mute buttons stay clickable while the rest of the card is one big
+   "watch this one" surface. */
+.vt-hit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 1;
+}
+
+/* Play glyph on a clip that is not the one playing — it is the only cue on a
+   poster frame that there is a video behind it. */
+.vt-badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--navy);
+  box-shadow: 0 2px 10px rgba(52, 32, 78, 0.25);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.vt-badge svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+}
+
+/* Overlay controls on the active card, positioned like the reference: transport
+   top-left, sound bottom-right, clear of the burned-in captions in the middle. */
+.vt-ctl {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(24, 12, 40, 0.45);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity var(--cr-dur) var(--cr-ease), background var(--cr-dur) var(--cr-ease);
+  z-index: 2;
+}
+
+.vt-ctl:hover {
+  opacity: 1;
+  background: rgba(24, 12, 40, 0.68);
+}
+
+.vt-ctl svg {
+  width: 16px;
+  height: 16px;
+}
+
+.vt-ctl--transport {
+  left: 10px;
+  top: 10px;
+}
+
+.vt-ctl--sound {
+  right: 10px;
+  bottom: 10px;
+}
+
+/* How far through the clip we are. The whole point of the change is that a clip
+   now runs to its end rather than being cut off after a few seconds, so it is
+   worth showing that there is an end and where it is. */
+.vt-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.28);
+  z-index: 2;
+}
+
+.vt-progress i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: #fff;
+}
+
+/* No caption sits under a card — see the note in VideoTestimonials.tsx. The
+   `.vt-quote` / `.vt-name` rules that used to live here went with the markup. */
+
+/* ── Footer controls: the two arrows ───────────────────────────────────────────
+   There are no dots any more — the rail is an endless roll, so a row of them
+   would be counting out a set that never ends. See VideoTestimonials.tsx. */
+.vt-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.vt-arrow {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--cr-hairline);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+  transition: transform var(--cr-dur) var(--cr-ease), box-shadow var(--cr-dur) var(--cr-ease);
+}
+
+.vt-arrow:hover {
+  transform: scale(1.08);
+  box-shadow: var(--cr-shadow-sm);
+}
+
+.vt-arrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-frame,
+  .vt-arrow,
+  .vt-card:not(.is-active) .vt-video {
+    transition: none;
+  }
+}
+
+/* ── Landing-page host section ─────────────────────────────────────────────────
+   `.fl-testimonials` was authored around a fixed-height marquee of photo cards
+   (745px tall, with an absolutely positioned track). The rail replaces that
+   track, so the fixed geometry has to come back off or the section clips the
+   taller active card.
+
+   Qualified with `.figma-landing` purely for specificity: this sheet is pulled
+   in by the component rather than by app/layout.tsx, and a bare
+   `.fl-testimonials--video` would tie with `.fl-testimonials` on cascade order
+   that the bundler decides. The landing section carries its own Figma-typed
+   heading, so the rail is rendered there with `heading={null}`. */
+.figma-landing .fl-testimonials--video {
+  height: auto;
+  padding: clamp(56px, 6vw, 72px) 0;
+  overflow: visible;
+}
+
+.figma-landing .fl-testimonials--video .fl-heading {
+  height: auto;
+  align-items: flex-end;
+}
+
+.figma-landing .fl-testimonials--video .vt-section {
+  margin: clamp(28px, 3.5vw, 44px) 0 0;
+}
+
+/* ===== Touch targets =====
+   This sheet had no `pointer: coarse` block. Measured on a phone: `.vt-arrow`
+   40x40, `.vt-ctl` 36x36. These render on the landing page AND on every product
+   page, so they were the most-seen undersized controls in the app. */
+@media (max-width: 900px), (pointer: coarse) {
+  .vt-arrow,
+  .vt-ctl {
+    width: 44px;
+    height: 44px;
+  }
+}

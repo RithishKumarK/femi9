@@ -1,0 +1,739 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   thara.css — /thara, rebuilt to the "Feminine E-commerce Design System" comp.
+
+   The old sheet was the depthless version §11 of docs/thara/THARA_UI_E2E.md
+   lists as defects: a generic system font stack, off-palette #7F6EB9 hints,
+   foreign indigo #5B3FDA, one-off lavender greys, 12px radii and hard 1px
+   borders. Everything here is redrawn from the comp:
+
+     hero      lavender wash card, gold eyebrow, serif headline with an italic
+               tail, a glassy status notice and ONE gold pill CTA
+     sections  centred serif headings whose last word is italic
+     cards     28px radius, plum-tinted multi-layer shadow, hairline — no
+               hard border, no flat fill
+     example   the navy-wash panel with gold figures
+     slabs     a two-column table card with a lavender header strip
+     faq       an accordion (details/summary) instead of a flat dl
+
+   Scoped entirely under `.thara`, and the palette is declared here as local
+   custom properties rather than reaching for base.css tokens — the comp is a
+   closed system, and a later token tweak elsewhere must not redraw this page.
+   Faces are the site-wide pair craft-type.css installs (Newsreader display /
+   Hanken Grotesk interface), which is what the comp is drawn in.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.thara {
+  /* ink */
+  --t9-deep: #34204e;      /* headings, the darkest ink        */
+  --t9-ink: #4b3e63;       /* body copy                        */
+  --t9-muted: #877d9e;     /* meta, captions - never below 14px */
+  --t9-plum: #563184;      /* plum-2, the italic display tail  */
+  --t9-forest: #3a2158;    /* deep plum: dark panels, gold-button text */
+  --t9-lilac: #c9aee4;     /* copy ON a dark panel             */
+
+  /* surfaces */
+  --t9-lav: #ede7f9;
+  --t9-lilac-tint: #f2ecf9;
+  --t9-cream: #fbf9ff;
+  --t9-surface: #fdfcfa;
+  --t9-butter: #fbefc8;
+  --t9-butter-soft: #fcf6e1;
+
+  /* accent + status */
+  --t9-gold: #f0c14e;
+  --t9-gold-deep: #d8a22f;
+  --t9-gold-ink: #8a6a12;
+  --t9-green: #3f6b4f;
+  --t9-green-tint: #e6efe8;
+  --t9-red: #b03b57;
+  --t9-red-tint: #f7ecef;
+  --t9-focus: #7a5bbf;
+
+  --t9-hairline: rgba(52, 32, 78, .09);
+  --t9-line: rgba(52, 32, 78, .13);
+
+  /* washes */
+  --t9-wash-lav: linear-gradient(158deg, #f4ecfc 0%, #efe6f9 55%, #f7f2fb 100%);
+  --t9-wash-cream: linear-gradient(160deg, #fdfaf4 0%, #fbf5ec 100%);
+  --t9-wash-navy: linear-gradient(162deg, #3d2858 0%, #311f4b 62%, #34204e 100%);
+
+  /* elevation - multi-layer, low opacity, tinted to the brand plum */
+  --t9-sh-xs: 0 1px 2px rgba(52, 32, 78, .05), 0 1px 3px rgba(52, 32, 78, .04);
+  --t9-sh-sm: 0 2px 6px rgba(52, 32, 78, .06), 0 6px 14px rgba(52, 32, 78, .06);
+  --t9-sh-md: 0 4px 12px rgba(52, 32, 78, .07), 0 14px 30px rgba(52, 32, 78, .09);
+  --t9-sh-lg: 0 8px 20px rgba(52, 32, 78, .08), 0 26px 56px rgba(52, 32, 78, .13);
+
+  --t9-r-sm: 14px;
+  --t9-r-md: 20px;
+  --t9-r-lg: 28px;
+  --t9-ease: cubic-bezier(.22, .8, .28, 1);
+
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 40px 20px 110px;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: var(--t9-ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+/* One focus treatment for the whole page. */
+.thara :focus-visible {
+  outline: 2px solid var(--t9-focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Type primitives
+   -------------------------------------------------------------------------- */
+.thara h1,
+.thara h2,
+.thara h3 { margin: 0; }
+
+/* Display — Newsreader at weight 400. The face carries emphasis through size
+   and letterform, never through weight. The italic tail is the comp's one
+   flourish: "Shop. Share. Earn." / "How Thara works". */
+.t9-disp {
+  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  color: var(--t9-deep);
+  letter-spacing: -.01em;
+  line-height: 1.12;
+}
+.t9-disp em {
+  font-style: italic;
+  color: var(--t9-plum);
+}
+.t9-num { font-variant-numeric: tabular-nums; }
+
+/* Eyebrow — Hanken 800 / .2em / uppercase / deep gold. */
+.t9-ey {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--t9-gold-deep);
+  margin: 0;
+}
+
+.thara p { line-height: 1.6; margin: 0; }
+.t9-lede {
+  font-size: 16.5px;
+  line-height: 1.62;
+  color: var(--t9-ink);
+  max-width: 56ch;
+}
+/* Captions sit at 14px minimum: muted on cream is the weakest pairing in the
+   system and must not go smaller or carry anything essential. */
+.t9-cap {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--t9-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons. Deliberately NOT `.btn`: figma-landing-responsive.css ships two
+   unscoped !important blocks that hit every `.btn` on the site.
+   Gold pill + plum text + gold glow is the site-wide primary; one per view.
+   -------------------------------------------------------------------------- */
+.t9-btn {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
+  border-radius: 999px;
+  padding: 15px 30px;
+  min-height: 46px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  border: none;
+}
+.t9-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.t9-btn--gold {
+  background: var(--t9-gold);
+  color: var(--t9-forest);
+  box-shadow: 0 14px 30px -16px rgba(240, 193, 78, .72);
+  transition: transform .24s var(--t9-ease), box-shadow .24s var(--t9-ease);
+}
+.t9-btn--gold:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -16px rgba(240, 193, 78, .9);
+}
+
+.t9-btn--ghost {
+  background: transparent;
+  border: 1.5px solid var(--t9-line);
+  color: var(--t9-deep);
+  transition: background .24s var(--t9-ease), border-color .24s var(--t9-ease);
+}
+.t9-btn--ghost:hover:not(:disabled) {
+  background: rgba(52, 32, 78, .05);
+  border-color: var(--t9-plum);
+}
+
+.t9-btn--sm { padding: 11px 20px; font-size: 14px; min-height: 44px; }
+.t9-btn--lg { padding: 17px 38px; font-size: 16px; min-height: 52px; }
+
+/* --------------------------------------------------------------------------
+   1. HERO — the lavender wash card
+   -------------------------------------------------------------------------- */
+.t9-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--t9-r-lg);
+  background: var(--t9-wash-lav);
+  box-shadow: var(--t9-sh-md);
+  padding: 56px 48px 52px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+/* The warm blush the comp bleeds into the upper-right corner. */
+.t9-hero::before {
+  content: '';
+  position: absolute;
+  inset: -30% -20% auto auto;
+  width: 520px;
+  height: 420px;
+  background: radial-gradient(circle at 70% 40%, rgba(247, 219, 196, .75), transparent 62%);
+  pointer-events: none;
+  z-index: -1;
+}
+.t9-hero__title {
+  font-size: clamp(34px, 6vw, 54px);
+  margin: 2px 0 0;
+}
+.t9-hero .t9-lede { margin-inline: auto; }
+
+/* The one piece of good news on the join screen: you already qualify. Glassy
+   inset pill rather than the old flat green slab. */
+.t9-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  text-align: left;
+  max-width: 60ch;
+  padding: 16px 20px;
+  border-radius: var(--t9-r-md);
+  background: rgba(255, 255, 255, .5);
+  border: 1px solid rgba(255, 255, 255, .75);
+  box-shadow: var(--t9-sh-xs);
+  color: var(--t9-ink);
+  font-size: 15px;
+}
+.t9-notice strong { color: var(--t9-deep); font-weight: 700; }
+.t9-notice__tick {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--t9-green);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.t9-notice__tick svg { width: 16px; height: 16px; }
+
+/* Member hero: the same card, with the balance sitting opposite the copy. */
+.t9-hero--member { text-align: left; align-items: stretch; }
+.t9-hero__row {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.t9-hero__copy { max-width: 56ch; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.t9-hero--member .t9-hero__title { font-size: clamp(30px, 5vw, 46px); }
+
+/* --------------------------------------------------------------------------
+   2. SECTIONS
+   -------------------------------------------------------------------------- */
+.t9-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.t9-sec__head { text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.t9-sec__head--left { text-align: left; align-items: flex-start; }
+.t9-h2 { font-size: clamp(26px, 3.6vw, 36px); }
+.t9-h3 {
+  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1.25;
+  color: var(--t9-deep);
+}
+.t9-sec__foot { text-align: center; }
+
+/* The card. 28px radius, plum-tinted shadow, hairline instead of a border. */
+.t9-card {
+  background: var(--t9-surface);
+  border-radius: var(--t9-r-lg);
+  box-shadow: var(--t9-sh-sm), inset 0 0 0 1px var(--t9-hairline);
+  padding: 26px 28px;
+}
+.t9-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+/* --------------------------------------------------------------------------
+   3. HOW IT WORKS — 01 / 02 / 03
+   -------------------------------------------------------------------------- */
+.t9-steps { list-style: none; margin: 0; padding: 0; }
+.t9-step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform .24s var(--t9-ease), box-shadow .24s var(--t9-ease);
+}
+.t9-step:hover { transform: translateY(-3px); box-shadow: var(--t9-sh-md), inset 0 0 0 1px var(--t9-hairline); }
+.t9-step__n {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .12em;
+  color: var(--t9-gold-deep);
+  font-variant-numeric: tabular-nums;
+}
+.t9-step p { font-size: 14.5px; color: var(--t9-ink); }
+/* State chip — only the member view shows one; the join screen has no state
+   to report. Neutral by default, green when done, gold when she is here. */
+.t9-step__state {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--t9-muted);
+  background: var(--t9-lilac-tint);
+  border-radius: 999px;
+  padding: 5px 11px;
+}
+.t9-step--done .t9-step__n { color: var(--t9-green); }
+.t9-step--done .t9-step__state { color: var(--t9-green); background: var(--t9-green-tint); }
+.t9-step--now { box-shadow: var(--t9-sh-md), inset 0 0 0 1.5px rgba(216, 162, 47, .55); }
+.t9-step--now .t9-step__state { color: var(--t9-gold-ink); background: var(--t9-butter-soft); }
+.t9-step--later { opacity: .78; }
+
+/* --------------------------------------------------------------------------
+   4. WHAT YOU GET — icon tiles
+   -------------------------------------------------------------------------- */
+.t9-benefit { display: flex; flex-direction: column; gap: 10px; }
+.t9-tile {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--t9-r-sm);
+  background: var(--t9-lav);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.t9-tile svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: var(--t9-plum);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.t9-benefit p { font-size: 14.5px; }
+
+/* --------------------------------------------------------------------------
+   5. A WORKED EXAMPLE — the navy-wash panel
+   -------------------------------------------------------------------------- */
+.t9-example {
+  border-radius: var(--t9-r-lg);
+  background: var(--t9-wash-navy);
+  box-shadow: var(--t9-sh-lg);
+  padding: 30px 34px 28px;
+  color: var(--t9-lilac);
+}
+.t9-example .t9-ey { color: var(--t9-gold); margin-bottom: 6px; }
+.t9-example__rows { list-style: none; margin: 0; padding: 0; }
+.t9-example__rows li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(201, 174, 228, .18);
+}
+.t9-example__rows span { font-size: 15px; color: var(--t9-lilac); }
+.t9-example__rows strong {
+  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: 25px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.t9-example__rows .t9-gold { color: var(--t9-gold); }
+.t9-example__foot {
+  margin-top: 16px;
+  font-size: 14px;
+  color: rgba(201, 174, 228, .82);
+}
+
+/* --------------------------------------------------------------------------
+   6. YOUR OWN DISCOUNT — the slab table
+   -------------------------------------------------------------------------- */
+.t9-slabs {
+  border-radius: var(--t9-r-md);
+  overflow: hidden;
+  box-shadow: var(--t9-sh-sm), inset 0 0 0 1px var(--t9-hairline);
+  background: var(--t9-surface);
+}
+.t9-slabs__head,
+.t9-slabs__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+}
+.t9-slabs__head {
+  background: var(--t9-lav);
+  padding-block: 14px;
+}
+.t9-slabs__head span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--t9-plum);
+}
+.t9-slabs__row { border-top: 1px solid var(--t9-hairline); }
+.t9-slabs__row:nth-child(odd) { background: var(--t9-cream); }
+.t9-slabs__range { font-size: 15.5px; color: var(--t9-ink); font-variant-numeric: tabular-nums; }
+.t9-slabs__pct {
+  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--t9-deep);
+  font-variant-numeric: tabular-nums;
+}
+.t9-slabs__row--none .t9-slabs__pct { color: var(--t9-muted); }
+
+/* --------------------------------------------------------------------------
+   7. FAQ — an accordion, one open at a time is not enforced; each row is a
+   native <details> so it works with keyboard, find-in-page and no JS.
+   -------------------------------------------------------------------------- */
+.t9-faq { display: flex; flex-direction: column; gap: 14px; }
+.t9-faq__item {
+  background: var(--t9-surface);
+  border-radius: var(--t9-r-md);
+  box-shadow: var(--t9-sh-xs), inset 0 0 0 1px var(--t9-hairline);
+  transition: box-shadow .24s var(--t9-ease);
+}
+.t9-faq__item[open] { box-shadow: var(--t9-sh-sm), inset 0 0 0 1px rgba(86, 49, 132, .18); }
+.t9-faq__q {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--t9-deep);
+}
+.t9-faq__q::-webkit-details-marker { display: none; }
+.t9-faq__chev {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--t9-lilac-tint);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t9-plum);
+  transition: transform .24s var(--t9-ease), background .24s var(--t9-ease);
+}
+.t9-faq__chev svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.t9-faq__item[open] .t9-faq__chev { transform: rotate(180deg); background: var(--t9-lav); }
+.t9-faq__a {
+  margin: 0;
+  padding: 0 24px 22px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--t9-ink);
+  max-width: 68ch;
+}
+
+/* --------------------------------------------------------------------------
+   8. CLOSING CTA
+   -------------------------------------------------------------------------- */
+.t9-close {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 0 0;
+}
+.t9-close .t9-lede { margin-inline: auto; max-width: 46ch; }
+
+/* --------------------------------------------------------------------------
+   9. MEMBER FURNITURE — status, metrics, meter, link, invite, tables
+   -------------------------------------------------------------------------- */
+.t9-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.t9-status::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+}
+.t9-status--active { background: var(--t9-green-tint); color: var(--t9-green); }
+.t9-status--purchase_pending { background: var(--t9-butter-soft); color: var(--t9-gold-ink); }
+.t9-status--suspended { background: var(--t9-red-tint); color: var(--t9-red); }
+.t9-status--deactivated { background: var(--t9-lilac-tint); color: var(--t9-muted); }
+
+.t9-metric {
+  background: rgba(255, 255, 255, .55);
+  border: 1px solid rgba(255, 255, 255, .8);
+  border-radius: var(--t9-r-md);
+  box-shadow: var(--t9-sh-xs);
+  padding: 18px 22px;
+  min-width: 190px;
+}
+.t9-metric__label {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--t9-gold-deep);
+}
+.t9-metric__value {
+  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: 34px;
+  color: var(--t9-deep);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+.t9-metric .t9-cap { margin-top: 4px; }
+/* The same tile inside a plain card (points this cycle). */
+.t9-card .t9-metric {
+  background: var(--t9-cream);
+  border: 1px solid var(--t9-hairline);
+  flex: 1;
+}
+.t9-row { display: flex; gap: 18px; flex-wrap: wrap; }
+
+/* Unlock meter. */
+.t9-meter { display: flex; flex-direction: column; gap: 10px; }
+.t9-meter__bar {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--t9-lav);
+  overflow: hidden;
+}
+.t9-meter__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--t9-gold) 0%, var(--t9-gold-deep) 100%);
+  transition: width .5s var(--t9-ease);
+}
+.t9-meter__legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 14px;
+  color: var(--t9-muted);
+  font-variant-numeric: tabular-nums;
+}
+.t9-meter p { font-size: 15px; }
+.t9-meter strong { color: var(--t9-deep); }
+
+/* The caution the whole programme hinges on: orders never add up. */
+.t9-note {
+  margin-top: 4px;
+  padding: 14px 18px;
+  border-radius: var(--t9-r-sm);
+  background: var(--t9-butter-soft);
+  border-left: 3px solid var(--t9-gold);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--t9-ink);
+}
+.t9-note strong { color: var(--t9-deep); }
+
+/* Referral code + copy. */
+.t9-code-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.thara code {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 19px;
+  letter-spacing: .06em;
+  color: var(--t9-deep);
+  background: var(--t9-butter-soft);
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+.t9-url {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+  color: var(--t9-muted);
+  overflow-wrap: anywhere;
+}
+
+.t9-field-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.t9-field-row input {
+  flex: 1;
+  min-width: 220px;
+  padding: 13px 16px;
+  border: 1px solid var(--t9-line);
+  border-radius: 999px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--t9-ink);
+  background: var(--t9-cream);
+}
+.t9-field-row input:focus { outline: 2px solid var(--t9-focus); outline-offset: 1px; border-color: transparent; }
+
+/* Tables. Both keep their own horizontal scroller: five unwrappable uppercase
+   headers min-content wider than a 360px phone, and html/body are
+   `overflow-x: clip`, so without this the Status and Action columns would be
+   painted outside the clip and could never be reached. */
+.t9-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.t9-scroll .t9-table { min-width: 460px; }
+.t9-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  font-variant-numeric: tabular-nums;
+}
+.t9-table th,
+.t9-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--t9-hairline); }
+.t9-table tr:last-child td { border-bottom: 0; }
+.t9-table th {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--t9-plum);
+}
+.t9-table td.t9-credit { color: var(--t9-green); font-weight: 700; }
+.t9-table td.t9-debit { color: var(--t9-gold-ink); font-weight: 700; }
+.t9-table code { font-size: 12.5px; background: transparent; padding: 0; }
+
+.t9-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.t9-pill--available { background: var(--t9-lav); color: var(--t9-plum); }
+.t9-pill--claimed { background: var(--t9-green-tint); color: var(--t9-green); }
+.t9-pill--expired { background: var(--t9-butter-soft); color: var(--t9-gold-ink); }
+.t9-pill--cancelled { background: var(--t9-red-tint); color: var(--t9-red); }
+
+/* Failure copy for enrol / claim / opt-out / clipboard. One error colour. */
+.t9-error {
+  margin-top: 12px;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--t9-red);
+}
+
+.t9-empty {
+  min-height: 46vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--t9-muted);
+  font-size: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE — 900 / 620 / narrow phone
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .thara { gap: 46px; padding: 32px 18px 96px; }
+  .t9-hero { padding: 44px 30px 40px; }
+  .t9-example { padding: 26px 24px; }
+}
+
+@media (max-width: 620px) {
+  .thara { gap: 40px; padding: 26px 14px 88px; }
+  .t9-hero { padding: 34px 20px 32px; border-radius: var(--t9-r-md); }
+  .t9-card { padding: 22px 18px; border-radius: var(--t9-r-md); }
+  .t9-example { padding: 22px 18px; border-radius: var(--t9-r-md); }
+
+  /* Label and figure stack rather than squeezing the rupee value into a
+     column narrower than it can print. */
+  .t9-example__rows li { flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 0; }
+  .t9-example__rows strong { font-size: 22px; }
+
+  .t9-slabs__head,
+  .t9-slabs__row { padding-inline: 18px; }
+
+  .t9-faq__q { padding: 17px 18px; font-size: 15px; }
+  .t9-faq__a { padding: 0 18px 18px; }
+
+  .t9-hero__row { flex-direction: column; }
+  .t9-metric { width: 100%; min-width: 0; }
+
+  /* Full-bleed the scroller to the card edge so the swipe affordance shows and
+     neither end column is cropped by the card padding. */
+  .t9-scroll { margin-inline: -18px; padding-inline: 18px; }
+  .t9-table th, .t9-table td { padding: 11px 9px; }
+
+  .t9-field-row input { flex-basis: 100%; min-width: 0; font-size: 16px; }
+  .t9-field-row .t9-btn { width: 100%; }
+  .t9-btn--lg { width: 100%; }
+}
+
+/* Below 16px mobile Safari zooms the viewport on focus and never zooms back,
+   and with html/body `overflow-x: clip` she cannot pan back to the left edge. */
+@media (pointer: coarse) {
+  .thara input { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thara *,
+  .thara *::before,
+  .thara *::after { transition: none !important; animation: none !important; }
+  .t9-step:hover { transform: none; }
+  .t9-btn--gold:hover:not(:disabled) { transform: none; }
+}

@@ -1,0 +1,714 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   pdp-reviews.css — "Customer Reviews": a pinned stack of paper notes beside
+   the rating summary.
+
+   Structure: the lavender section panel holds a two-column layout — the note
+   stack on the left, the score · histogram · actions summary on the right. It
+   stacks to one column on tablet and phone.
+
+   The stack: every note occupies the same grid cell, so the stack is as tall as
+   its tallest review without any measuring. Each note rests in a pose set by
+   its depth (`--rest`), and the note leaving or returning to the top plays a
+   short lift-and-tuck keyframe that ends exactly on its new resting pose.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rv-section {
+  margin: clamp(48px, 7vw, 88px) 0;
+  padding: clamp(32px, 5vw, 60px) clamp(18px, 3.5vw, 48px);
+  background: var(--cr-wash-lav);
+  border: 1px solid var(--cr-hairline);
+  border-radius: var(--cr-r-lg);
+  box-shadow: var(--cr-shadow-md);
+  /* Guard against a rotated note's corner ever widening the page. Clip only
+     sideways, so the pin and the notes' shadows keep their vertical room. */
+  overflow-x: clip;
+}
+
+.rv-heading {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(1.9rem, 4vw, 2.85rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--navy);
+  margin: 0 0 clamp(24px, 3.5vw, 44px);
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+.rv-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+}
+
+/* ── The stack ──────────────────────────────────────────────────────────── */
+.rv-deck {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  margin-inline: auto;
+  /* Room for the pin above and for the rotated notes' corners at the sides. */
+  padding: 26px clamp(12px, 2vw, 22px) 0;
+}
+
+.rv-pin {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 200;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffffff 0%, #efe9f8 45%, #c9bddd 100%);
+  box-shadow:
+    0 3px 6px rgba(52, 32, 78, 0.28),
+    inset 0 -2px 3px rgba(52, 32, 78, 0.12);
+  pointer-events: none;
+}
+
+/* The needle's shadow on the paper, falling down-right of the head. */
+.rv-pin::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 15px;
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: rgba(52, 32, 78, 0.18);
+  transform: rotate(-24deg);
+  filter: blur(1px);
+}
+
+.rv-deck-stack {
+  display: grid;
+}
+
+.rv-deck-stack.is-flippable .rv-paper--d0 {
+  cursor: pointer;
+}
+
+/* ── A note ─────────────────────────────────────────────────────────────── */
+.rv-paper {
+  /* Resting pose for the top note; deeper notes override these two. */
+  --rest: rotate(-1deg);
+  --rest-o: 1;
+
+  grid-area: 1 / 1;
+  position: relative;
+  min-width: 0;
+  padding: clamp(34px, 4vw, 46px) clamp(22px, 3.6vw, 42px) clamp(20px, 2.6vw, 28px);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fffdf9 0%, #fbf7f0 100%);
+  box-shadow:
+    0 1px 1px rgba(52, 32, 78, 0.05),
+    0 14px 30px -6px rgba(52, 32, 78, 0.16);
+  /* Pinned at the top centre, so every tilt pivots from the pin. */
+  transform-origin: 50% 0;
+  transform: var(--rest);
+  opacity: var(--rest-o);
+  transition:
+    transform 540ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 380ms ease,
+    box-shadow 380ms ease;
+}
+
+/* A large, quiet opening quote mark — the note's one decorative mark. */
+.rv-paper::before {
+  content: '\201C';
+  position: absolute;
+  top: 2px;
+  left: clamp(12px, 2vw, 22px);
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 84px;
+  line-height: 1;
+  color: var(--lilac);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.rv-paper--d1 {
+  --rest: translate(14px, 10px) rotate(2.6deg);
+  box-shadow: 0 8px 18px -8px rgba(52, 32, 78, 0.14);
+}
+
+.rv-paper--d2 {
+  --rest: translate(-12px, 16px) rotate(-3.2deg);
+  box-shadow: 0 6px 14px -8px rgba(52, 32, 78, 0.12);
+}
+
+/* Everything deeper waits, invisible, directly behind the visible three. */
+.rv-paper--d3 {
+  --rest: translate(0, 20px) rotate(1deg);
+  --rest-o: 0;
+  box-shadow: none;
+}
+
+/* A hint of lift on the note you are about to flip. */
+.rv-deck-stack.is-flippable .rv-paper--d0:hover {
+  --rest: translateY(-3px) rotate(-0.6deg);
+}
+
+/* Sent to the back: lifts off the pin up and to the left, then tucks in
+   behind the stack. z-index is animatable; it stays on top for the lift and
+   drops behind everything at the midpoint. */
+.rv-paper.is-back {
+  animation: rv-send-back 620ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+@keyframes rv-send-back {
+  0% {
+    transform: rotate(-1deg);
+    opacity: 1;
+    z-index: 150;
+  }
+  48% {
+    transform: translate(-7%, -10%) rotate(-7deg) scale(0.97);
+    opacity: 1;
+    z-index: 150;
+  }
+  52% {
+    z-index: 0;
+  }
+  100% {
+    transform: var(--rest);
+    opacity: var(--rest-o);
+    z-index: 0;
+  }
+}
+
+/* Brought back to the front: the reverse path, from behind the stack. */
+.rv-paper.is-front {
+  animation: rv-bring-front 620ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+@keyframes rv-bring-front {
+  0% {
+    transform: translate(-12px, 16px) rotate(-3.2deg);
+    opacity: 1;
+    z-index: 0;
+  }
+  48% {
+    z-index: 0;
+  }
+  52% {
+    transform: translate(7%, -10%) rotate(6deg) scale(0.97);
+    z-index: 150;
+  }
+  100% {
+    transform: rotate(-1deg);
+    opacity: 1;
+    z-index: 150;
+  }
+}
+
+/* ── Note content ───────────────────────────────────────────────────────── */
+.rv-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.rv-card-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.rv-stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--yellow-deep);
+  line-height: 0;
+}
+
+.rv-star {
+  width: 15px;
+  height: 15px;
+  opacity: 0.22;
+}
+
+.rv-star--on {
+  opacity: 1;
+}
+
+/* Inside a note the stars sit in a small navy pill, like the reference. */
+.rv-card-head .rv-stars {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--navy);
+}
+
+.rv-card-head .rv-star {
+  width: 16px;
+  height: 16px;
+  color: var(--butter, #f5d57a);
+}
+
+.rv-card-head .rv-star:not(.rv-star--on) {
+  opacity: 0.35;
+}
+
+.rv-stars--lg .rv-star {
+  width: 20px;
+  height: 20px;
+}
+
+.rv-stars--sm .rv-star {
+  width: 13px;
+  height: 13px;
+}
+
+.rv-date {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.rv-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: clamp(1.2rem, 2vw, 1.4rem);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--navy);
+  margin: 0 0 10px;
+}
+
+/* Six lines, then "Full Review" takes over. -webkit-line-clamp is the only
+   cross-browser way to clamp to a line count with an ellipsis; if an engine ever
+   ignored it the body is simply unclamped — content stays reachable either way. */
+.rv-body {
+  max-width: 44ch;
+  font-size: clamp(0.95rem, 1.3vw, 1.02rem);
+  line-height: 1.7;
+  color: var(--ink);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  overflow: hidden;
+}
+
+.rv-body--open {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.rv-more {
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--forest-2);
+  font: inherit;
+  font-size: 0.84rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.rv-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  text-align: left;
+}
+
+.rv-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--lilac-tint);
+  color: var(--navy);
+  font-size: 0.92rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.rv-author-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rv-author-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.rv-source {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.rv-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  width: 100%;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(52, 32, 78, 0.14);
+}
+
+.rv-helpful-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.rv-votes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rv-vote {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  min-height: 32px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: color var(--cr-dur) var(--cr-ease), background var(--cr-dur) var(--cr-ease);
+}
+
+.rv-vote:hover:not(:disabled) {
+  background: var(--lilac-tint);
+  color: var(--forest-2);
+}
+
+/* The vote this visitor cast. Disabled AND coloured: greying both buttons out
+   would leave no trace of which way they voted. */
+.rv-vote--cast {
+  color: var(--forest-2);
+  border-color: var(--line);
+  background: var(--lilac-tint);
+}
+
+.rv-vote:disabled {
+  cursor: default;
+}
+.rv-vote:disabled:not(.rv-vote--cast) {
+  opacity: 0.5;
+}
+
+.rv-vote svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ── Stack controls ─────────────────────────────────────────────────────── */
+.rv-deck-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: clamp(22px, 3vw, 30px);
+}
+
+.rv-deck-count {
+  min-width: 4ch;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.rv-deck-hint {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.rv-arrow {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+  box-shadow: var(--cr-shadow-xs);
+  transition: background var(--cr-dur) var(--cr-ease),
+    box-shadow var(--cr-dur) var(--cr-ease),
+    border-color var(--cr-dur) var(--cr-ease),
+    transform var(--cr-dur) var(--cr-ease);
+}
+
+.rv-arrow:hover {
+  border-color: var(--lilac);
+  box-shadow: var(--cr-shadow-sm);
+}
+
+.rv-arrow:active {
+  transform: scale(0.94);
+}
+
+.rv-arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* IChevron points right by default; the previous arrow is the same glyph turned
+   around, so both controls stay optically identical in weight and size. */
+.rv-arrow--prev svg {
+  transform: rotate(180deg);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.rv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 26px;
+  border-radius: var(--cr-r-sm);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--cr-dur) var(--cr-ease),
+    color var(--cr-dur) var(--cr-ease),
+    transform var(--cr-dur) var(--cr-ease),
+    box-shadow var(--cr-dur) var(--cr-ease);
+}
+
+.rv-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cr-shadow-md);
+}
+
+.rv-btn:active {
+  transform: translateY(0);
+}
+
+.rv-btn--solid {
+  background: var(--forest-2);
+  color: #fff;
+  box-shadow: var(--cr-shadow-sm);
+}
+
+.rv-btn--solid:hover {
+  background: var(--forest);
+}
+
+.rv-btn--outline {
+  background: #fff;
+  color: var(--navy);
+  border-color: var(--line);
+}
+
+.rv-btn--outline:hover {
+  border-color: var(--lilac);
+}
+
+/* ── Summary ────────────────────────────────────────────────────────────────
+   One soft panel beside the stack: score, histogram and the two actions,
+   separated by hairlines. Its weight balances the notes on the other side. */
+.rv-summary {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.4vw, 24px);
+  padding: clamp(22px, 3vw, 32px);
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid var(--cr-hairline);
+  border-radius: var(--cr-r-md);
+  box-shadow: var(--cr-shadow-sm);
+}
+
+.rv-summary-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.rv-score-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.rv-score-count {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.rv-summary-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-block: clamp(16px, 2.2vw, 22px);
+  border-block: 1px solid var(--cr-hairline);
+}
+
+.rv-bar-row {
+  display: grid;
+  grid-template-columns: auto 1fr 2ch;
+  align-items: center;
+  gap: 10px;
+}
+
+.rv-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(52, 32, 78, 0.09);
+  overflow: hidden;
+}
+
+.rv-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--forest-2);
+}
+
+.rv-bar-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rv-summary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rv-summary-actions .rv-btn {
+  width: 100%;
+  padding-inline: 14px;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────────── */
+.rv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: clamp(24px, 4vw, 40px) 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.rv-empty p {
+  margin: 0;
+}
+
+.rv-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Tablet: one column, stack above the summary ────────────────────────── */
+@media (max-width: 900px) {
+  .rv-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+
+  .rv-summary {
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+}
+
+/* ── Phone ──────────────────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .rv-section {
+    padding: 28px 16px 32px;
+    border-radius: var(--cr-r-md);
+  }
+
+  .rv-deck {
+    padding-inline: 8px;
+  }
+
+  /* Tighter fan so the tilted corners stay well inside a narrow screen. */
+  .rv-paper--d1 {
+    --rest: translate(8px, 8px) rotate(1.8deg);
+  }
+
+  .rv-paper--d2 {
+    --rest: translate(-8px, 12px) rotate(-2.2deg);
+  }
+
+  .rv-paper::before {
+    font-size: 64px;
+  }
+
+  .rv-arrow {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+@media (max-width: 420px) {
+  .rv-summary-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (pointer: coarse) {
+  /* Meets the 44px touch floor without changing the desktop note's rhythm. */
+  .rv-vote {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-paper,
+  .rv-btn,
+  .rv-arrow,
+  .rv-vote {
+    transition: none;
+  }
+
+  .rv-paper.is-back,
+  .rv-paper.is-front {
+    animation: none;
+  }
+
+  .rv-btn:hover,
+  .rv-deck-stack.is-flippable .rv-paper--d0:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,1041 @@
+/* ============================================================
+   PERIODS WALL — community wall of honest period-product stories
+   Namespaced under .pwall. Reuses global tokens/helpers only.
+   ============================================================ */
+
+.pwall {
+  /* local, on-brand accents (heart uses a soft rose within the lavender family) */
+  --pw-plum-tint: #EDE7F9;
+  --pw-heart: #C56AA0;
+  --pw-max: 720px;
+  --pw-feed: 680px;
+  position: relative;
+}
+
+/* ---------- hero ---------- */
+.pwall-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-block: clamp(48px, 8vw, 104px) clamp(28px, 4vw, 48px);
+}
+.pwall-title {
+  margin-top: 16px;
+  font-size: clamp(2.3rem, 6.2vw, 4.1rem);
+  line-height: 1.02;
+  color: var(--navy);
+  max-width: 16ch;
+}
+.pwall-sub {
+  margin-top: 20px;
+  max-width: 60ch;
+  font-size: clamp(1.02rem, 1.4vw, 1.18rem);
+  line-height: 1.6;
+  color: var(--ink);
+}
+.pwall-kind {
+  margin-top: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.7em 1.15em;
+  border-radius: var(--r-chip);
+  background: var(--pw-plum-tint);
+  border: 1px solid var(--line-soft);
+  color: var(--forest-2);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+.pwall-kind span {
+  display: inline-flex;
+}
+.pwall-kind svg {
+  width: 17px;
+  height: 17px;
+  fill: var(--yellow);
+  stroke: var(--forest-2);
+  stroke-width: 1.25;
+}
+
+/* ---------- content column ---------- */
+.pwall-body-wrap {
+  padding-bottom: clamp(72px, 10vw, 130px);
+}
+
+/* ---------- compose card ---------- */
+.pw-compose {
+  max-width: var(--pw-max);
+  margin-inline: auto;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-sm);
+  padding: clamp(22px, 3.4vw, 38px);
+}
+.pw-compose-title {
+  font-size: clamp(1.28rem, 2.2vw, 1.6rem);
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.pw-compose-sub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.pw-input,
+.pw-textarea {
+  width: 100%;
+  margin-top: 20px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 0.9em 1.05em;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+.pw-input::placeholder,
+.pw-textarea::placeholder {
+  color: var(--muted);
+}
+.pw-textarea {
+  min-height: 128px;
+  line-height: 1.6;
+  resize: vertical;
+}
+.pw-input:focus,
+.pw-textarea:focus {
+  outline: none;
+  background: var(--surface);
+  border-color: var(--forest-2);
+  box-shadow: 0 0 0 3px rgba(86, 49, 132, 0.14);
+}
+
+.pw-field {
+  margin-top: 22px;
+}
+.pw-label {
+  display: block;
+  margin-bottom: 11px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--navy);
+}
+
+/* product select chips */
+.pw-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.pw-chip {
+  min-height: 40px;
+  padding: 8px 15px;
+  border-radius: var(--r-chip);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease),
+    border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+/* :hover lives in the hover-capability block near the end of this file. */
+.pw-chip.is-active {
+  background: var(--forest-2);
+  color: #fff9ea;
+  border-color: var(--forest-2);
+}
+
+/* interactive stars */
+.pw-stars {
+  display: flex;
+  gap: 2px;
+}
+.pw-star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  transition: transform 0.16s var(--ease), background 0.16s var(--ease);
+}
+.pw-star:focus-visible {
+  outline: 2px solid var(--forest-2);
+  outline-offset: 2px;
+}
+.pw-star-svg {
+  width: 27px;
+  height: 27px;
+  fill: #E1D9F0;
+  transition: fill 0.16s var(--ease);
+}
+.pw-star-svg.is-on {
+  fill: var(--yellow);
+}
+
+.pw-compose-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 26px;
+}
+.pw-confirm {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--forest-2);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.pw-confirm.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- filter row ---------- */
+.pw-filters {
+  max-width: var(--pw-max);
+  margin: clamp(30px, 4vw, 44px) auto clamp(20px, 3vw, 28px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: center;
+}
+.pw-filter {
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: var(--r-chip);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease),
+    border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.pw-filter.is-active {
+  background: var(--forest-2);
+  color: #fff9ea;
+  border-color: var(--forest-2);
+}
+
+/* ---------- feed ---------- */
+.pw-feed {
+  max-width: var(--pw-feed);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.4vw, 22px);
+}
+
+.pw-card {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-sm);
+  padding: clamp(20px, 3vw, 28px);
+  transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
+}
+
+.pw-card-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.pw-avatar {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  /* default tone */
+  background: var(--lilac-tint);
+  color: var(--forest-2);
+}
+.pw-card[data-tone='0'] .pw-avatar { background: var(--lilac-tint); color: var(--forest-2); }
+.pw-card[data-tone='1'] .pw-avatar { background: var(--sage-tint);  color: var(--forest); }
+.pw-card[data-tone='2'] .pw-avatar { background: var(--butter-soft); color: var(--yellow-deep); }
+.pw-card[data-tone='3'] .pw-avatar { background: var(--cream-2);     color: var(--forest-2); }
+.pw-anon-svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.pw-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pw-name {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+.pw-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.pw-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.65;
+}
+
+.pw-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+.pw-product {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--r-chip);
+  background: var(--pw-plum-tint);
+  color: var(--forest-2);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  /* post.product is the resolved catalog name (lib/services/wall.ts), not one
+     of the five short compose chips — a 45-char product name gave this chip a
+     ~307px min-content inside a 284px card at 360px, and `nowrap` meant it
+     could not shrink, so it spilled past the card border into html's
+     `overflow-x: clip`. At >=1200px the card is 680px and nothing wraps, so
+     this renders identically on desktop. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  min-width: 0;
+  line-height: 1.35;
+}
+.pw-stars-view {
+  display: inline-flex;
+  gap: 1px;
+}
+.pw-stars-view .pw-star-svg {
+  width: 17px;
+  height: 17px;
+}
+
+.pw-body {
+  margin-top: 14px;
+  color: var(--ink);
+  font-size: clamp(0.98rem, 1.1vw, 1.05rem);
+  line-height: 1.62;
+}
+
+.pw-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line-soft);
+}
+.pw-heart {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: var(--r-chip);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.16s var(--ease);
+}
+.pw-heart:active {
+  transform: scale(0.94);
+}
+.pw-heart-svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  transition: fill 0.2s var(--ease), stroke 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.pw-heart-svg.is-on {
+  fill: var(--pw-heart);
+  stroke: var(--pw-heart);
+}
+.pw-heart.is-liked {
+  color: var(--pw-heart);
+}
+.pw-heart.is-liked .pw-heart-svg {
+  transform: scale(1.12);
+}
+
+/* .pw-replies / .pw-reply-svg were deleted here: replies are not wired
+   (see the Post type comment in PeriodsWall.tsx) and neither class appears in
+   the markup — the card footer holds only .pw-heart. Re-add them with the
+   feature, not before it. */
+
+/* ---------- empty state ---------- */
+.pw-empty {
+  max-width: var(--pw-feed);
+  margin-inline: auto;
+  text-align: center;
+  background: var(--lilac-tint);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-card);
+  padding: clamp(34px, 6vw, 56px) clamp(22px, 4vw, 40px);
+}
+.pw-empty-title {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 1.1rem;
+}
+.pw-empty-sub {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+/* ---------- a11y helper ---------- */
+.pw-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- hover, for real pointers only ----------
+   These five decorative states used to be unguarded. On iOS Safari and Chrome
+   for Android :hover latches onto the last-tapped element, so after liking a
+   story that card stayed raised and a tapped filter chip stayed outlined as if
+   still active — the feed showed two elements that both looked selected.
+   This block must stay ABOVE the reduced-motion block below, which cancels
+   these transforms and wins only by being later in source order. */
+@media (hover: hover) and (pointer: fine) {
+  .pw-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+  .pw-chip:hover,
+  .pw-filter:hover {
+    border-color: var(--forest-2);
+    transform: translateY(-1px);
+  }
+  .pw-star:hover {
+    background: var(--butter-soft);
+    transform: translateY(-1px);
+  }
+  .pw-heart:hover {
+    background: var(--lilac-tint);
+    color: var(--forest-2);
+  }
+}
+
+/* ---------- touch ----------
+   The author already set .pw-star to 44x44, so 44 was the intended floor —
+   the chips, the filters and the like button were simply missed at 40px.
+   Keyed on pointer rather than width so touch tablets are covered too, and so
+   desktop is untouched at every width. */
+@media (pointer: coarse) {
+  .pw-chip {
+    min-height: 44px;
+    padding: 10px 15px;
+  }
+  .pw-filter {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+  .pw-heart {
+    min-height: 44px;
+    padding: 8px 14px;
+  }
+  /* 9px between wrapped chips is tight once each row is 44px tall. */
+  .pw-chips,
+  .pw-filters {
+    gap: 10px;
+  }
+}
+
+/* ---------- narrow phones ---------- */
+@media (max-width: 480px) {
+  /* A centred filter row reads as ragged once seven chips wrap onto three
+     lines; left-aligned it scans as a list. */
+  .pw-filters {
+    justify-content: flex-start;
+  }
+  .pw-meta,
+  .pw-label {
+    font-size: 0.88rem;
+  }
+  .pw-product {
+    font-size: 0.82rem;
+  }
+  .pw-card-head {
+    gap: 11px;
+  }
+  .pw-tags {
+    gap: 9px;
+  }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .pw-card,
+  .pw-chip,
+  .pw-filter,
+  .pw-star,
+  .pw-heart,
+  .pw-heart-svg,
+  .pw-confirm,
+  .pw-input,
+  .pw-textarea {
+    transition: none;
+  }
+  .pw-card:hover,
+  .pw-chip:hover,
+  .pw-filter:hover,
+  .pw-star:hover,
+  .pw-heart:active,
+  .pw-heart.is-liked .pw-heart-svg {
+    transform: none;
+  }
+  .pw-confirm.is-shown {
+    transform: none;
+  }
+}
+
+/* A refused like (almost always a 401) needs a visible reason. The heart used
+   to fill optimistically and silently un-fill, leaving a signed-out visitor
+   with no idea why her tap did nothing. */
+.pw-like-error {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--butter-soft);
+  border: 1px solid var(--line-soft);
+  color: var(--navy);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.pw-like-error-link {
+  color: var(--forest-2);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ============================================================
+   LAYERED STORY CAROUSEL (PeriodsWall.tsx `.pw-carousel`)
+   All stories share one grid cell. PeriodsWall sets `--off` on each slide
+   (0 centre · ±1 sides · ±2 waiting) and `data-state`; the slide's position,
+   scale, blur and opacity all derive from those, and transition between them,
+   so a change of story slides the next card in sharp while the previous one
+   recedes, blurred, to the side. PostCard itself is unchanged.
+   ============================================================ */
+
+.pw-feed:has(.pw-carousel) {
+  max-width: min(1120px, 100%);
+}
+
+.pw-carousel {
+  position: relative;
+  padding-block: clamp(20px, 4vw, 44px) 8px;
+  /* Side cards may run past the edge; never widen the page. */
+  overflow-x: clip;
+  outline: none;
+}
+
+.pw-carousel:focus-visible .pw-slide[data-state='centre'] .pw-card {
+  outline: 2px solid var(--forest-2);
+  outline-offset: 4px;
+}
+
+/* Two soft lavender orbs behind the cards for depth. */
+.pw-carousel::before,
+.pw-carousel::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(2px);
+}
+.pw-carousel::before {
+  width: clamp(70px, 9vw, 110px);
+  height: clamp(70px, 9vw, 110px);
+  left: 12%;
+  top: 58%;
+  background: radial-gradient(circle at 35% 30%, #e7dbf5 0%, #b79ad8 55%, #7c5aa8 100%);
+  opacity: 0.55;
+}
+.pw-carousel::after {
+  width: clamp(34px, 4vw, 48px);
+  height: clamp(34px, 4vw, 48px);
+  right: 16%;
+  top: 14%;
+  background: radial-gradient(circle at 35% 30%, #fff1c7 0%, #f0c14e 60%, #c9951c 100%);
+  opacity: 0.6;
+}
+
+.pw-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  touch-action: pan-y;
+}
+
+.pw-slide {
+  --shift: 66%;
+  grid-area: 1 / 1;
+  position: relative;
+  width: min(540px, 100%);
+  transform: translateX(calc(var(--off, 0) * var(--shift))) scale(0.84);
+  filter: blur(6px);
+  opacity: 0.5;
+  z-index: 2;
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.6s ease,
+    opacity 0.6s ease;
+  will-change: transform, filter, opacity;
+}
+
+.pw-slide[data-state='centre'] {
+  transform: translateX(0) scale(1);
+  filter: none;
+  opacity: 1;
+  z-index: 3;
+}
+
+.pw-slide[data-state='hidden'] {
+  transform: translateX(calc(var(--off, 0) * var(--shift))) scale(0.7);
+  opacity: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Clicking a blurred side card brings it to the front. */
+.pw-slide-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 24px;
+}
+
+/* ---------- the card, dressed for the stage ---------- */
+.pw-carousel .pw-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(86, 49, 132, 0.12);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(201, 174, 228, 0.28) 0%, rgba(201, 174, 228, 0) 60%),
+    linear-gradient(160deg, #fffdf9 0%, #faf5ff 100%);
+  box-shadow: 0 2px 6px rgba(52, 32, 78, 0.06), 0 24px 44px -26px rgba(52, 32, 78, 0.35);
+  padding: clamp(24px, 3.4vw, 36px);
+  transition: box-shadow 0.5s ease;
+}
+
+.pw-slide[data-state='centre'] .pw-card {
+  box-shadow: 0 4px 10px rgba(52, 32, 78, 0.08), 0 40px 70px -30px rgba(52, 32, 78, 0.5);
+}
+
+/* A large faint quotation mark, like the reference, behind the story text. */
+.pw-carousel .pw-card::before {
+  content: '\201C';
+  position: absolute;
+  right: 18px;
+  bottom: -46px;
+  z-index: 0;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 220px;
+  line-height: 1;
+  color: var(--forest-2);
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+.pw-carousel .pw-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pw-carousel .pw-body {
+  font-size: clamp(1rem, 1.35vw, 1.1rem);
+  line-height: 1.7;
+}
+
+/* The slide moves; the card itself does not also lift. */
+.pw-carousel .pw-card:hover {
+  transform: none;
+}
+
+/* ---------- controls ---------- */
+.pw-carousel-nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: clamp(22px, 3vw, 32px);
+}
+
+.pw-nav-btn {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--forest-2);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.pw-nav-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pw-nav-btn:active {
+  transform: scale(0.94);
+}
+.pw-nav-btn:focus-visible {
+  outline: 2px solid var(--forest-2);
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pw-nav-btn:hover {
+    background: var(--lilac-tint);
+    border-color: var(--forest-2);
+  }
+}
+
+.pw-nav-count {
+  min-width: 4ch;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.pw-carousel .pw-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* ---------- mobile: centre card dominant, sides barely there ---------- */
+@media (max-width: 640px) {
+  .pw-slide {
+    --shift: 84%;
+    width: 86%;
+    opacity: 0.3;
+    filter: blur(7px);
+  }
+  .pw-carousel .pw-card {
+    padding: 22px 20px;
+    border-radius: 20px;
+  }
+  .pw-carousel .pw-card::before {
+    font-size: 170px;
+    bottom: -36px;
+  }
+  .pw-carousel::before {
+    left: 2%;
+  }
+}
+
+/* ---------- reduced motion: stories swap without travelling ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .pw-slide,
+  .pw-carousel .pw-card,
+  .pw-nav-btn {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   DESKTOP: compose card LEFT, stories RIGHT (PeriodsWall.tsx `.pw-stories`)
+   Two columns that stretch to the same height, so neither side leaves a
+   gap: the compose card's textarea grows into spare height, and the story
+   carousel is centred in whatever the filters leave. Below 980px the page
+   stacks exactly as before.
+   ============================================================ */
+@media (min-width: 980px) {
+  .pwall-body-wrap {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(28px, 3.5vw, 56px);
+    align-items: stretch;
+  }
+
+  .pw-compose {
+    max-width: none;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Spare height goes to the story box, not to empty card below the button. */
+  .pw-compose .pw-textarea {
+    flex: 1 1 auto;
+    min-height: 120px;
+  }
+
+  .pw-stories {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .pw-stories .pw-filters {
+    max-width: none;
+    margin: 0 0 clamp(8px, 1.5vw, 16px);
+    justify-content: flex-start;
+  }
+
+  .pw-stories .pw-feed {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+  }
+
+  /* Sized to the column: the centre story stays prominent and the blurred
+     neighbours still peek in from both sides. */
+  .pw-stories .pw-slide {
+    --shift: 60%;
+    width: min(460px, 80%);
+  }
+
+  .pw-stories .pw-carousel {
+    padding-block: 12px 4px;
+  }
+
+  .pw-stories .pw-carousel::before {
+    left: 4%;
+  }
+
+  .pw-stories .pw-carousel::after {
+    right: 6%;
+  }
+}
+
+/* Fill the stories column edge to edge: the carousel takes all the height the
+   filters leave, the centre story grows into it, and the controls sit on the
+   column's foot — level with the compose card's button — instead of floating
+   in the middle with blank bands above and below. */
+@media (min-width: 980px) {
+  .pw-stories .pw-filters {
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  .pw-stories .pw-filter {
+    min-height: 36px;
+    padding: 6px 13px;
+    font-size: 0.84rem;
+  }
+
+  .pw-stories .pw-feed {
+    justify-content: stretch;
+  }
+
+  .pw-stories .pw-carousel {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding-block: 0;
+  }
+
+  .pw-stories .pw-stage {
+    flex: 1 1 auto;
+    align-items: center;
+  }
+
+  .pw-stories .pw-slide {
+    --shift: 58%;
+    width: min(520px, 86%);
+  }
+
+  .pw-stories .pw-card {
+    padding: clamp(28px, 2.8vw, 40px);
+  }
+
+  .pw-stories .pw-body {
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    line-height: 1.75;
+  }
+
+  .pw-stories .pw-carousel-nav {
+    margin-top: 18px;
+  }
+}
+
+/* The stage now fills the column, but a card at its natural height still
+   floated in the middle of it. Stretch every slide — and the story card inside
+   it — to the stage's full height: header and tags stay at the top, the like
+   row at the foot, and the story text is centred in the space between. */
+@media (min-width: 980px) {
+  .pw-stories .pw-stage {
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .pw-stories .pw-slide {
+    display: flex;
+    min-height: 0;
+  }
+
+  .pw-stories .pw-slide-card {
+    flex: 1 1 auto;
+    display: flex;
+    min-width: 0;
+  }
+
+  .pw-stories .pw-card {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .pw-stories .pw-body {
+    margin-block: auto;
+    padding-block: 18px;
+  }
+
+  .pw-stories .pw-card-foot {
+    margin-top: 0;
+  }
+}
+
+/* ============================================================
+   SWIPE — drag the stories like cards (PeriodsWall.tsx `.pw-stage`)
+   While a pointer drags, PeriodsWall sets `--drag` (px, unitless) and
+   `data-dragging`. The centre card follows the pointer with a slight tilt
+   pivoting low, the neighbours drift the same way, and the one being dragged
+   toward sharpens and brightens. Transitions are off during the drag so it
+   tracks the finger exactly; letting go re-enables them, so the card either
+   springs back or flies on to its new place from wherever it was released.
+   ============================================================ */
+.pw-stage.is-swipeable {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pw-stage[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.pw-stage[data-dragging='true'] .pw-slide {
+  transition: none;
+}
+
+.pw-stage[data-dragging='true'] .pw-slide[data-state='centre'] {
+  transform:
+    translateX(calc(var(--drag, 0) * 1px))
+    rotate(calc(var(--drag, 0) * 0.018deg));
+  transform-origin: 50% 120%;
+}
+
+.pw-stage[data-dragging='true'] .pw-slide[data-state='side'] {
+  transform:
+    translateX(calc(var(--off, 0) * var(--shift) + var(--drag, 0) * 0.35px))
+    scale(0.84);
+}
+
+/* Links and images inside a card must not start the browser's own drag. */
+.pw-stage.is-swipeable img,
+.pw-stage.is-swipeable a {
+  -webkit-user-drag: none;
+}
+
+/* The card being released springs with a touch of overshoot. */
+.pw-stage.is-swipeable .pw-slide[data-state='centre'] {
+  transition:
+    transform 0.62s cubic-bezier(0.34, 1.25, 0.5, 1),
+    filter 0.5s ease,
+    opacity 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pw-stage.is-swipeable .pw-slide[data-state='centre'],
+  .pw-stage[data-dragging='true'] .pw-slide[data-state='centre'] {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* The springy release transition above (0,3,0) is later in source than the
+   `[data-dragging] .pw-slide { transition:none }` rule of equal weight, so it
+   switched the transition back on mid-drag and the card lagged behind the
+   pointer. This out-specifies both, so the card tracks the finger exactly. */
+.pw-stage.is-swipeable[data-dragging='true'] .pw-slide[data-state='centre'],
+.pw-stage.is-swipeable[data-dragging='true'] .pw-slide[data-state='side'] {
+  transition: none;
+}
+
+/* Soft edges. The carousel clips sideways so cards never widen the page, but
+   a hard clip sliced a card mid-swipe with a straight vertical line (and cut
+   the blurred neighbours the same way at rest). Fade the outer bands instead,
+   so a card being swiped away — or peeking in — dissolves into the column
+   edge. Horizontal only: the vertical shadows are untouched. */
+.pw-carousel {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+}
+
+@media (max-width: 640px) {
+  .pw-carousel {
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
+  }
+}

@@ -1,0 +1,209 @@
+/* ===== CHECKOUT =====
+   Route-scoped stylesheet, imported from app/(store)/checkout/page.tsx so the
+   money path needs no edit to a shared sheet (and no place in the load-order
+   contract declared in app/layout.tsx).
+
+   Everything here is one of two things:
+     (a) a byte-for-byte restatement of a style that used to be inline on the
+         checkout markup — same computed result at >=1200px, or
+     (b) scoped inside a mobile / coarse-pointer media query.
+   Nothing changes the desktop rendering.
+
+   Naming: `co-` = checkout. */
+
+/* --------------------------------------------------------------------------
+   1. FIELD GRID
+   Replaces the inline `grid-template-columns: repeat(2, minmax(0,1fr))`, which
+   no media query could reach and which produced 133px half-columns on a 360px
+   phone (and ~140px on a 768px tablet, where a viewport media query would not
+   have helped either — the page grid is still two columns there, so the form
+   column is only ~338px wide).
+
+   `auto-fit` measures the FORM COLUMN rather than the viewport, so it collapses
+   wherever the column is genuinely too narrow. Measured: at >=1200px the page
+   is capped at 1040px, the outer grid gives the form a 460px column, and its
+   content box is 394px — which fits two 180px tracks plus the 16px gap, i.e.
+   the same two columns as before. At 768px the form column is only ~338px wide
+   (the outer grid is still two columns there), leaving 290px of content, and
+   the track count drops to one. The 180px floor is deliberate: 190px would
+   still fit at 1200px, 200px would not, and single-column desktop would be the
+   regression this fix is supposed to avoid.
+   -------------------------------------------------------------------------- */
+.co-fields {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+}
+.co-field { min-width: 0; }
+.co-field--full { grid-column: 1 / -1; }
+
+/* --------------------------------------------------------------------------
+   2. LABELS, ERRORS, FINE PRINT
+   Desktop sizes are the ones that were inline; the mobile block below raises
+   them past the 14px legibility floor. #B03B57 is the one sanctioned error
+   colour in this codebase (member.css), replacing the one-off #b4322f.
+   -------------------------------------------------------------------------- */
+.co-label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: .35rem;
+}
+.co-error {
+  display: block;
+  margin-top: .35rem;
+  font-size: .78rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #B03B57;
+}
+.co-note {
+  margin-top: .8rem;
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
+}
+/* Order-summary line meta ("500ml pack · Qty 2") — the only place the shopper
+   can check WHICH variant she is paying for. */
+.co-meta {
+  font-size: .82rem;
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+   3. INPUTS
+   The base rule reproduces the old inline `inputStyle` exactly (padding
+   .72rem .95rem, 14px radius, 1.5px var(--line), font: inherit) so desktop is
+   untouched. `font: inherit` resolved to body's clamp(15px,1.05vw,17px) = 15px
+   on every phone, which is below the 16px threshold at which iOS Safari zooms
+   the viewport on focus and never zooms back out — the mobile block fixes that.
+   -------------------------------------------------------------------------- */
+.co-input,
+.co-select {
+  width: 100%;
+  padding: .72rem .95rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+/* The old inline style had `outline:none` and nothing in its place, so keyboard
+   focus was invisible. Same ring the member-area form uses. */
+.co-input:focus-visible,
+.co-select:focus-visible {
+  border-color: var(--forest-2);
+  box-shadow: 0 0 0 3px rgba(86, 49, 132, .16);
+}
+.co-input[aria-invalid="true"] {
+  border-color: #B03B57;
+  box-shadow: 0 0 0 3px rgba(176, 59, 87, .14);
+}
+.co-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23877D9E' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   4. PAY BAR
+   On desktop this is an inert flex wrapper: the submit button renders exactly
+   where it did (full width, 1.4rem below the form body). `display:flex` rather
+   than a bare block so the inline-flex .btn does not sit on a text baseline and
+   pick up a few px of descender space.
+   -------------------------------------------------------------------------- */
+.co-paybar {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.4rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. SUMMARY
+   The sticky offset used to be an inline `position:sticky; top:24` on the
+   <aside>. Inline, it could not be undone for mobile — and it was inert there
+   anyway, because a single-column grid gives the aside a grid area exactly as
+   tall as itself. Stated here it applies only where it does something.
+   -------------------------------------------------------------------------- */
+@media (min-width: 681px) {
+  .co-summary { position: sticky; top: 24px; }
+}
+
+/* --------------------------------------------------------------------------
+   MOBILE
+   -------------------------------------------------------------------------- */
+
+/* 16px is the floor: below it, focusing a field zooms iOS Safari's viewport and
+   it never returns. `pointer: coarse` rather than width alone so touch tablets
+   (768x1024 portrait, and the same device in landscape) are covered too. */
+@media (max-width: 900px), (pointer: coarse) {
+  .co-input,
+  .co-select {
+    min-height: 48px;
+    padding: 12px 15px;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .co-select { padding-right: 44px; }
+
+  .co-label { font-size: .9rem; }
+  .co-error { font-size: .875rem; }
+  .co-note { font-size: .85rem; }
+  .co-meta { font-size: .9rem; }
+}
+
+/* A touch tablet in landscape (1024px) is still wide enough for auto-fit to
+   keep two ~186px columns, which is exactly the truncation this fix is about.
+   Coarse pointers only, so no mouse-driven desktop is touched. */
+@media (pointer: coarse) and (max-width: 1100px) {
+  .co-fields { grid-template-columns: 1fr; }
+}
+
+/* Stacked, the summary used to land ~400px BELOW the pay button, so the shopper
+   submitted without ever seeing the amount she was paying. Put it first.
+
+   680px, not 720px: the page grid is `minmax(min(100%,300px),1fr)` with a
+   clamped gap, and it holds two columns down to ~685px. Swapping the order
+   above that point would not stack anything — it would just mirror the desktop
+   layout, summary-left / form-right. */
+@media (max-width: 680px) {
+  .co-summary { order: -1; }
+}
+
+@media (max-width: 720px) {
+  /* Pin the CTA to the bottom of the viewport while the form is being filled.
+     Sticky inside the <form>, so it releases naturally at the end of the card.
+     The negative inline margins repeat the form's own padding expression rather
+     than hard-coding 20px — the clamp resolves to 21.6px at 720px, and a fixed
+     -20px would leave a 1.6px sliver of card showing beside the bar. */
+  .co-paybar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin: 1.4rem calc(-1 * clamp(20px, 3vw, 32px)) calc(-1 * clamp(20px, 3vw, 32px));
+    padding: 12px clamp(20px, 3vw, 32px) calc(12px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--line-soft);
+    border-bottom-left-radius: var(--r-card);
+    border-bottom-right-radius: var(--r-card);
+  }
+  .co-paybar .btn {
+    width: 100%;
+    min-height: 52px;
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .co-input,
+  .co-select { transition: none; }
+}

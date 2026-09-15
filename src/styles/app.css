@@ -1,0 +1,2572 @@
+/* ===== APP + DASHBOARD (warm brand system) ===== */
+:root {
+  --panel-r: 20px;
+  --tile-r: 18px;
+}
+
+/* ---------- App shell ---------- */
+.app { display: flex; min-height: 100dvh; background: var(--cream); }
+.sidebar {
+  width: 264px; flex-shrink: 0; background: var(--forest); color: #e7efe9;
+  position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column;
+  padding: 24px 16px; gap: 8px; overflow-y: auto;
+}
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px; }
+.sidebar-brand img { height: 30px; filter: brightness(0) invert(1); }
+.sidebar-brand .badge { font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; background: var(--yellow); color: var(--forest); padding: 3px 7px; border-radius: 6px; font-weight: 600; }
+.side-group { font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(231,239,233,.45); padding: 16px 12px 8px; font-weight: 500; }
+.side-link {
+  display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px;
+  color: rgba(231,239,233,.82); font-size: .95rem; font-weight: 300; cursor: pointer;
+  position: relative; transition: background .2s, color .2s;
+}
+.side-link svg { width: 20px; height: 20px; flex-shrink: 0; }
+.side-link:hover { background: rgba(255,255,255,.06); color: #fff; }
+.side-link.active { background: rgba(253,184,23,.16); color: var(--yellow); font-weight: 400; }
+.side-link.active::before { content: ''; position: absolute; left: -16px; top: 50%; transform: translateY(-50%); width: 3px; height: 22px; background: var(--yellow); border-radius: 0 3px 3px 0; }
+.sidebar-foot { margin-top: auto; padding: 14px 12px; border-top: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 11px; }
+.sidebar-foot .avatar { background: var(--yellow); color: var(--forest); }
+.sidebar-foot b { display: block; font-size: .88rem; color: #fff; font-weight: 500; }
+.sidebar-foot span { font-size: .74rem; color: rgba(231,239,233,.6); }
+
+.app-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.topbar {
+  position: sticky; top: 0; z-index: 20; min-height: 72px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; padding: 12px clamp(18px,3vw,36px);
+  background: rgba(255,252,244,.82); backdrop-filter: saturate(140%) blur(12px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.topbar-title { min-width: 0; }
+.topbar-title h1 { font-size: 1.3rem; font-weight: 600; color: var(--navy); line-height: 1.12; }
+.topbar-title p { font-size: .84rem; color: var(--muted); margin-top: 2px; }
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.icon-btn { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line); color: var(--navy); display: grid; place-items: center; background: var(--surface); cursor: pointer; transition: background .2s, border-color .2s; }
+.icon-btn:hover { background: var(--butter-soft); border-color: var(--yellow); }
+.icon-btn svg { width: 20px; height: 20px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--forest-2); color: #fff; display: grid; place-items: center; font-weight: 600; font-size: .85rem; flex-shrink: 0; }
+.app-content { padding: clamp(20px,3vw,34px); max-width: 1320px; width: 100%; margin: 0 auto; }
+
+/* ---------- grid ---------- */
+.dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(14px,1.6vw,20px); }
+.col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; } .col-5 { grid-column: span 5; }
+.col-6 { grid-column: span 6; } .col-7 { grid-column: span 7; } .col-8 { grid-column: span 8; }
+.col-9 { grid-column: span 9; } .col-12 { grid-column: span 12; }
+
+/* ---------- panels ---------- */
+.panel { background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--panel-r); padding: clamp(16px,2vw,22px); }
+.panel.pad-lg { padding: clamp(20px,2.4vw,28px); }
+.panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.panel-head h3 { font-size: 1.02rem; font-weight: 600; color: var(--navy); }
+.panel-head .sub { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+.seg { display: inline-flex; background: var(--cream-2); border-radius: 999px; padding: 3px; gap: 2px; }
+.seg button { border: none; background: transparent; font: inherit; font-size: .8rem; color: var(--muted); padding: 5px 12px; border-radius: 999px; cursor: pointer; font-weight: 400; white-space: nowrap; transition: background .2s var(--ease), color .2s var(--ease), box-shadow .2s var(--ease); }
+.seg button.on { background: var(--surface); color: var(--navy); font-weight: 500; box-shadow: var(--shadow-sm); }
+
+/* ---------- stat tiles ---------- */
+.stat-tile { background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--tile-r); padding: 17px 19px; display: flex; flex-direction: column; gap: 8px; min-height: 128px; }
+.stat-top { display: flex; align-items: center; justify-content: space-between; }
+.stat-label { font-size: .82rem; color: var(--muted); }
+.stat-icon { width: 34px; height: 34px; border-radius: 11px; background: var(--butter-soft); display: grid; place-items: center; color: var(--forest-2); }
+.stat-icon svg { width: 18px; height: 18px; }
+.stat-value { font-size: 1.85rem; font-weight: 700; color: var(--navy); letter-spacing: -.02em; line-height: 1; }
+.stat-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; gap: 12px; }
+.stat-spark { width: 104px; flex-shrink: 0; }
+.delta { font-size: .78rem; font-weight: 500; padding: 3px 9px; border-radius: 999px; display: inline-flex; gap: 3px; align-items: center; }
+.delta.up { color: #166a44; background: rgba(30,130,79,.12); }
+.delta.down { color: #b23a2a; background: rgba(194,68,52,.12); }
+
+/* ---------- rank bars ---------- */
+.rankbars { display: flex; flex-direction: column; gap: 15px; }
+.rankrow { display: grid; grid-template-columns: 92px 1fr auto; align-items: center; gap: 12px; }
+.rlabel { font-size: .88rem; color: var(--ink); }
+.rtrack { height: 9px; border-radius: 999px; background: rgba(11,42,91,.07); overflow: hidden; }
+.rfill { display: block; height: 100%; border-radius: 999px; transition: width .6s var(--ease); }
+.rval { font-size: .85rem; font-weight: 500; color: var(--navy); }
+
+/* ---------- cycle calendar ---------- */
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.cal-nav { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--navy); font-size: 1.3rem; line-height: 1; cursor: pointer; transition: background .2s; }
+.cal-nav:hover { background: var(--butter-soft); }
+.cal-title { text-align: center; }
+.cal-title b { display: block; font-size: 1.05rem; color: var(--navy); font-weight: 600; }
+.cal-title span { font-size: .78rem; color: var(--muted); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cal-week { margin-bottom: 6px; }
+.cal-wd { text-align: center; font-size: .72rem; color: var(--muted); font-weight: 500; }
+.cal-day { aspect-ratio: 1; border-radius: 11px; border: 1px solid transparent; background: transparent; font-family: inherit; font-size: .86rem; color: var(--ink); display: grid; place-items: center; cursor: pointer; transition: transform .12s; }
+.cal-day:hover { transform: scale(1.08); }
+.cal-day.today { outline: 2px solid var(--navy); outline-offset: 1px; font-weight: 600; }
+.cal-legend { display: flex; flex-wrap: wrap; gap: 9px 16px; margin-top: 18px; }
+.cl-item { font-size: .8rem; color: var(--ink); display: inline-flex; align-items: center; gap: 7px; }
+.cl-sw { width: 11px; height: 11px; border-radius: 4px; flex-shrink: 0; }
+
+/* ---------- prediction hero (user dashboard) ---------- */
+.predict-hero { background: linear-gradient(138deg, #3A2158 0%, #6B3FA6 100%); color: #efe9f8; border-radius: var(--panel-r); padding: clamp(22px,3vw,30px); position: relative; overflow: hidden; display: flex; gap: clamp(20px,3vw,40px); align-items: center; flex-wrap: wrap; }
+.predict-hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 240px; height: 240px; background: radial-gradient(circle, rgba(253,184,23,.16), transparent 70%); }
+.predict-hero .ph-copy { position: relative; z-index: 1; min-width: 220px; flex: 1; }
+.predict-hero .ph-eyebrow { font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; color: var(--yellow); font-weight: 500; }
+.predict-hero h2 { color: #fff; font-size: clamp(1.7rem,3vw,2.3rem); font-weight: 700; margin: 10px 0 6px; letter-spacing: -.02em; }
+.predict-hero .ph-sub { color: rgba(239,233,248,.8); font-size: .96rem; max-width: 40ch; }
+.predict-hero .ph-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.ph-chip { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16); border-radius: 12px; padding: 10px 14px; }
+.ph-chip b { display: block; color: #fff; font-size: 1.05rem; font-weight: 600; }
+.ph-chip span { font-size: .74rem; color: rgba(239,233,248,.7); }
+.predict-hero .ph-ring { position: relative; z-index: 1; }
+.predict-hero .donut-center b { color: #fff; }
+.predict-hero .donut-center span { color: rgba(239,233,248,.72); }
+
+/* ---------- insight cards ---------- */
+.insight { display: flex; gap: 13px; padding: 15px 0; }
+.insight + .insight { border-top: 1px solid var(--line-soft); }
+.insight-dot { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; }
+.insight-dot svg { width: 18px; height: 18px; }
+.tone-good .insight-dot { background: rgba(30,130,79,.12); color: #1e824f; }
+.tone-warning .insight-dot { background: rgba(168,110,10,.14); color: #a86e0a; }
+.tone-info .insight-dot { background: var(--butter-soft); color: var(--forest-2); }
+.insight b { font-size: .94rem; color: var(--navy); font-weight: 600; }
+.insight p { font-size: .86rem; color: var(--muted); margin-top: 3px; }
+
+/* ---------- model panel (admin) ---------- */
+.model-panel { background: linear-gradient(135deg, #1a1230 0%, #2a1c4a 100%); color: #ece7f6; border-radius: var(--panel-r); padding: clamp(20px,2.4vw,26px); }
+.model-panel h3 { color: #fff; }
+.model-panel .sub { color: rgba(236,231,246,.6); }
+.model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+.model-stat { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 16px; }
+.model-stat b { display: block; font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: -.02em; }
+.model-stat span { font-size: .78rem; color: rgba(236,231,246,.66); margin-top: 4px; display: block; }
+.model-stat.accent b { color: var(--yellow); }
+.model-note { margin-top: 16px; font-size: .84rem; color: rgba(236,231,246,.8); display: flex; gap: 9px; align-items: flex-start; }
+.model-note svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; color: var(--yellow); }
+
+/* ---------- status badges / chips ---------- */
+.badge { font-size: .74rem; font-weight: 500; padding: 4px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; }
+.badge.delivered { color: #166a44; background: rgba(30,130,79,.12); }
+.badge.shipped { color: #2b57a8; background: rgba(62,113,198,.13); }
+.badge.processing { color: #a86e0a; background: rgba(168,110,10,.14); }
+
+/* ---------- data table ---------- */
+.dtable { width: 100%; border-collapse: collapse; }
+.dtable th { text-align: left; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 0 14px 12px; }
+.dtable td { padding: 14px; border-top: 1px solid var(--line-soft); font-size: .9rem; color: var(--ink); vertical-align: middle; }
+.dtable tr:hover td { background: var(--butter-soft); }
+.dtable .oid { font-weight: 600; color: var(--navy); }
+.dtable .oitems { color: var(--muted); font-size: .84rem; }
+
+/* ---------- product detail ---------- */
+.pdp-section { padding: clamp(26px,4vw,52px) 0; }
+.crumbs { font-size: .84rem; color: var(--muted); margin-bottom: 22px; }
+.crumbs a:hover { color: var(--forest-2); }
+.pdp { display: grid; grid-template-columns: 1.02fr 1fr; gap: clamp(28px,4vw,60px); align-items: start; }
+.pdp-gallery { position: sticky; top: 90px; }
+.pdp-main { border-radius: 16px; overflow: hidden; background: linear-gradient(160deg, #FFF7DE, #FFEcB8); aspect-ratio: 4 / 5; box-shadow: 0 8px 24px rgba(61,44,92,0.06); }
+.pdp-main img { width: 100%; height: 100%; object-fit: cover; }
+.pdp-thumbs { display: flex; gap: 12px; margin-top: 14px; }
+.pdp-thumb { width: 86px; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 2px solid transparent; cursor: pointer; background: var(--butter-soft); padding: 0; transition: border-color .2s, transform .2s var(--ease); }
+.pdp-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pdp-thumb.on { border-color: var(--forest-2); transform: scale(1.03); }
+.pdp-flow { font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: #494286; font-weight: 600; display: inline-block; margin-bottom: 12px; }
+.pdp-info h1 { font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif; font-size: clamp(1.8rem,3vw,2.5rem); font-weight: 700; color: var(--navy); letter-spacing: -.01em; margin: 0 0 12px; }
+.display, h2.display { font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif; font-weight: 600; letter-spacing: -.01em; }
+.pdp-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.stars { display: inline-flex; gap: 2px; color: var(--yellow); }
+.stars svg { width: 17px; height: 17px; }
+.pdp-rating span { font-size: .86rem; color: var(--muted); }
+.pdp-price { display: flex; align-items: baseline; gap: 12px; margin: 0 0 12px; }
+.pdp-price b { font-size: 2.3rem; font-weight: 700; color: var(--navy); }
+.pdp-price .unit { font-size: .9rem; color: #9B8EA9; opacity: 0.85; }
+.pdp-long { color: var(--muted); line-height: 1.55; max-width: 48ch; margin-bottom: 22px; }
+.pdp-block-label { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--navy); font-weight: 600; margin-bottom: 12px; }
+
+/* eyebrow / kicker label */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: .6em;
+  font-family: "Instrument Sans", "Urbanist", sans-serif;
+  font-size: .85rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+  color: #E2A233;
+}
+.eyebrow::before { content: none; }
+.eyebrow::after {
+  content: ""; display: inline-block; width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23E2A233' d='M8 0c.5 2.5 2.5 4.5 5 5-2.5.5-4.5 2.5-5 5-.5-2.5-2.5-4.5-5-5 2.5-.5 4.5-2.5 5-5z'/%3E%3C/svg%3E");
+  background-size: contain; background-repeat: no-repeat; background-position: center;
+}
+
+.size-opts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.size-opt { border: 1.5px solid var(--line); background: var(--surface); border-radius: 14px; padding: 10px 16px; cursor: pointer; text-align: left; transition: border-color .2s, background .2s; }
+.size-opt.on { border-color: var(--forest-2); background: #F3E8FF; border-radius: 14px; }
+.size-opt b { display: block; font-size: .92rem; color: var(--navy); font-weight: 600; }
+.size-opt span { font-size: .76rem; color: var(--muted); }
+.buy-row { display: flex; gap: 12px; align-items: center; margin-bottom: 26px; flex-wrap: wrap; }
+.stepper { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; height: 50px; box-sizing: border-box; }
+.stepper button { width: 44px; height: 44px; border-radius: 999px; background: transparent; color: var(--navy); font-size: 1.2rem; cursor: pointer; transition: background .2s; }
+.stepper button:hover { background: var(--butter); }
+.stepper span { min-width: 36px; text-align: center; font-weight: 600; }
+.buy-row .btn { flex: 1; min-width: 180px; height: 50px; padding: 0 28px; gap: 10px; }
+.pdp-features { display: flex; flex-direction: column; gap: 2px; margin-bottom: 24px; padding-left: 0; margin-left: 0; }
+.pdp-feat { display: flex; gap: 13px; padding: 14px 0; align-items: flex-start; }
+.pdp-feat + .pdp-feat { border-top: 1px solid rgba(52, 32, 78, 0.08); }
+.pdp-feat .ficon { width: 30px; height: 30px; border-radius: 50%; background: var(--sage-tint); color: var(--forest-2); display: grid; place-items: center; flex-shrink: 0; margin-left: 0; }
+.pdp-feat .ficon svg { width: 16px; height: 16px; }
+.pdp-feat b { font-size: .94rem; color: var(--navy); font-weight: 600; }
+.pdp-feat p { font-size: .86rem; color: var(--muted); margin-top: 2px; line-height: 1.55; }
+.spec-list { border: 1px solid rgba(52, 32, 78, 0.08); border-radius: 16px; overflow: hidden; background: #FDFCFA; }
+.spec-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; font-size: .9rem; gap: 16px; }
+.spec-row + .spec-row { border-top: 1px solid rgba(52, 32, 78, 0.08); }
+.spec-row .k { color: var(--muted); flex-shrink: 0; }
+.spec-row .v { color: var(--navy); font-weight: 500; text-align: right; margin-left: auto; word-break: break-word; }
+
+/* ---------- pdp: Section 9 Chip / Selector component ---------- */
+.pdp-was { font-size: 1rem; color: var(--muted); text-decoration: line-through; }
+.pdp-choose { margin-bottom: 22px; }
+.pack-opts, .size-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.pack-opt, .size-pill, .chip-opt {
+  flex: 1 1 0; min-width: 88px; text-align: center;
+  border: 1.5px solid var(--line); background: var(--surface);
+  border-radius: 14px; padding: 10px 14px; color: var(--navy);
+  font-weight: 600; font-family: inherit; cursor: pointer;
+  transition: all .2s var(--ease);
+}
+/* The chip's computed height was ~43px — 1px under the touch minimum, with
+   nothing guaranteeing it. 46px is the floor .size-pill already declares below,
+   so this is the value the family was always meant to share.
+   Scoped to .chip-opt on purpose: .pack-opt lays a <b> over a <span> as blocks,
+   so it must not become a centred row. */
+.chip-opt {
+  display: inline-flex; align-items: center; justify-content: center;
+}
+@media (pointer: coarse) {
+  .chip-opt { min-height: 46px; }
+}
+/* 88px is too wide a floor for a three-up chip group at 360px — it forces a
+   wrap that leaves one chip alone on its own row. */
+@media (max-width: 400px) {
+  .chip-opt { min-width: 72px; }
+}
+.pack-opt b, .size-pill b { display: block; font-size: .95rem; font-weight: 600; color: inherit; }
+.pack-opt span { display: block; font-size: .78rem; color: var(--muted); margin-top: 2px; transition: color .2s var(--ease); }
+
+.pack-opt:hover, .size-pill:hover, .chip-opt:hover {
+  border-color: #494286; background: #F5F2FF;
+}
+.pack-opt:active, .size-pill:active, .chip-opt:active {
+  transform: scale(.97);
+}
+.pack-opt.on, .size-pill.on, .chip-opt.on,
+.pack-opt[aria-pressed="true"], .size-pill[aria-pressed="true"], .chip-opt[aria-pressed="true"] {
+  border-color: #494286; background: #494286; color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(73,66,134,.25); transform: scale(1.02);
+}
+.pack-opt.on b, .size-pill.on b { color: #FFFFFF; }
+.pack-opt.on span, .size-pill.on span { color: rgba(255,255,255,.9); }
+.size-pill { min-width: 54px; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; }
+
+/* ---------- pdp: subscribe & save ---------- */
+.sub-module {
+  border: 1.5px solid rgba(86, 49, 132, 0.15); border-radius: 16px;
+  padding: 8px; margin-bottom: 22px; background: #F8F5FF;
+  box-shadow: 0 8px 24px rgba(61,44,92,0.06);
+}
+.sub-mode {
+  display: flex; align-items: center; gap: 13px; width: 100%; text-align: left;
+  padding: 14px 15px; border-radius: 14px; background: transparent; border: 1.5px solid transparent;
+  cursor: pointer; transition: background .2s, border-color .2s; position: relative;
+}
+.sub-mode + .sub-mode { margin-top: 2px; }
+.sub-mode:hover { background: rgba(255, 255, 255, 0.7); }
+.sub-mode.on { background: #FFFFFF; border-color: var(--forest-2); box-shadow: 0 4px 12px rgba(61,44,92,0.05); }
+.sub-radio {
+  width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); flex-shrink: 0;
+  transition: border-color .2s; position: relative;
+}
+.sub-mode.on .sub-radio { border-color: var(--forest-2); }
+.sub-mode.on .sub-radio::after {
+  content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--forest-2);
+}
+.sub-mode-txt { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; padding-right: 75px; }
+.sub-mode-txt b { font-size: .98rem; color: var(--navy); font-weight: 600; }
+.sub-mode-txt span { font-size: .82rem; color: var(--muted); }
+.sub-save {
+  position: absolute; top: 14px; right: 14px;
+  font-size: .74rem; font-weight: 700; color: var(--navy);
+  background: var(--yellow); padding: 4px 10px; border-radius: 999px;
+}
+.sub-detail { padding: 4px 15px 14px; }
+.sub-cadences { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.cad {
+  padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface);
+  font-size: .84rem; font-weight: 500; color: var(--ink); cursor: pointer;
+  transition: background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
+}
+.cad:hover { border-color: var(--forest-2); }
+.cad.on { background: var(--forest-2); color: #fff; border-color: var(--forest-2); }
+.sub-next {
+  display: flex; align-items: center; gap: 8px; margin-top: 12px;
+  font-size: .88rem; color: var(--ink);
+}
+.sub-next svg { width: 16px; height: 16px; color: var(--forest-2); flex-shrink: 0; }
+.sub-next b { color: var(--navy); font-weight: 600; }
+
+/* reviews + related */
+.reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 22px; }
+.review { background: #FDFCFA; border: 1px solid rgba(52, 32, 78, 0.08); border-radius: 16px; padding: 22px; box-shadow: 0 8px 24px rgba(61,44,92,0.06); }
+.review .stars { margin-bottom: 10px; }
+.review p { font-size: .9rem; color: var(--ink); line-height: 1.55; }
+.review .who { margin-top: 14px; font-size: .84rem; color: var(--muted); }
+.review .who b { color: var(--navy); font-weight: 600; }
+
+/* ---------- account ---------- */
+.acct-hero { display: flex; align-items: center; gap: 18px; }
+.acct-hero .avatar { width: 62px; height: 62px; font-size: 1.3rem; }
+.acct-hero h2 { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
+.acct-hero p { font-size: .88rem; color: var(--muted); }
+.kv { display: flex; flex-direction: column; gap: 14px; }
+.kv-row { display: flex; justify-content: space-between; gap: 12px; font-size: .92rem; }
+.kv-row .k { color: var(--muted); }
+.kv-row .v { color: var(--navy); font-weight: 500; text-align: right; }
+.addr { border: 1px solid var(--line-soft); border-radius: 16px; padding: 16px 18px; position: relative; }
+.addr + .addr { margin-top: 12px; }
+.addr .alabel { font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--forest-2); font-weight: 600; }
+.addr.primary::after { content: 'Default'; position: absolute; top: 16px; right: 16px; font-size: .68rem; background: var(--sage-tint); color: var(--forest-2); padding: 3px 9px; border-radius: 999px; font-weight: 500; }
+.addr b { display: block; margin: 6px 0 3px; color: var(--navy); font-weight: 600; font-size: .94rem; }
+.addr span { font-size: .86rem; color: var(--muted); line-height: 1.5; }
+.sub-card { background: linear-gradient(135deg, var(--butter-soft), #FFE9A8); border: 1px solid var(--line-soft); border-radius: var(--panel-r); padding: 22px; }
+.sub-card .stag { font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--forest-2); font-weight: 600; }
+.sub-card h3 { font-size: 1.2rem; color: var(--navy); margin: 8px 0 4px; }
+.sub-card .srow { display: flex; justify-content: space-between; font-size: .88rem; padding: 8px 0; border-bottom: 1px solid rgba(11,42,91,.08); }
+.sub-card .srow .k { color: var(--muted); }
+.sub-card .srow .v { color: var(--navy); font-weight: 500; }
+
+/* symptom chips */
+.symptoms { display: flex; flex-direction: column; gap: 12px; }
+.symp { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 12px; }
+.symp .sname { font-size: .88rem; color: var(--ink); }
+.symp .sdots { display: flex; gap: 5px; }
+.symp .sdot { width: 20px; height: 8px; border-radius: 3px; background: rgba(11,42,91,.09); }
+.symp .sdot.on { background: var(--forest-2); }
+
+/* ---------- app responsive ---------- */
+@media (max-width: 1080px) {
+  .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 12; }
+  .col-3 { grid-column: span 6; } .col-4 { grid-column: span 6; }
+  .pdp { grid-template-columns: 1fr; gap: 28px; }
+  .pdp-gallery { position: static; }
+  .pdp-main { max-width: 680px; margin-inline: auto; }
+  .pdp-thumbs { justify-content: center; flex-wrap: wrap; }
+  .reviews { grid-template-columns: 1fr; }
+  .model-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 860px) {
+  .sidebar { position: fixed; left: 0; top: 0; z-index: 60; transform: translateX(-100%); transition: transform .3s var(--ease); }
+  .sidebar.open { transform: translateX(0); box-shadow: 20px 0 60px -30px rgba(0,0,0,.5); }
+  .app-menu-btn { display: grid !important; }
+}
+@media (max-width: 620px) {
+  .col-3 { grid-column: span 12; }
+  .pdp-section { padding: 24px 0 38px; }
+  .crumbs { margin-bottom: 16px; font-size: .78rem; }
+  .pdp { gap: 22px; }
+  .pdp-main {
+    aspect-ratio: 1 / 1;
+    min-height: 300px;
+    border-radius: 14px;
+  }
+  .pdp-main img { object-fit: cover; }
+  .pdp-thumbs {
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pdp-thumb {
+    width: 56px;
+    flex: 0 0 56px;
+    border-radius: 7px;
+  }
+  .pdp-flow {
+    font-size: .72rem;
+    margin-bottom: 8px;
+  }
+  .pdp-info h1 {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+    line-height: 1.12;
+    margin-bottom: 10px;
+  }
+  .pdp-rating {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pdp-price {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .pdp-price b { font-size: 2rem; }
+  .pdp-price .unit { font-size: .84rem; }
+  .pdp-long {
+    max-width: none;
+    margin-bottom: 18px;
+    font-size: .95rem;
+    line-height: 1.6;
+  }
+  .pack-opts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .pack-opt {
+    min-width: 0;
+    padding: 9px 6px;
+    border-radius: 999px;
+  }
+  .pack-opt b { font-size: .82rem; white-space: nowrap; }
+  .pack-opt span { font-size: .72rem; }
+  .size-pills {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .size-pill {
+    min-width: 0;
+    min-height: 44px;
+  }
+  .sub-module {
+    border-radius: 14px;
+    padding: 6px;
+  }
+  .sub-mode {
+    align-items: flex-start;
+    padding: 12px;
+  }
+  .sub-mode-txt {
+    padding-right: 0;
+  }
+  .sub-mode-txt b {
+    font-size: .92rem;
+  }
+  .sub-save {
+    position: static;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .sub-cadences {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .cad {
+    padding: 8px 6px;
+    text-align: center;
+    font-size: .78rem;
+  }
+  .sub-next {
+    align-items: flex-start;
+    font-size: .82rem;
+    line-height: 1.45;
+  }
+  .buy-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .stepper {
+    width: max-content;
+    min-height: 50px;
+  }
+  .buy-row .btn {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 50px;
+    padding: 12px 16px;
+    white-space: normal;
+  }
+  .pdp-feat {
+    gap: 11px;
+    padding: 12px 0;
+  }
+  .spec-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+  }
+  .spec-row .v {
+    text-align: left;
+    margin-left: 0;
+  }
+  .reviews { grid-template-columns: 1fr; }
+  .dtable .hide-sm { display: none; }
+  .topbar-title p { display: none; }
+  .topbar-title h1 { font-size: 1.15rem; }
+  .topbar-actions { gap: 8px; }
+}
+.app-menu-btn { display: none; }
+.scrim { position: fixed; inset: 0; background: rgba(11,42,91,.4); z-index: 55; opacity: 0; visibility: hidden; transition: opacity .3s; }
+.scrim.open { opacity: 1; visibility: visible; }
+
+/* ===== FEMI9 DESIGN SYSTEM TOKENS ===== */
+:root {
+  --ink: #2A1B47;
+  --ink-2: #3D2A66;
+  --mustard: #E7A83B;
+  --mustard-deep: #C98A22;
+  --cream: #FBF6EF;
+  --lavender: #F2EAFB;
+  --line: #E7E0D4;
+  --teal: #2E8E79;
+  --teal-tint: #E3F2EE;
+  --text: #241738;
+  --text-soft: #786E8C;
+  --font-main: "Plus Jakarta Sans", "Instrument Sans", system-ui, sans-serif;
+}
+
+/* ---------- PDP Page Structure ---------- */
+.pdp-page {
+  background-color: var(--cream);
+  color: var(--text);
+  font-family: var(--font-main);
+  /* 100vh is the URL-bar-collapsed height on mobile, so the page is ~60-90px
+     taller than what is actually visible. dvh tracks the real viewport; the vh
+     line stays as the fallback for browsers without dvh. */
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.pdp-nav {
+  background-color: var(--ink);
+  width: 100%;
+  padding: 16px 0;
+  color: #FFF;
+}
+
+.pdp-nav-in {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdp-logo {
+  font-family: var(--font-main);
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFF;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.pdp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-left: auto;
+  margin-right: 40px;
+}
+
+.pdp-nav-links a {
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 200ms ease-out;
+}
+
+.pdp-nav-links a:hover {
+  color: #FFF;
+}
+
+.pdp-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdp-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 200ms ease-out;
+}
+
+.pdp-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.pdp-main-content {
+  padding: 24px 0 60px;
+}
+
+.crumbs {
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 28px;
+}
+
+.crumbs a {
+  color: var(--text-soft);
+  text-decoration: none;
+}
+
+.crumbs a:hover {
+  color: var(--ink);
+}
+
+/* ---------- PDP Announcement Bar ---------- */
+.pdp-announcement-bar {
+  background: var(--ink);
+  color: var(--mustard);
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ---------- PDP Two-Column Layout (Reference Alignment) ---------- */
+.pdp-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Gallery Layout: Vertical Thumbs Left + Stage Right */
+.pdp-gallery-layout {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+/* The vertical thumbnail stack and its `.pdp-vertical-thumb` children are gone.
+   The gallery is one square stage with a horizontal `.pdp-thumb-rail` beneath
+   it at every width now — see pdp-buybox.css. Rules for classes nothing renders
+   are worse than dead weight: they silently restyle the next component that
+   reuses the name. */
+
+.pdp-hero-stage {
+  flex: 1;
+  aspect-ratio: 4 / 5;
+  min-height: 520px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid var(--line-soft, #e8e3f4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 14px 40px rgba(42, 27, 71, 0.08);
+}
+
+.pdp-hero-badge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  background: var(--ink, #272355);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  border-radius: 12px;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pdp-hero-stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pdp-hero-stage:hover img {
+  transform: scale(1.03);
+}
+
+.pdp-stage-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* `.pdp-hero-gap-banner` is gone. It was a second, unrelated photograph stacked
+   under the stage for one reason: the 4:5 stage was shorter than the buy column
+   beside it, and the banner filled the gap. The stage is square and carries a
+   thumbnail rail now, so the column fills itself and the filler image — which
+   read as a second product shot — is not rendered at all. */
+
+/* ---------- Right Column Product Information ---------- */
+.pdp-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 580px;
+}
+
+.pdp-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal, #386f62);
+  margin-bottom: -10px;
+}
+
+.pdp-title {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.16;
+  color: var(--ink, #120f2e);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Rating Row */
+.pdp-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -6px;
+}
+
+.pdp-rating-score {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #120f2e);
+}
+
+.pdp-rating-count {
+  font-size: 14px;
+  color: var(--text-soft, #7c7c7c);
+}
+
+.pdp-rating-divider {
+  color: var(--line, #e8e3f4);
+  font-weight: bold;
+}
+
+.pdp-rating-sub {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal, #386f62);
+}
+
+/* Price Line with Strike-Through, Active Price & Discount Badge */
+.pdp-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.pdp-price-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdp-was-price {
+  font-size: 20px;
+  color: var(--text-soft, #9490a0);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.pdp-now-price {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--ink, #120f2e);
+}
+
+.pdp-discount-badge {
+  background: var(--forest, #272355);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+
+.pdp-tax-note {
+  font-size: 12.5px;
+  color: var(--text-soft, #7c7c7c);
+  line-height: 1.4;
+}
+
+/* Clean Description Text */
+.pdp-desc-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #4a4754;
+  margin: 6px 0 2px;
+  font-weight: 400;
+}
+
+/* 4 CIRCULAR BENEFIT BADGES ROW (Reference Layout) */
+.pdp-benefit-badges {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 20px 0;
+  margin: 4px 0;
+}
+
+.pdp-benefit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.benefit-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #edf5f0;
+  color: #272355;
+  display: grid;
+  place-items: center;
+  border: 1px solid #dbe8e0;
+  transition: transform 200ms ease-out, background 200ms ease-out;
+}
+
+.benefit-circle svg {
+  width: 24px;
+  height: 24px;
+}
+
+.pdp-benefit-item:hover .benefit-circle {
+  transform: translateY(-3px);
+  background: #e3dcff;
+  color: #272355;
+}
+
+.pdp-benefit-item span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink, #120f2e);
+  line-height: 1.3;
+  max-width: 90px;
+}
+
+.pdp-share-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 4px;
+}
+
+.pdp-share-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft, #7c7c7c);
+}
+
+.pdp-share-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pdp-share-link {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line-soft, #e8e3f4);
+  color: var(--ink, #272355);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+/* A hover lift is the only press affordance these had, and touch never fires
+   it — worse, iOS leaves the sticky-hover state behind after a tap. Keep the
+   lift for real pointers and give touch a genuine :active response. */
+@media (hover: hover) {
+  .pdp-share-link:hover {
+    transform: translateY(-2px);
+    background: var(--lavender, #e3dcff);
+    color: var(--ink, #272355);
+  }
+}
+
+.pdp-share-link:active {
+  background: var(--lavender, #e3dcff);
+  color: var(--ink, #272355);
+  transform: scale(0.94);
+}
+
+.pdp-share-link svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Collapsible Accordions (Reference Style) */
+.pdp-accordions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.pdp-accordion-item {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+.pdp-accordion-summary {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 8px 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pdp-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.pdp-accordion-summary::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text-soft);
+}
+
+.pdp-accordion-item[open] .pdp-accordion-summary::after {
+  content: "\2212";
+}
+
+.pdp-accordion-body {
+  padding: 6px 0 10px;
+  font-size: 13px;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+.pdp-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+/* `margin-top: 0`, not the -16px this used to carry. `.pdp-eyebrow` already
+   pulls the pair together with `margin-bottom: -10px` (line 783), and the two
+   negatives stacked: against `.pdp-right-col`'s flex gap (20px desktop, 16px
+   mobile) the title's line box ended up 6px / 10px ABOVE the eyebrow's, so the
+   ascenders of the product name punched through "SANITARY & PERIOD CARE". The
+   eyebrow's own -10px is kept, so the kicker stays tight to the title — 10px
+   apart on desktop, 6px on mobile — instead of overlapping it.
+   Also un-collides the review form heading, where `.pdp-title` follows a
+   `.pdp-label` with an inline `marginBottom: 8` and the -16px ate all of it. */
+.pdp-title {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.pdp-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: -16px 0 0;
+}
+
+.pdp-price-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.pdp-price-was {
+  font-size: 15px;
+  color: var(--text-soft);
+  text-decoration: line-through;
+}
+
+.pdp-desc-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-soft);
+  margin: -16px 0 0;
+}
+
+.pdp-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -16px 0 0;
+  /* ~361px of content (5 SVG stars that cannot shrink + four labels) in a 324px
+     line at 360px. Without wrap the text spans break mid-phrase into a ragged
+     three-line block; desktop has room, so this never engages there. */
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.pdp-rating-row .stars {
+  flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+  .pdp-rating-divider,
+  .pdp-rating-sub {
+    display: none;
+  }
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--mustard-deep);
+}
+
+.pdp-rating-score {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.pdp-rating-count {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.pdp-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdp-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pack-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.pack-card {
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #FFF;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.pack-card.active {
+  background: var(--ink);
+  color: #FFF;
+  border-color: var(--ink);
+}
+
+.pack-card b {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pack-card span {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.size-cards {
+  display: flex;
+  gap: 10px;
+}
+
+.size-card {
+  height: 44px;
+  min-width: 52px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #FFF;
+  color: var(--ink);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.size-card.active {
+  background: var(--ink);
+  color: #FFF;
+  border-color: var(--ink);
+}
+
+.sub-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sub-row {
+  min-height: 52px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #FFF;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 200ms ease-out;
+}
+
+.sub-row.active {
+  background: var(--lavender);
+  border-color: var(--ink);
+}
+
+.sub-radio-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.sub-row.active .sub-radio-dot::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.sub-row-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.sub-row-content b {
+  font-weight: 600;
+}
+
+.sub-row-content span {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.cta-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.qty-stepper {
+  width: 120px;
+  height: 50px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+
+.qty-stepper button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 200ms ease-out;
+}
+
+.qty-stepper button:hover {
+  background: var(--lavender);
+}
+
+.qty-stepper span {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.add-to-bag-btn {
+  flex: 1;
+  /* Was a hard height:50px with zero horizontal padding. The label is
+     "Start subscription — Rs.2,025" in subscribe mode, which wraps in the
+     192px the stepper leaves and then clipped. min-height keeps the desktop
+     resting size identical while letting a wrapped label grow. */
+  min-height: 50px;
+  padding: 12px 18px;
+  text-align: center;
+  line-height: 1.25;
+  border-radius: 14px;
+  background: var(--mustard);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 200ms ease-out, color 200ms ease-out;
+}
+
+.add-to-bag-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.add-to-bag-btn:hover {
+  background: var(--mustard-deep);
+  color: #FFF;
+}
+
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.feature-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.feature-icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--teal-tint);
+  color: var(--teal);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.feature-text b {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+}
+
+.feature-text p {
+  font-size: 13px;
+  color: var(--text-soft);
+  line-height: 1.45;
+  margin: 2px 0 0;
+}
+
+.specs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.specs-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.spec-item {
+  display: flex;
+  align-items: baseline;
+  font-size: 13px;
+}
+
+.spec-key {
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.spec-dash {
+  flex: 1;
+  border-bottom: 1px dashed var(--line);
+  margin: 0 10px;
+  height: 1em;
+}
+
+.spec-val {
+  color: var(--ink);
+  font-weight: 600;
+  /* Key and value were both flex-shrink:0, so the row's minimum width was
+     key + 20 + value with no upper bound — spec text is admin-authored free
+     text, and "100% certified organic cotton top sheet" pushed the whole page
+     sideways. Letting the value wrap costs desktop nothing: it only engages
+     when the row would otherwise overflow. */
+  flex-shrink: 1;
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 620px) {
+  .spec-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .spec-dash {
+    display: none;
+  }
+
+  .spec-val {
+    text-align: left;
+  }
+}
+
+/* ---------- Reviews Strip ---------- */
+.reviews-strip-card {
+  margin-top: 56px;
+  background: #FFF;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reviews-strip-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.reviews-big-num {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.reviews-strip-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reviews-strip-count {
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.reviews-write-link {
+  background: none;
+  border: none;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Related Products ---------- */
+.pdp-related-section {
+  margin-top: 64px;
+}
+
+.related-heading {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.related-card {
+  background: #FFF;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.related-media {
+  height: 150px;
+  background: linear-gradient(140deg, #FBF6EF, #F3E4CD);
+  position: relative;
+  overflow: hidden;
+}
+
+.related-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.related-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  background: var(--ink);
+  color: #FFF;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.related-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+
+.related-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.related-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.related-desc {
+  font-size: 12px;
+  color: var(--text-soft);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.related-foot {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.related-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.related-add-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* 4th Card Inverted Style */
+.related-card-inverted {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #FFF;
+}
+
+.related-media-accent {
+  background: var(--ink-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accent-illustration {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(231, 168, 59, 0.15);
+  color: var(--mustard);
+  display: grid;
+  place-items: center;
+}
+
+.accent-badge {
+  background: var(--mustard);
+  color: var(--ink);
+}
+
+.accent-eyebrow {
+  color: var(--mustard);
+}
+
+.accent-title {
+  color: #FFF;
+}
+
+.accent-desc {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.accent-price {
+  color: var(--mustard);
+}
+
+.accent-link {
+  color: var(--mustard);
+}
+
+/* ---------- Footer ---------- */
+.pdp-footer {
+  background: var(--ink);
+  color: #FFF;
+  margin-top: 80px;
+  padding: 60px 0 28px;
+}
+
+.pdp-footer-in {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.pdp-footer-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.footer-logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFF;
+  text-decoration: none;
+}
+
+.footer-tagline {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--mustard);
+  margin: 12px 0 8px;
+}
+
+.footer-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.55;
+  max-width: 320px;
+}
+
+.footer-col h4 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #FFF;
+  margin-bottom: 18px;
+}
+
+.footer-col a {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: color 200ms ease-out;
+}
+
+.footer-col a:hover {
+  color: #FFF;
+}
+
+.pdp-footer-bottom {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.pdp-footer-bottom a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+}
+
+.pdp-footer-bottom a:hover {
+  color: #FFF;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 920px) {
+  .pdp-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pdp-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bento-gallery {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .bento-hero {
+    grid-column: 1;
+    grid-row: auto;
+    min-height: 220px;
+  }
+  .bento-texture,
+  .bento-wing {
+    grid-column: 1;
+    grid-row: auto;
+    min-height: 120px;
+  }
+  .bento-eco {
+    grid-column: 1;
+    grid-row: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .related-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .pdp-footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The 900px and 560px blocks that used to live here targeted the pre-rewrite
+   gallery — .pdp, .pdp-gallery, .pdp-gallery-frame, .pdp-main, .reviews-layout,
+   .reviews, .pdp-related-grid. None of those class names is emitted by
+   ProductDetail.tsx any more (it renders .pdp-grid, .pdp-gallery-layout,
+   .pdp-thumb-rail, .pdp-reviews-grid, .related-grid), so every declaration in
+   them was inert. The live mobile behaviour is the 992/768px blocks near the
+   end of this file. */
+
+.pdp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.pdp-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(52, 32, 78, .42);
+}
+
+.pdp-modal-card,
+.pdp-image-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 560px);
+  max-height: min(780px, 88vh);
+  overflow: auto;
+  border: 1px solid var(--line-soft);
+  border-radius: 4px;
+  background: var(--surface);
+  box-shadow: 0 28px 70px rgba(52, 32, 78, .22);
+}
+
+.pdp-modal-card {
+  padding: 28px;
+}
+
+.pdp-image-modal-card {
+  width: min(100%, 920px);
+  padding: 12px;
+  background: var(--cream);
+}
+
+.pdp-image-modal-card img,
+.pdp-image-modal-card svg {
+  max-height: calc(88vh - 24px);
+  width: 100%;
+  object-fit: contain;
+}
+
+.pdp-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--navy);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* 34px is 10px short of the touch minimum. Grown only on coarse pointers, and
+   only together with the extra card padding below, so the bigger hit area does
+   not land on the first line of the review form. */
+@media (pointer: coarse) {
+  .pdp-modal-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .pdp-modal-card {
+    padding-top: 60px;
+  }
+
+  .pdp-image-modal-card .pdp-modal-close {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.review-form {
+  display: grid;
+  gap: 14px;
+}
+
+/* Hidden by default; the 768px block below is what turns it on. ProductDetail
+   now actually renders this element — for a long time it did not, so the only
+   Add-to-bag button was ~1400px down a 360px page with three full sections
+   beneath it and no way back. */
+.pdp-mobile-bar {
+  display: none;
+}
+
+/* The 1080px and 620px blocks that used to follow styled the pre-rewrite PDP
+   (.pdp, .pdp-info h1, .pdp-gallery-frame, .pdp-thumbs, .pack-opts, .sub-detail,
+   .sub-cadences, .buy-row, .reviews, .pdp-related-grid). Grepping every one of
+   those names across src/ and app/ returns nothing, so the PDP's whole mobile
+   story rested on the single 768px block at the end of this file. Only the
+   .pdp-mobile-bar rules survived, rewired below to the same 768px breakpoint
+   the rest of the PDP mobile layout uses. */
+@media (max-width: 768px) {
+  .pdp-mobile-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    display: block;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line-soft);
+    background: var(--cream);
+  }
+
+  .pdp-mobile-bar .btn {
+    width: 100%;
+    white-space: normal;
+    min-height: 48px;
+  }
+}
+
+/* ==========================================================================
+   PDP DESIGN SYSTEM & VISUAL RHYTHM REFINEMENTS (1280px Max-Width, 80-96px Spacing)
+   ========================================================================== */
+.pdp-main-content .wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* SECTION 2: WHY FEMI9 FEELS DIFFERENT (Visual Anchor Container) */
+.pdp-benefits-section {
+  margin: 96px 0 80px;
+  padding: 60px 48px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line-soft, #e8e3f4);
+  border-radius: 28px;
+  box-shadow: 0 12px 48px rgba(39, 35, 85, 0.04);
+}
+
+.pdp-sec-head {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 48px;
+}
+
+.pdp-sec-title {
+  font-family: "Instrument Sans", sans-serif;
+  /* Was a flat 2.2rem (35px), which out-sized the product H1's clamped 28px cap
+     on every phone and wrapped "Frequently Bought Together" to three lines in a
+     284px column. The clamp max is the former value, so the desktop artboard is
+     pinned: 5.2vw only falls below 2.2rem under ~677px. */
+  font-size: clamp(1.45rem, 5.2vw, 2.2rem);
+  font-weight: 600;
+  color: var(--ink, #120f2e);
+  line-height: 1.18;
+}
+
+.pdp-sec-subtitle {
+  font-size: clamp(0.9rem, 3.4vw, 1rem);
+  color: var(--muted, #7c7c7c);
+  margin-top: 10px;
+  line-height: 1.55;
+}
+
+.pdp-benefits-banner-wrapper {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(39, 35, 85, 0.06);
+  border: 1px solid var(--line-soft, #e8e3f4);
+  background: #ffffff;
+}
+
+.pdp-benefits-full-img {
+  width: 100%;
+  /* Paired with the width/height attributes the markup now emits: the browser
+     derives the aspect ratio from them and reserves the exact box before decode,
+     instead of the element occupying 0px and then jumping to full height. A
+     hardcoded aspect-ratio here would be wrong — the banner is 16:9 and the
+     per-product fallback photo is 3:4. */
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* SECTION 4: CUSTOMER REVIEWS SECTION (3-Card Grid + Rating Distribution) */
+.pdp-reviews-section {
+  margin: 96px 0 80px;
+  padding: 60px 48px;
+  background: #faf8ff;
+  border: 1px solid var(--line-soft, #e8e3f4);
+  border-radius: 28px;
+}
+
+.pdp-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 40px;
+}
+
+.pdp-review-card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px;
+  background: #ffffff;
+  border: 1px solid #e8e3f4;
+  border-radius: 20px;
+  box-shadow: 0 6px 24px rgba(39, 35, 85, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.pdp-review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(39, 35, 85, 0.08);
+}
+
+.pdp-review-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.pdp-review-stars {
+  display: flex;
+  align-items: center;
+}
+
+.pdp-review-date {
+  font-size: 0.82rem;
+  color: var(--text-soft, #9490a0);
+  font-weight: 500;
+}
+
+.pdp-review-user-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.pdp-review-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e3dcff;
+  color: #272355;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.pdp-review-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pdp-review-user-info b {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--ink, #120f2e);
+}
+
+.pdp-review-user-info span {
+  font-size: 0.8rem;
+  color: var(--text-soft, #7c7c7c);
+}
+
+.verified-text {
+  color: #386f62;
+  font-weight: 600;
+}
+
+.pdp-review-title {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--ink, #120f2e);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.pdp-review-body {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #4a4754;
+  margin: 0 0 20px;
+  flex: 1;
+}
+
+.pdp-review-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #f0ecf8;
+  margin-top: auto;
+}
+
+.pdp-review-full-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #272355;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pdp-review-helpful {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdp-review-helpful button {
+  background: none;
+  border: none;
+  font-size: 0.82rem;
+  color: var(--text-soft, #7c7c7c);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+}
+
+.pdp-review-helpful button:hover {
+  color: var(--ink, #272355);
+}
+
+.pdp-review-helpful button svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+/* Rating Summary Box */
+.pdp-rating-summary-box {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-top: 48px;
+  padding: 36px 40px;
+  background: #ffffff;
+  border: 1px solid #e8e3f4;
+  border-radius: 20px;
+}
+
+.pdp-rating-score-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border-right: 1px solid #f0ecf8;
+  padding-right: 32px;
+}
+
+.pdp-rating-big {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: var(--ink, #120f2e);
+  line-height: 1;
+}
+
+.pdp-rating-summary-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pdp-rating-summary-meta span {
+  font-size: 0.85rem;
+  color: var(--text-soft, #7c7c7c);
+}
+
+.pdp-rating-bars-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+}
+
+.pdp-rating-bar-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 40px;
+  gap: 14px;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink, #120f2e);
+}
+
+.pdp-rating-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.pdp-rating-label svg {
+  width: 12px;
+  height: 12px;
+  color: #c98a18;
+}
+
+.pdp-bar-track {
+  height: 8px;
+  border-radius: 6px;
+  background: #f0ecf8;
+  overflow: hidden;
+}
+
+.pdp-bar-fill {
+  height: 100%;
+  background: #386f62;
+  border-radius: 6px;
+}
+
+.pdp-bar-count {
+  text-align: right;
+  color: var(--text-soft, #7c7c7c);
+}
+
+/* ==========================================================================
+   RECOMMENDED PRODUCTS (Frequently Bought Together — Reference Layout)
+   ========================================================================== */
+.pdp-related-section {
+  margin: 96px 0 80px;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 36px;
+  align-items: stretch;
+}
+
+.related-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  padding: 8px;
+  gap: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--line-soft, #e8e3f4);
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(39, 35, 85, 0.07);
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.related-card:hover {
+  transform: translateY(-5px);
+  border-color: #d9d1ed;
+  box-shadow: 0 16px 38px rgba(39, 35, 85, 0.12);
+}
+
+.related-img-box {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 17px;
+  background: #f4f1ec;
+  border: 0;
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+
+.related-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: var(--ink, #272355);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 10px;
+  z-index: 2;
+}
+
+.related-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform 0.35s ease;
+}
+
+.related-img-box:hover img {
+  transform: none;
+}
+
+.related-card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 16px 12px 10px;
+}
+
+.related-title {
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--ink, #120f2e);
+  text-decoration: none;
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+.related-title:hover {
+  color: var(--teal, #386f62);
+}
+
+.related-desc {
+  font-size: 0.84rem;
+  color: var(--text-soft, #7c7c7c);
+  line-height: 1.45;
+  margin: 0;
+  min-height: 2.9em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.related-price-block {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 26px;
+  margin-top: 2px;
+}
+
+.related-was-price {
+  font-size: 0.88rem;
+  color: var(--text-soft, #9490a0);
+  text-decoration: line-through;
+}
+
+.related-now-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink, #120f2e);
+}
+
+.related-discount-pill {
+  background: var(--ink, #272355);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+}
+
+.related-add-btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--ink, #272355);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 20px;
+  text-decoration: none;
+  min-height: 44px;
+  margin-top: auto;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(39, 35, 85, 0.1);
+}
+
+.related-add-btn-pill:hover {
+  background: #1e1b43;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(39, 35, 85, 0.18);
+  color: #ffffff;
+}
+
+.related-add-btn-pill svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* MOBILE ADAPTATION */
+@media (max-width: 992px) {
+  .pdp-benefits-section,
+  .pdp-reviews-section {
+    margin: 48px 0;
+    padding: 36px 20px;
+  }
+  .pdp-reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .pdp-rating-summary-box {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    /* 36px 40px left the distribution bars ~100px of track at 360px, so a 9%
+       bar and a 100% bar looked alike. This plus the tighter bar tracks below
+       recovers ~48px. */
+    padding: 24px 18px;
+    margin-top: 28px;
+  }
+  .pdp-rating-bar-row {
+    grid-template-columns: 34px 1fr 36px;
+    gap: 10px;
+  }
+  .pdp-rating-big {
+    font-size: 2.6rem;
+  }
+  .pdp-rating-score-col {
+    border-right: none;
+    border-bottom: 1px solid #f0ecf8;
+    padding-right: 0;
+    padding-bottom: 20px;
+  }
+  .pdp-related-section {
+    margin: 48px 0;
+  }
+  .related-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 580px) {
+  .related-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .related-card {
+    max-width: 430px;
+    width: 100%;
+    margin-inline: auto;
+  }
+}
+
+/* =============================================================================
+   MOBILE PRODUCT DETAIL PAGE (PDP) GALLERY & LAYOUT OPTIMIZATIONS
+   ============================================================================= */
+@media (max-width: 768px) {
+  /* The toast is rendered by app/providers.tsx as a sibling of the page, not a
+     descendant of .pdp-page, so a custom property declared on .pdp-page would
+     never reach it. Hoisting the declaration to <body> is what actually lets
+     CartDrawer.css's `bottom: calc(26px + var(--bottom-bar-h,0px) + ...)` clear
+     the buy bar. Where :has() is unsupported the token stays at its 0px default
+     and the toast simply sits where it always did. */
+  body:has(.pdp-page) {
+    --bottom-bar-h: 78px;
+  }
+
+  .pdp-page {
+    padding-top: 6px;
+    /* Clearance for the fixed .pdp-mobile-bar. */
+    --bottom-bar-h: 78px;
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+
+  .crumbs {
+    padding-top: 12px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pdp-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  .pdp-gallery-layout {
+    width: 100% !important;
+  }
+
+  .pdp-stage-column {
+    width: 100% !important;
+  }
+
+  .pdp-hero-stage {
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    min-height: 280px !important;
+    max-height: 420px !important;
+    border-radius: 18px !important;
+  }
+
+  /* The thumbnails are a horizontal rail at EVERY width now, so the block of
+     !important that used to re-lay-out a vertical stack here is gone with it.
+     One 64px floor is all this breakpoint still has an opinion about. */
+  .pdp-thumb {
+    width: 64px !important;
+    height: 64px !important;
+  }
+
+  .pdp-right-col {
+    max-width: 100% !important;
+    gap: 16px !important;
+  }
+
+  .pdp-title {
+    font-size: clamp(22px, 6vw, 28px) !important;
+    line-height: 1.25 !important;
+  }
+
+  .pdp-benefit-badges {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Mobile switches the stage to 1:1 while the desktop rule keeps object-fit:
+     cover, so a 4:5 pack shot lost 20% off the top and bottom. Every other
+     product image in the app is `contain`, and the stage is already white so the
+     letterboxing is invisible. */
+  .pdp-hero-stage img {
+    object-fit: contain;
+    padding: 12px;
+  }
+
+  /* iOS keeps the hover state after the tap that opens the fullscreen modal,
+     which left the stage image permanently zoomed. */
+  .pdp-hero-stage:hover img {
+    transform: none;
+  }
+
+  /* Purchase options: the two labels shared ~256px side by side, so both wrapped
+     mid-phrase and the price stopped visually belonging to its option. */
+  .sub-row {
+    align-items: flex-start;
+    padding: 14px;
+  }
+
+  .sub-radio-dot {
+    margin-top: 3px;
+  }
+
+  .sub-row-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  .sub-row-content span {
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  /* A flex-shrink:0 120px stepper left the CTA 192px for a label reading
+     "Start subscription — Rs.2,025". Stack them so each gets the full row. */
+  .cta-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .qty-stepper {
+    width: 100%;
+    height: 52px;
+    padding: 0 8px;
+  }
+
+  .qty-stepper button {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  /* :hover is the only press affordance the stepper has and it never fires on
+     touch. */
+  .qty-stepper button:active {
+    background: var(--lavender);
+  }
+
+  .add-to-bag-btn {
+    width: 100%;
+    min-height: 52px;
+  }
+}
+
+/* =============================================================================
+   LEGAL / POLICY PAGES
+   Long-form prose pages (privacy, terms) carried no type scale at all, so their
+   headings fell back to the UA's `em` defaults — 2em h1 next to a 1.5em h2 with
+   no line-height control, which reads as a browser error page on a phone. The
+   clamp maxima are the sizes those pages already rendered at on a wide screen,
+   so this is a mobile floor, not a desktop change. Applied by the page wrapper's
+   `legal` class.
+   ============================================================================= */
+.legal h1 {
+  font-size: clamp(1.85rem, 6vw, 2.6rem);
+  line-height: 1.12;
+}
+
+.legal h2 {
+  font-size: clamp(1.15rem, 3.4vw, 1.45rem);
+  line-height: 1.25;
+  margin-top: 36px;
+}
+
+.legal p {
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+
+
+/* ===== Touch targets: the PDP quantity stepper =====
+   The 48px stepper lives in `@media (max-width: 768px)`, so a phone held in
+   LANDSCAPE (844px wide) never matches it and the −/+ buttons stay 36x36 — the
+   one control a shopper taps repeatedly. Keyed on the pointer here rather than
+   a width, which is how the rest of the codebase covers touch tablets too. */
+@media (pointer: coarse) {
+  .qty-stepper {
+    height: 52px;
+  }
+
+  .qty-stepper button {
+    width: 48px;
+    height: 48px;
+  }
+}

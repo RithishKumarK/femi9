@@ -1,0 +1,202 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   craft-buttons.css — animated button system from the Femi9 "Five Animations"
+   reference. Pill buttons, one easing (--cr-be), purposeful motion:
+
+     • Lift & Glow  — gold pill lifts + glows, the ARROW TAIL glides forward.
+                      The one main CTA per view (fl-btn--gold, btn-primary).
+     • Fill Rise    — gold fills up from the base, label flips to plum.
+                      Outline / light buttons that sit on dark bands.
+     • Sheen Sweep  — a light streak sweeps across. Checkout pay button.
+     • Press Ripple — ripple blooms from the click point (JS, layout.tsx).
+                      Cart actions (add-to-bag / related add).
+
+   Secondary/form buttons stay quiet (just the pill) — "one primary per view".
+   The admin panel opts out at the end.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --cr-be: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base: pill shape + brand sans + a smooth base transition for every button. */
+.fl-btn,
+.btn {
+  border-radius: 999px !important;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+  font-weight: 700;
+  transition: transform 0.3s var(--cr-be), box-shadow 0.3s var(--cr-be),
+    background 0.35s var(--cr-be), background-position 0.8s var(--cr-be),
+    background-size 0.45s var(--cr-be), color 0.35s var(--cr-be), border-color 0.35s var(--cr-be);
+}
+
+/* ── 1. LIFT & GLOW — primary gold CTAs (the one main action per view) ─────── */
+.fl-btn--gold,
+.btn-primary,
+.btn--primary,
+.add-to-bag-btn,
+.related-add-btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px !important;
+  background: #f0c14e !important;
+  background-image: none !important;
+  color: #3a2158 !important;
+  border: none !important;
+  box-shadow: 0 14px 30px -16px rgba(240, 193, 78, 0.72);
+}
+.fl-btn--gold:hover,
+.btn-primary:hover,
+.btn--primary:hover,
+.add-to-bag-btn:hover,
+.related-add-btn-pill:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 52px -18px rgba(240, 193, 78, 1);
+  color: #3a2158 !important;
+}
+.fl-btn--gold:active,
+.btn-primary:active,
+.btn--primary:active,
+.add-to-bag-btn:active,
+.related-add-btn-pill:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* The arrow "tail" — appended after the label, glides forward on hover. Only on
+   the text CTAs, not the icon cart buttons (they carry a bag icon) nor the
+   existing arrow-modifier button (which has its own arrow span, handled below). */
+.fl-btn--gold:not(.fl-btn--arrow)::after,
+.btn--primary::after,
+.btn-primary:not(.co-paybar .btn-primary)::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  margin-left: 9px;
+  flex: 0 0 auto;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233A2158' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  transition: transform 0.35s var(--cr-be);
+}
+.fl-btn--gold:not(.fl-btn--arrow):hover::after,
+.btn--primary:hover::after,
+.btn-primary:hover::after {
+  transform: translateX(5px);
+}
+/* Buttons that already ship an arrow span (.fl-btn--arrow) — glide that arrow. */
+.fl-btn--arrow span {
+  display: inline-block;
+  transition: transform 0.35s var(--cr-be);
+}
+.fl-btn--arrow:hover span {
+  transform: translateX(5px);
+}
+
+/* ── 2. FILL RISE — outline / light buttons that sit on dark bands ─────────── */
+.fl-btn--outline,
+.fl-btn--light {
+  background-color: transparent;
+  background-image: linear-gradient(#f0c14e, #f0c14e);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 0%;
+  border: 1px solid rgba(240, 193, 78, 0.55);
+}
+.fl-btn--outline:hover,
+.fl-btn--light:hover {
+  background-size: 100% 100%;
+  color: #3a2158;
+  border-color: #f0c14e;
+}
+
+/* Product-card "Buy Now" (.add) — was a navy slab; now a gold Fill-Rise pill so
+   the in-grid CTA reads yellow, not navy. At rest: a warm gold hairline on the
+   light card with gold-deep text; on hover the gold fills from the base and the
+   label flips to plum, with a small lift. Loads after Products.css → wins;
+   !important guards the base .add + the responsive overrides. This is the
+   secondary/repeated CTA — the hero keeps the one solid-gold Lift & Glow primary
+   ("one primary per view"). */
+.add {
+  background-color: transparent !important;
+  background-image: linear-gradient(#f0c14e, #f0c14e) !important;
+  background-repeat: no-repeat !important;
+  background-position: 0 100% !important;
+  background-size: 100% 0% !important;
+  color: #b07d10 !important;
+  border: 1.5px solid #f0c14e !important;
+  font-weight: 700 !important;
+  transition: background-size 0.4s var(--cr-be), color 0.35s var(--cr-be),
+    transform 0.3s var(--cr-be), box-shadow 0.3s var(--cr-be) !important;
+}
+.add:hover,
+.add:focus-visible {
+  background-size: 100% 100% !important;
+  color: #3a2158 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 14px 28px -16px rgba(240, 193, 78, 0.85) !important;
+}
+.add:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+.add:disabled {
+  opacity: 0.45 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ── 3. SHEEN SWEEP — checkout pay button (overrides Lift & Glow) ──────────── */
+.co-paybar .btn-primary {
+  background: linear-gradient(
+    105deg,
+    #f0c14e 0%,
+    #f0c14e 40%,
+    #fff7de 50%,
+    #f0c14e 60%,
+    #f0c14e 100%
+  ) !important;
+  background-size: 230% 100% !important;
+  background-position: 100% 0 !important;
+  color: #3a2158 !important;
+  box-shadow: 0 14px 30px -18px rgba(240, 193, 78, 0.7);
+}
+.co-paybar .btn-primary::after {
+  content: none;
+}
+.co-paybar .btn-primary:hover {
+  background-position: 0 0 !important;
+  transform: translateY(-3px);
+}
+
+/* ── 4. Press Ripple keyframe (JS in layout.tsx appends the ripple span) ───── */
+@keyframes f9ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* ── Accessibility: honour reduced motion. ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .fl-btn,
+  .btn,
+  .fl-btn--gold::after,
+  .btn--primary::after,
+  .fl-btn--arrow span {
+    transition: none !important;
+  }
+}
+
+/* ── Admin panel opts out (internal tool keeps its own compact buttons). ───── */
+.adm .btn,
+.adm .fl-btn {
+  border-radius: 10px !important;
+}
+.adm .btn-primary,
+.adm .btn--primary {
+  background: var(--navy, #34204e) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+.adm .btn-primary::after,
+.adm .btn--primary::after {
+  content: none;
+}

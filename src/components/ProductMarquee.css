@@ -1,0 +1,169 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ProductMarquee — two counter-drifting lanes under the home hero
+   Top: highlights, left → right. Bottom: phrases, right → left.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.fl-marquee {
+  --marquee-ink: #2e2560;
+  --marquee-scallop: 14px;
+  position: relative;
+  /* Room for the scallops, so the product section below (painted later, with
+     its own white background) does not cover them. */
+  padding-bottom: var(--marquee-scallop);
+  background: #fff;
+}
+
+/* ── Shared lane mechanics ───────────────────────────────────────────────── */
+.fl-marquee__lane {
+  overflow: hidden;
+  /* Items fade in and out at the edges rather than being sliced off. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.fl-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: fl-marquee-leftward 48s linear infinite;
+}
+
+.fl-marquee__track--rightward {
+  animation-name: fl-marquee-rightward;
+  animation-duration: 64s;
+}
+
+.fl-marquee__lane:hover .fl-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes fl-marquee-leftward {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes fl-marquee-rightward {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.figma-landing .fl-marquee__highlights,
+.figma-landing .fl-marquee__phrases {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── Highlights lane ─────────────────────────────────────────────────────── */
+.fl-marquee__strip {
+  background: #f3eefb;
+}
+
+.fl-marquee__strip .fl-marquee__lane {
+  padding-block: clamp(12px, 1.5vw, 20px);
+}
+
+.figma-landing .fl-marquee__highlights li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  color: #3b3470;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 500;
+}
+
+/* Every item carries its own divider after it, the last in a run included, so
+   the join between runs is spaced like every other gap. */
+.figma-landing .fl-marquee__highlights li::after {
+  content: '';
+  flex: none;
+  width: 1px;
+  height: 22px;
+  margin-inline: clamp(18px, 2.4vw, 40px);
+  background: rgba(74, 66, 134, 0.22);
+}
+
+.fl-marquee__highlights svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #4a4286;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Phrases band ────────────────────────────────────────────────────────── */
+.fl-marquee__band {
+  position: relative;
+  background: var(--marquee-ink);
+  color: #f6e7b8;
+}
+
+/* Scalloped bottom edge: a row of half-discs in the band's colour. */
+.fl-marquee__band::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: var(--marquee-scallop);
+  background:
+    radial-gradient(circle at 50% 0, var(--marquee-ink) 13px, transparent 13.5px)
+    0 0 / 30px var(--marquee-scallop) repeat-x;
+}
+
+.fl-marquee__band .fl-marquee__lane {
+  padding-block: clamp(12px, 1.5vw, 20px);
+}
+
+.figma-landing .fl-marquee__phrases li {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(17px, 1.8vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+
+.figma-landing .fl-marquee__phrases li::after {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin-inline: clamp(22px, 3vw, 48px);
+  border-radius: 50%;
+  background: #f0c14e;
+}
+
+/* Phones: the band is thinner, so the scallops shrink with it. */
+@media (max-width: 620px) {
+  .fl-marquee {
+    --marquee-scallop: 9px;
+  }
+  .fl-marquee__band::after {
+    background:
+      radial-gradient(circle at 50% 0, var(--marquee-ink) 8px, transparent 8.5px)
+      0 0 / 19px var(--marquee-scallop) repeat-x;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-marquee__track {
+    animation: none;
+  }
+}

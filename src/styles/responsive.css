@@ -1,0 +1,28 @@
+/* ===== RESPONSIVE =====
+   Loaded LAST of the component sheets (app/layout.tsx), so anything in here
+   beats the sheet that owns the component at equal specificity. That made it a
+   trap: it used to re-force `.grid-products` to two columns at <=560px and
+   `.footer-main` to two/three columns, overriding the correct single-column
+   collapses in Products.css and Footer.css purely on source order. With
+   `.card{overflow:hidden}` the two-up catalog card then amputated the Add
+   button at every width <=560px.
+
+   Grid ownership now lives with the component sheets. Nineteen further rules in
+   here targeted markup that was deleted long ago (`.hero-in`, `.trust-in`,
+   `.bento`, `.story-in`, `.impact-in`, `.stats`, `.sec-head`); they are gone
+   too. Do not reintroduce layout rules here — put them in the sheet that owns
+   the component, where they can be found. */
+
+@media (max-width:560px){
+  /* Catalog card interior only — Products.css owns the grid itself. */
+  .card-body{padding:14px}
+  .card h3{font-size:1rem}
+  .price b{font-size:1.15rem}
+}
+
+/* A real floor for form controls: anything under 16px makes iOS Safari zoom the
+   layout viewport on focus and never zoom back out. Component sheets may raise
+   this, none may lower it. */
+@media (max-width:560px){
+  input,select,textarea{font-size:16px}
+}

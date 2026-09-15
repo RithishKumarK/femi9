@@ -1,0 +1,1050 @@
+/* ===== /dashboard — the "Femi9 Dashboard" comp, built as CSS ================
+
+   This sheet renders ONE screen: src/screens/UserDashboard.tsx. It is the
+   design handed over as `Femi9 Dashboard.html` — a purple membership hero, a
+   three-way segmented control (Overview / Cycle / Rewards), metric cards with
+   a Bloom-points ring, a sub-tabbed records card, a rewards board and the
+   "Femi9 essentials" band.
+
+   Everything is scoped under `.f9dash`, including the handful of `.m-*`
+   re-skins at the bottom: the cycle tracker keeps its existing markup and all
+   of its behaviour, and only its surfaces are repainted to match the comp. No
+   rule here may escape the wrapper — /account and /welcome share those `.m-*`
+   classes and must not move.
+
+   The palette is the comp's verbatim, declared once as local custom properties
+   rather than reaching for base.css tokens: the comp is a closed system and a
+   later token tweak elsewhere must not silently redraw this page.
+
+   Imported LAST in app/layout.tsx, after the craft-* layer, so its surfaces win
+   on equal specificity.
+   ========================================================================== */
+
+.f9dash {
+  --f9-deep: #34204e;      /* headings, the darkest ink                    */
+  --f9-ink: #4b3e63;       /* body copy                                    */
+  --f9-muted: #877d9e;     /* meta, captions, inactive tab labels          */
+  --f9-purple: #563184;    /* links, accents, the avatar disc             */
+  --f9-lilac: #c9aee4;     /* copy ON the purple hero                      */
+  --f9-lav: #ede7f9;       /* icon tiles, quiet pills, the segment track   */
+  --f9-cream: #fbf9ff;     /* page ground / inset rows                     */
+  --f9-card: #fdfcfa;      /* raised card                                  */
+  --f9-gold: #f0c14e;
+  --f9-gold-deep: #d8a22f; /* eyebrows, progress fill, the active underline */
+  --f9-gold-soft: #fbefc8;
+  --f9-gold-ink: #8a6a12;
+  --f9-green: #3f6b4f;     /* the "+50" earn amounts                       */
+  --f9-line: rgba(52, 32, 78, .1);
+  --f9-ease: cubic-bezier(.16, 1, .3, 1);
+
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: var(--f9-ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.f9dash h1,
+.f9dash h2,
+.f9dash h3 { margin: 0; }
+
+/* Newsreader — every display string in the comp. */
+.f9d-disp {
+  font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+.f9d-num { font-variant-numeric: tabular-nums; }
+
+/* --------------------------------------------------------------------------
+   Eyebrow — Hanken 800 / .2em / uppercase / gold-deep. The comp's has NO rule
+   before it, unlike the storefront `.eyebrow`, so this is its own class.
+   -------------------------------------------------------------------------- */
+.f9d-ey {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--f9-gold-deep);
+}
+.f9d-ey--gold { color: var(--f9-gold); }
+
+/* --------------------------------------------------------------------------
+   Buttons. Deliberately NOT `.btn`: figma-landing-responsive.css ships two
+   unscoped `!important` blocks that hit every `.btn` on the site, and this
+   screen would spend the rest of the file undoing them.
+   -------------------------------------------------------------------------- */
+.f9d-btn {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.f9d-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.f9d-btn--gold {
+  background: var(--f9-gold);
+  color: #3a2158;
+  border: none;
+  box-shadow: 0 14px 30px -16px rgba(240, 193, 78, .72);
+  transition: transform .24s var(--f9-ease), box-shadow .24s var(--f9-ease);
+}
+.f9d-btn--gold:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -16px rgba(240, 193, 78, .9);
+}
+
+.f9d-btn--ghost {
+  background: transparent;
+  border: 1.5px solid rgba(52, 32, 78, .22);
+  color: var(--f9-deep);
+  transition: background .24s, border-color .24s;
+}
+.f9d-btn--ghost:hover {
+  background: rgba(52, 32, 78, .05);
+  border-color: var(--f9-purple);
+}
+
+.f9d-btn--light {
+  background: rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, .28);
+  color: #fff;
+  transition: background .24s;
+}
+.f9d-btn--light:hover { background: rgba(255, 255, 255, .24); }
+
+/* --------------------------------------------------------------------------
+   1. MEMBERSHIP HERO
+   -------------------------------------------------------------------------- */
+.f9d-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  background: linear-gradient(162deg, #3d2858 0%, #311f4b 62%, #34204e 100%);
+  color: var(--f9-lav);
+  padding: 44px 44px 40px;
+}
+
+/* The oversized "Femi9" watermark bleeding off the bottom-right corner. */
+.f9d-hero__ghost {
+  position: absolute;
+  right: -2%;
+  bottom: -34%;
+  font-size: clamp(180px, 26vw, 340px);
+  font-style: italic;
+  color: rgba(237, 234, 255, .05);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.f9d-hero__glow {
+  position: absolute;
+  top: -50px;
+  left: -30px;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(240, 193, 78, .14), transparent 70%);
+  pointer-events: none;
+}
+.f9d-hero__inner {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 26px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.f9d-hero__copy { max-width: 560px; }
+.f9d-hero__title {
+  font-size: clamp(38px, 5.4vw, 58px);
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: #fff;
+  margin: 14px 0 0;
+}
+.f9d-hero__title em {
+  font-style: italic;
+  color: var(--f9-lilac);
+}
+.f9d-hero__lead {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--f9-lilac);
+  margin: 14px 0 0;
+  max-width: 420px;
+}
+
+/* Identity chip — avatar disc + name + tier, on a translucent pill. */
+.f9d-hero__id {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-top: 24px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(201, 174, 228, .22);
+  border-radius: 999px;
+  padding: 8px;
+  width: fit-content;
+}
+.f9d-hero__avatar {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--f9-purple);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-style: italic;
+  overflow: hidden;
+}
+.f9d-hero__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.f9d-hero__idtext { padding-right: 8px; }
+.f9d-hero__name { font-weight: 700; font-size: 15px; color: #fff; }
+.f9d-hero__tier { font-size: 12.5px; color: var(--f9-lilac); }
+.f9d-hero__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.f9d-hero__actions .f9d-btn { padding: 12px 20px; font-size: 14px; }
+
+/* --------------------------------------------------------------------------
+   2. SEGMENTED CONTROL — Overview / Cycle / Rewards
+   A real tablist: the white thumb is aria-hidden and slides with a transform,
+   so the buttons underneath never move and stay a stable hit target.
+   -------------------------------------------------------------------------- */
+.f9d-seg {
+  position: relative;
+  display: inline-flex;
+  background: var(--f9-lav);
+  border-radius: 999px;
+  padding: 5px;
+  gap: 2px;
+  max-width: 100%;
+}
+.f9d-seg__thumb {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / 3);
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px -8px rgba(52, 32, 78, .45);
+  transition: transform .38s var(--f9-ease);
+}
+.f9d-seg__btn {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 14.5px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  transition: color .3s;
+  color: var(--f9-muted);
+}
+.f9d-seg__btn[aria-selected='true'] { color: var(--f9-deep); }
+
+/* --------------------------------------------------------------------------
+   3. CARD
+   -------------------------------------------------------------------------- */
+.f9d-card {
+  background: var(--f9-card);
+  border-radius: 28px;
+  box-shadow: 0 4px 12px rgba(52, 32, 78, .07), 0 14px 30px rgba(52, 32, 78, .09);
+  border: 1px solid rgba(52, 32, 78, .06);
+}
+/* The lift the comp gives to every clickable tile. */
+.f9d-tile { transition: transform .24s var(--f9-ease), box-shadow .24s; }
+.f9d-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -14px rgba(52, 32, 78, .4);
+}
+
+/* --------------------------------------------------------------------------
+   4. METRICS ROW
+   -------------------------------------------------------------------------- */
+.f9d-metrics {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 16px;
+}
+.f9d-metric {
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.f9d-metric__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.f9d-metric__icon {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 11px;
+  background: var(--f9-lav);
+  color: var(--f9-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.f9d-metric__icon--gold {
+  background: var(--f9-gold-soft);
+  color: var(--f9-gold-ink);
+  font-weight: 800;
+}
+.f9d-metric__value {
+  display: block;
+  font-size: 46px;
+  color: var(--f9-deep);
+  line-height: 1;
+  margin: 12px 0 0;
+}
+.f9d-metric__note {
+  font-size: 13px;
+  color: var(--f9-muted);
+  margin: 8px 0 0;
+}
+
+/* Points card — the ring sits beside the copy, on the lavender wash. */
+.f9d-points {
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: linear-gradient(158deg, #f4ecfc 0%, #efe6f9 55%, #f7f2fb 100%);
+}
+.f9d-ring { position: relative; flex: none; width: 118px; height: 118px; }
+.f9d-ring__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.f9d-ring__value { font-size: 34px; color: var(--f9-deep); line-height: 1; }
+.f9d-ring__of {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--f9-muted);
+  text-transform: uppercase;
+}
+.f9d-points__title {
+  font-size: 22px;
+  color: var(--f9-deep);
+  margin: 8px 0 0;
+  line-height: 1.15;
+}
+.f9d-points__title em { font-style: italic; color: var(--f9-purple); }
+.f9d-points__note { font-size: 13px; color: var(--f9-muted); margin: 6px 0 0; }
+
+/* --------------------------------------------------------------------------
+   5. RECORDS CARD — the four sub-tabs
+   -------------------------------------------------------------------------- */
+.f9d-records { padding: 8px 30px 30px; overflow: hidden; }
+.f9d-subrow {
+  display: flex;
+  gap: 26px;
+  border-bottom: 1px solid var(--f9-line);
+}
+.f9d-subtab {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--f9-muted);
+  padding: 14px 4px;
+  position: relative;
+  transition: color .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.f9d-subtab:hover { color: var(--f9-deep); }
+.f9d-subtab[aria-selected='true'] { color: var(--f9-deep); }
+/* The gold rule under the selected tab, drawn over the row's own hairline. */
+.f9d-subtab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--f9-gold-deep);
+  border-radius: 2px;
+}
+.f9d-subtab__count {
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--f9-purple);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.f9d-subtab__count--zero { color: var(--f9-muted); background: var(--f9-lav); }
+.f9d-panel { padding-top: 22px; }
+
+/* Order row. */
+.f9d-order {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--f9-cream);
+  border: 1px solid var(--f9-line);
+  border-radius: 20px;
+  padding: 18px 20px;
+  text-decoration: none;
+}
+.f9d-order + .f9d-order { margin-top: 12px; }
+.f9d-order__art {
+  flex: none;
+  width: 56px;
+  height: 64px;
+  border-radius: 14px;
+  background: var(--f9-lav);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--f9-purple);
+}
+.f9d-order__body { flex: 1; min-width: 0; }
+.f9d-order__no { font-size: 19px; color: var(--f9-deep); }
+.f9d-order__meta { font-size: 13.5px; color: var(--f9-muted); margin-top: 2px; }
+.f9d-order__again {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--f9-purple);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.f9d-order__again:hover { text-decoration: underline; }
+.f9d-order__end { text-align: right; flex: none; }
+.f9d-order__total { font-size: 20px; color: var(--f9-deep); }
+
+.f9d-pill {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 999px;
+  color: var(--f9-gold-ink);
+  background: var(--f9-gold-soft);
+}
+.f9d-pill--active { color: var(--f9-purple); background: var(--f9-lav); }
+.f9d-pill--success { color: #2f5c3f; background: #dff0e3; }
+.f9d-pill--danger { color: #8a2f2f; background: #f7dede; }
+
+/* Empty state — the comp's centred icon disc + copy + one ghost button. */
+.f9d-empty { padding: 40px 0 30px; text-align: center; }
+.f9d-empty__art {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: #f2ecf9;
+  color: var(--f9-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.f9d-empty__title { font-size: 21px; color: var(--f9-deep); margin-top: 16px; }
+.f9d-empty p {
+  font-size: 14px;
+  color: var(--f9-muted);
+  margin: 6px auto 0;
+  max-width: 340px;
+}
+.f9d-empty .f9d-btn { margin-top: 18px; padding: 12px 24px; font-size: 14px; }
+
+/* Subscription rows reuse the order shell but carry their own meta line and
+   their own controls — pause / skip / resume / cancel act from here. */
+.f9d-sub {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: var(--f9-cream);
+  border: 1px solid var(--f9-line);
+  border-radius: 20px;
+  padding: 18px 20px;
+}
+.f9d-sub + .f9d-sub { margin-top: 12px; }
+.f9d-sub__acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 8px;
+}
+.f9d-sub__ask { font-size: 13.5px; color: var(--f9-ink); }
+.f9d-sub__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #8a2f2f;
+}
+.f9d-sub__error svg { flex: none; margin-top: 1px; }
+.f9d-order__again--danger { color: #8a2f2f; }
+.f9d-order__again:disabled { opacity: .5; cursor: not-allowed; text-decoration: none; }
+
+/* Addresses. */
+.f9d-addrs { display: flex; flex-wrap: wrap; gap: 16px; }
+.f9d-addr {
+  flex: 1;
+  min-width: 260px;
+  background: var(--f9-cream);
+  border: 1px solid var(--f9-line);
+  border-radius: 20px;
+  padding: 22px;
+}
+.f9d-addr__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.f9d-addr__tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--f9-purple);
+  background: var(--f9-lav);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.f9d-addr__acts { display: inline-flex; gap: 12px; align-items: center; }
+.f9d-addr__edit {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--f9-purple);
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.f9d-addr__edit:hover { text-decoration: underline; }
+.f9d-addr__edit:disabled { opacity: .5; cursor: not-allowed; text-decoration: none; }
+.f9d-addr__edit--danger { color: #8a2f2f; }
+
+.f9d-addr__default {
+  margin-top: 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--f9-purple);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.f9d-addr__default:hover { text-decoration: underline; }
+.f9d-addr__default:disabled { opacity: .5; cursor: not-allowed; }
+
+.f9d-addr__confirm {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--f9-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--f9-ink);
+}
+.f9d-addr__confirm > span:last-child { display: inline-flex; gap: 14px; }
+.f9d-addr__name { font-size: 18px; color: var(--f9-deep); margin-top: 14px; }
+.f9d-addr__lines {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--f9-ink);
+  margin: 6px 0 0;
+}
+.f9d-addr-add {
+  flex: 1;
+  min-width: 260px;
+  background: transparent;
+  border: 1.5px dashed rgba(52, 32, 78, .24);
+  border-radius: 20px;
+  padding: 22px;
+  cursor: pointer;
+  color: var(--f9-purple);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+}
+.f9d-addr-add__plus {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--f9-lav);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Profile facts. Three of the four are BUTTONS that open the edit sheet
+   focused on that field, so correcting an email is one tap. */
+.f9d-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.f9d-fact {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--f9-cream);
+  border: 1px solid var(--f9-line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  font-family: inherit;
+}
+.f9d-fact--edit {
+  cursor: pointer;
+  padding-right: 46px; /* clear of the pencil */
+  transition: border-color .2s, background .2s;
+}
+.f9d-fact--edit:hover {
+  border-color: rgba(86, 49, 132, .38);
+  background: #fff;
+}
+.f9d-fact__pencil {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--f9-purple);
+  opacity: .55;
+  display: flex;
+}
+.f9d-fact--edit:hover .f9d-fact__pencil { opacity: 1; }
+.f9d-fact__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--f9-muted);
+}
+.f9d-fact__value { display: block; font-size: 16px; color: var(--f9-deep); margin-top: 8px; }
+.f9d-fact__value.f9d-disp { font-size: 18px; margin-top: 6px; }
+/* An unverified email is a fact about the account, so it is stated rather than
+   left for the customer to discover at the next order mail. */
+.f9d-fact__flag {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--f9-gold-ink);
+  background: var(--f9-gold-soft);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.f9d-facts__foot { grid-column: 1 / -1; }
+.f9d-facts__foot .f9d-btn { padding: 12px 24px; font-size: 14px; }
+
+/* --------------------------------------------------------------------------
+   6. CYCLE PANEL — the comp's intro card, above the live tracker
+   -------------------------------------------------------------------------- */
+.f9d-cycle {
+  padding: 36px;
+  background: linear-gradient(158deg, #f4ecfc 0%, #efe6f9 55%, #f7f2fb 100%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: center;
+  justify-content: space-between;
+}
+.f9d-cycle__copy { max-width: 460px; }
+.f9d-cycle__title {
+  font-size: 32px;
+  color: var(--f9-deep);
+  letter-spacing: -.02em;
+  margin: 12px 0 0;
+}
+.f9d-cycle__title em { font-style: italic; color: var(--f9-purple); }
+.f9d-cycle__lead {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--f9-ink);
+  margin: 12px 0 0;
+}
+.f9d-cycle__actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.f9d-cycle__actions .f9d-btn { padding: 13px 26px; font-size: 14.5px; }
+.f9d-cycle__dial { flex: none; width: 190px; height: 190px; position: relative; }
+.f9d-cycle__dialtext {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.f9d-cycle__dialcap {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--f9-muted);
+}
+.f9d-cycle__dialmain { font-size: 22px; color: var(--f9-deep); margin-top: 2px; }
+.f9d-cycle__dialsub { font-size: 12px; color: var(--f9-muted); }
+
+/* --------------------------------------------------------------------------
+   7. REWARDS
+   -------------------------------------------------------------------------- */
+.f9d-rewards { padding: 34px; }
+.f9d-rewards__title {
+  font-size: 30px;
+  color: var(--f9-deep);
+  letter-spacing: -.02em;
+  margin: 10px 0 0;
+}
+.f9d-rewards__title em { font-style: italic; color: var(--f9-purple); }
+
+.f9d-earn-two {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 22px;
+  align-items: start;
+  margin-top: 26px;
+}
+.f9d-balance {
+  background: linear-gradient(160deg, #fcf6e1, #fbefc8);
+  border-radius: 24px;
+  padding: 28px;
+}
+.f9d-balance__cap {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--f9-gold-ink);
+}
+.f9d-balance__value {
+  display: block;
+  font-size: 52px;
+  color: var(--f9-deep);
+  line-height: 1;
+  margin: 8px 0 0;
+}
+.f9d-balance__unit {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--f9-gold-ink);
+  letter-spacing: .02em;
+}
+.f9d-balance__note { font-size: 13.5px; color: var(--f9-ink); margin: 12px 0 0; }
+
+/* Track + fill. `--f9-pct` is set inline from the real balance. */
+.f9d-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(52, 32, 78, .12);
+  margin-top: 20px;
+  overflow: hidden;
+}
+.f9d-bar--thin { height: 7px; background: rgba(52, 32, 78, .1); margin-top: 16px; }
+.f9d-bar__fill {
+  display: block;
+  height: 100%;
+  width: var(--f9-pct, 0%);
+  border-radius: 999px;
+  background: var(--f9-gold-deep);
+}
+
+.f9d-cap {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--f9-muted);
+}
+.f9d-earn-list { margin-top: 14px; display: flex; flex-direction: column; }
+.f9d-earn-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(52, 32, 78, .09);
+}
+.f9d-earn-row:last-child { border-bottom: none; }
+.f9d-earn-row__icon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 11px;
+  background: var(--f9-lav);
+  color: var(--f9-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+.f9d-earn-row__label { flex: 1; font-size: 15px; font-weight: 600; color: var(--f9-deep); }
+.f9d-earn-row__pts { font-size: 18px; color: var(--f9-green); }
+.f9d-refer {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 16px;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--f9-purple);
+  text-decoration: none;
+}
+.f9d-refer:hover { text-decoration: underline; }
+
+.f9d-redeem { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 14px; }
+.f9d-reward { padding: 24px; }
+.f9d-reward__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.f9d-reward__name { font-size: 20px; color: var(--f9-deep); }
+.f9d-reward__cost {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--f9-purple);
+  background: var(--f9-lav);
+  padding: 4px 11px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.f9d-reward__desc { font-size: 13.5px; color: var(--f9-muted); margin: 8px 0 0; }
+.f9d-reward__togo { font-size: 12px; color: var(--f9-muted); margin: 8px 0 0; }
+.f9d-reward__btn { margin-top: 14px; padding: 11px 20px; font-size: 13.5px; width: 100%; }
+
+.f9d-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+.f9d-note { padding: 24px 26px; }
+.f9d-note p { font-size: 14px; color: var(--f9-muted); margin: 12px 0 0; }
+
+/* Reward codes + ledger, when the customer actually has some. */
+.f9d-codes { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.f9d-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--f9-cream);
+  border: 1px solid var(--f9-line);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.f9d-code__value { font-size: 15px; font-weight: 700; color: var(--f9-deep); letter-spacing: .04em; }
+.f9d-code__meta { font-size: 12.5px; color: var(--f9-muted); }
+.f9d-ledger { margin-top: 14px; display: flex; flex-direction: column; }
+.f9d-ledger__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(52, 32, 78, .09);
+}
+.f9d-ledger__row:last-child { border-bottom: none; }
+.f9d-ledger__label { flex: 1; font-size: 14.5px; font-weight: 600; color: var(--f9-deep); }
+.f9d-ledger__date { font-size: 12.5px; color: var(--f9-muted); }
+.f9d-ledger__pts { font-size: 16px; color: var(--f9-green); }
+.f9d-ledger__pts--out { color: var(--f9-purple); }
+
+/* --------------------------------------------------------------------------
+   8. FEMI9 ESSENTIALS BAND
+   -------------------------------------------------------------------------- */
+.f9d-essentials {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 10px;
+  align-items: stretch;
+  border-radius: 32px;
+  overflow: hidden;
+}
+.f9d-essentials__copy {
+  background: linear-gradient(162deg, #3d2858 0%, #311f4b 62%, #34204e 100%);
+  color: var(--f9-lav);
+  padding: 44px;
+  position: relative;
+  overflow: hidden;
+}
+.f9d-essentials__glow {
+  position: absolute;
+  top: -40px;
+  right: -30px;
+  width: 200px;
+  height: 200px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(240, 193, 78, .14), transparent 70%);
+  pointer-events: none;
+}
+.f9d-essentials__title {
+  position: relative;
+  font-size: clamp(28px, 3.6vw, 38px);
+  line-height: 1.04;
+  letter-spacing: -.02em;
+  color: #fff;
+  margin: 14px 0 0;
+}
+.f9d-essentials__title em { font-style: italic; color: var(--f9-lilac); }
+.f9d-essentials__lead {
+  position: relative;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--f9-lilac);
+  margin: 14px 0 0;
+  max-width: 420px;
+}
+.f9d-essentials__actions {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+.f9d-essentials__actions .f9d-btn--gold { padding: 15px 28px; font-size: 15.5px; }
+.f9d-essentials__actions .f9d-btn--light { padding: 14px 26px; font-size: 15px; }
+.f9d-essentials__art { position: relative; background: var(--f9-lav); min-height: 260px; }
+.f9d-essentials__art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --------------------------------------------------------------------------
+   9. THE LIVE CYCLE TRACKER, RE-SKINNED
+   The tracker keeps every one of its `.m-*` / `.dash-*` classes and all of its
+   behaviour — consent, logging, editing, the calendar's roving focus. Only its
+   surfaces are repainted here so it sits inside the comp rather than beside it.
+   Scoped to `.f9dash`, so /account and /welcome are untouched.
+   -------------------------------------------------------------------------- */
+.f9dash .m-card {
+  background: var(--f9-card);
+  border-radius: 28px;
+  box-shadow: 0 4px 12px rgba(52, 32, 78, .07), 0 14px 30px rgba(52, 32, 78, .09);
+  border: 1px solid rgba(52, 32, 78, .06);
+}
+.f9dash .m-title,
+.f9dash .m-h2,
+.f9dash .m-h3 {
+  font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
+  color: var(--f9-deep);
+}
+.f9dash .m-body,
+.f9dash .m-lead { color: var(--f9-ink); }
+.f9dash .m-cap,
+.f9dash .m-row__meta { color: var(--f9-muted); }
+.f9dash .m-row__title { color: var(--f9-deep); }
+.f9dash .eyebrow { color: var(--f9-gold-deep); }
+.f9dash .eyebrow::before { background: var(--f9-gold-deep); }
+
+/* The tracker's own vertical rhythm inside a tab panel. */
+.f9d-tracker { display: flex; flex-direction: column; gap: clamp(18px, 2.4vw, 26px); }
+
+/* --------------------------------------------------------------------------
+   10. RESPONSIVE — the comp's own two breakpoints
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .f9d-metrics,
+  .f9d-redeem,
+  .f9d-earn-two,
+  .f9d-essentials,
+  .f9d-two { grid-template-columns: 1fr; }
+  .f9d-hero { padding: 32px 26px 30px; }
+  .f9d-rewards,
+  .f9d-cycle { padding: 26px; }
+  .f9d-records { padding: 6px 20px 24px; }
+  .f9d-seg { display: flex; width: 100%; }
+  .f9d-subrow { overflow-x: auto; scrollbar-width: none; }
+  .f9d-subrow::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 620px) {
+  .f9d-facts { grid-template-columns: 1fr; }
+  .f9d-hero__actions { width: 100%; }
+  .f9d-hero__actions .f9d-btn { flex: 1; }
+  .f9d-order { flex-wrap: wrap; }
+  .f9d-order__end { text-align: left; width: 100%; }
+  .f9d-seg__btn { padding: 11px 10px; font-size: 13.5px; }
+  .f9d-cycle__dial { margin-inline: auto; }
+  .f9d-essentials__copy { padding: 30px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .f9dash *,
+  .f9dash *::before,
+  .f9dash *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ===== Touch targets =====
+   `.f9d-btn` declares no min-height and no padding in its base rule, so every
+   variant landed wherever its own padding put it — measured 38-42px across the
+   segmented control, the reward buttons and the hero actions. This sheet also
+   had no `pointer: coarse` block and exactly one `min-height` in 1,000+ lines.
+
+   `/thara` is the model to copy: thara.css sets `.t9-btn--sm { min-height: 44px }`
+   on the button itself rather than hoping padding adds up. */
+@media (max-width: 900px), (pointer: coarse) {
+  .f9d-btn,
+  .f9d-seg__btn,
+  .f9d-reward__btn,
+  .f9d-order__again {
+    min-height: 44px;
+  }
+
+  /* The ≤620px pass tightens this to padding:11px 10px / font-size:13.5px,
+     which took it back down to ~38px. Re-assert the floor after it. */
+  .f9d-seg .f9d-seg__btn {
+    min-height: 44px;
+  }
+}

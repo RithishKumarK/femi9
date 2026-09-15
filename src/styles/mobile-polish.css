@@ -1,0 +1,188 @@
+/* Femi9 mobile polish — loaded last so the real storefront markup wins over
+   the older Figma/mobile export rules. This is intentionally scoped to the
+   phone/tablet breakpoint; desktop remains unchanged. */
+
+@media (max-width: 960px) {
+  /* ── Header: fixed compact glass pill ─────────────────────────────── */
+  .nav {
+    position: fixed !important;
+    top: max(10px, env(safe-area-inset-top)) !important;
+    left: 50% !important;
+    width: calc(100% - 20px) !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    border-radius: 999px !important;
+    overflow: visible !important;
+    background: linear-gradient(135deg, rgba(105, 86, 137, 0.76), rgba(72, 56, 104, 0.68)) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    box-shadow: 0 18px 45px rgba(43, 27, 72, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(35, 20, 60, 0.12) !important;
+  }
+
+  .nav::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(115deg, rgba(255,255,255,.13), transparent 38%, rgba(255,255,255,.04));
+  }
+
+  .nav-in {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
+    padding: 7px 12px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .nav-logo {
+    flex: 0 0 94px !important;
+    width: 94px !important;
+    height: 40px !important;
+    padding: 0 !important;
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+
+  .nav-right {
+    margin-left: auto !important;
+    gap: 6px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .nav-right .cart-btn,
+  .nav-right .burger {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.10) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 5px 14px rgba(35,20,60,.12) !important;
+  }
+
+  .nav-right .cart-btn svg,
+  .nav-right .burger svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+
+  .mobile-menu {
+    top: calc(100% + 8px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 28px !important;
+  }
+
+  /* ── Hero: start safely below the compact floating navbar ─────────── */
+  .figma-landing .fl-hero--fullscreen-studio {
+    padding-top: 112px !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__inner {
+    padding-inline: 18px !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__copy {
+    max-width: 390px !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__title {
+    font-size: clamp(38px, 10.2vw, 46px) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.025em !important;
+    text-wrap: balance !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__subtitle {
+    max-width: 330px !important;
+    margin-top: 18px !important;
+    font-size: 17px !important;
+    line-height: 1.42 !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__subtitle::before {
+    width: 34px !important;
+    height: 3px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__actions {
+    margin-top: 22px !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__cta.fl-btn--gold {
+    width: min(100%, 360px) !important;
+    min-height: 56px !important;
+    padding-inline: 28px !important;
+    font-size: 18px !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__proof {
+    margin-top: 18px !important;
+    gap: 8px 14px !important;
+    font-size: 14px !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__proof span img {
+    width: 26px !important;
+    height: 26px !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .figma-landing .fl-hero--fullscreen-studio {
+    padding-top: 112px !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__fullscreen-bg {
+    height: clamp(300px, 76vw, 360px) !important;
+    margin-top: 0 !important;
+  }
+
+  .fl-hero--fullscreen-studio .fl-hero__fullscreen-img {
+    object-position: 50% 48% !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__copy {
+    max-width: 370px !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__title {
+    font-size: clamp(37px, 10vw, 43px) !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__proof {
+    align-items: center !important;
+  }
+
+  .figma-landing .fl-hero--fullscreen-studio .fl-hero__proof > span:not(.fl-hero__proof-divider) {
+    min-height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav,
+  .fl-hero--fullscreen-studio .fl-hero__fullscreen-img {
+    transition: none !important;
+  }
+}

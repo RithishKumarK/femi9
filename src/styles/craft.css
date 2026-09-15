@@ -1,0 +1,124 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   craft.css — "de-slab" design foundation for the Femi9 storefront.
+
+   Loaded after the base stylesheets. This is the shared vocabulary — radii,
+   layered elevation, soft brand-tinted gradient washes, motion — that every
+   craft-<area>.css override references, so the polish pass stays consistent
+   across nav, footer, home, product, cart, and checkout.
+
+   Rules here are TOKENS + opt-in UTILITIES + an accessibility floor only.
+   No layout changes, no per-area selectors — those live in the craft-<area>
+   files. The goal everywhere: turn flat, hard-edged, depthless "slabs" into
+   surfaces with soft geometry, real elevation, and organic transitions, while
+   keeping the existing brand and layout untouched.
+   Brand anchors: navy #34204E · ink #4B3E63 · gold #F0C14E · green #3F6B4F ·
+   lavender #F2EAFB · cream #FBF6EF · lilac #C9AEE4.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Radius: larger + consistent, so big surfaces read as soft, not blocky ── */
+  --cr-r-xs: 10px;
+  --cr-r-sm: 14px;
+  --cr-r-md: 20px;
+  --cr-r-lg: 28px;
+  --cr-r-xl: 36px;
+  --cr-r-2xl: 44px;
+
+  /* ── Elevation: multi-layer, low-opacity, tinted to the brand navy — never a
+     single hard drop shadow. This is what lifts a flat fill off the page so it
+     stops reading as a slab. ── */
+  --cr-shadow-xs: 0 1px 2px rgba(52, 32, 78, 0.05), 0 1px 3px rgba(52, 32, 78, 0.04);
+  --cr-shadow-sm: 0 2px 6px rgba(52, 32, 78, 0.06), 0 6px 14px rgba(52, 32, 78, 0.06);
+  --cr-shadow-md: 0 4px 12px rgba(52, 32, 78, 0.07), 0 14px 30px rgba(52, 32, 78, 0.09);
+  --cr-shadow-lg: 0 8px 20px rgba(52, 32, 78, 0.08), 0 26px 56px rgba(52, 32, 78, 0.13);
+  --cr-shadow-float: 0 34px 60px -24px rgba(52, 32, 78, 0.3);
+
+  /* ── Brand-tinted gradient washes: replace flat solid fills on large surfaces
+     with a subtle directional wash so the mass gains depth. ── */
+  --cr-wash-lav: linear-gradient(158deg, #f4ecfc 0%, #efe6f9 55%, #f7f2fb 100%);
+  --cr-wash-cream: linear-gradient(160deg, #fdfaf4 0%, #fbf5ec 100%);
+  --cr-wash-navy: linear-gradient(162deg, #3d2858 0%, #311f4b 62%, #34204e 100%);
+  --cr-hairline: rgba(52, 32, 78, 0.09); /* soft edge instead of a hard section line */
+
+  /* ── Motion: one calm easing family used everywhere, for cohesion ── */
+  --cr-ease: cubic-bezier(0.22, 0.8, 0.28, 1);
+  --cr-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --cr-dur: 0.24s;
+  --cr-dur-lg: 0.5s;
+
+  --cr-focus: #7a5bbf;
+}
+
+/* ── Opt-in utilities — area overrides apply these to existing selectors ────── */
+
+/* The standard "interactive, has depth" hover motion. */
+.cr-lift {
+  transition: transform var(--cr-dur) var(--cr-ease), box-shadow var(--cr-dur) var(--cr-ease);
+  will-change: transform;
+}
+.cr-lift:hover {
+  transform: translateY(-3px);
+}
+
+.cr-elev-sm { box-shadow: var(--cr-shadow-sm); }
+.cr-elev-md { box-shadow: var(--cr-shadow-md); }
+.cr-elev-lg { box-shadow: var(--cr-shadow-lg); }
+
+/* A surface that reads as a soft frame, not a hard slab. */
+.cr-panel {
+  border-radius: var(--cr-r-lg);
+  box-shadow: var(--cr-shadow-md);
+  background: #fff;
+}
+
+/* ── Add-to-bag confirmation ────────────────────────────────────────────────
+   Keyframes only; each area's sheet decides which of ITS buttons wears them, so
+   there is no global `.is-added` rule for an unrelated component to collide
+   with. Two layers, deliberately: the button gives a short squash-and-settle so
+   the press feels answered, and a ring expands out of its edge so the
+   confirmation is still legible when the cart drawer opens over the top and
+   steals attention. Kept under half a second — this fires on the conversion
+   path, and motion the shopper has to wait out is motion working against her. */
+@keyframes cr-add-pop {
+  0% { transform: scale(1); }
+  28% { transform: scale(0.94); }
+  62% { transform: scale(1.045); }
+  100% { transform: scale(1); }
+}
+
+@keyframes cr-add-ring {
+  0% { opacity: 0.55; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.28); }
+}
+
+/* Skeleton shimmer — removes the "blank white slab while an image loads" moment. */
+.cr-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #f2eafb;
+}
+.cr-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: translateX(-100%);
+  animation: cr-shimmer 1.4s var(--cr-ease) infinite;
+}
+@keyframes cr-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* ── Accessibility floor, applied site-wide ────────────────────────────────── */
+:where(a, button, [role='button'], input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--cr-focus);
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-lift,
+  .cr-skeleton::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
