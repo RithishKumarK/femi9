@@ -71,7 +71,7 @@
   max-width: 940px;
   margin: 0 auto;
   padding: 40px 20px 110px;
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   color: var(--t9-ink);
   -webkit-font-smoothing: antialiased;
   display: flex;
@@ -97,7 +97,7 @@
    and letterform, never through weight. The italic tail is the comp's one
    flourish: "Shop. Share. Earn." / "How Thara works". */
 .t9-disp {
-  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-family: var(--display), 'Poppins', sans-serif;
   font-weight: 400;
   color: var(--t9-deep);
   letter-spacing: -.01em;
@@ -141,7 +141,7 @@
    Gold pill + plum text + gold glow is the site-wide primary; one per view.
    -------------------------------------------------------------------------- */
 .t9-btn {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 15px;
   line-height: 1;
@@ -272,7 +272,7 @@
 .t9-sec__head--left { text-align: left; align-items: flex-start; }
 .t9-h2 { font-size: clamp(26px, 3.6vw, 36px); }
 .t9-h3 {
-  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-family: var(--display), 'Poppins', sans-serif;
   font-weight: 400;
   font-size: 19px;
   line-height: 1.25;
@@ -305,7 +305,7 @@
 }
 .t9-step:hover { transform: translateY(-3px); box-shadow: var(--t9-sh-md), inset 0 0 0 1px var(--t9-hairline); }
 .t9-step__n {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 800;
   font-size: 13px;
   letter-spacing: .12em;
@@ -380,7 +380,7 @@
 }
 .t9-example__rows span { font-size: 15px; color: var(--t9-lilac); }
 .t9-example__rows strong {
-  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-family: var(--display), 'Poppins', sans-serif;
   font-weight: 400;
   font-size: 25px;
   color: #fff;
@@ -426,7 +426,7 @@
 .t9-slabs__row:nth-child(odd) { background: var(--t9-cream); }
 .t9-slabs__range { font-size: 15.5px; color: var(--t9-ink); font-variant-numeric: tabular-nums; }
 .t9-slabs__pct {
-  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-family: var(--display), 'Poppins', sans-serif;
   font-weight: 400;
   font-size: 20px;
   color: var(--t9-deep);
@@ -536,7 +536,7 @@
   color: var(--t9-gold-deep);
 }
 .t9-metric__value {
-  font-family: var(--display), 'Newsreader', Georgia, serif;
+  font-family: var(--display), 'Poppins', sans-serif;
   font-weight: 400;
   font-size: 34px;
   color: var(--t9-deep);

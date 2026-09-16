@@ -605,6 +605,15 @@ body:has(.shop-layout) {
   border-color: rgba(52, 32, 78, .42);
 }
 
+/* Product name, moved above the photo. `.shop-layout .card h3` below already
+   styles it — it's a plain h3 descendant of `.card`, same selector that used
+   to reach it under `.card-body`. */
+.shop-layout .card-name-top {
+  display: block;
+  padding: 14px 16px 0;
+  color: inherit;
+}
+
 /* Static, so the strip below positions against the whole tile, not the photo. */
 .shop-layout .card-media-wrap {
   position: static;

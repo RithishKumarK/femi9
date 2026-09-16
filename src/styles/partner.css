@@ -14,7 +14,7 @@
 .pt-head p,
 .pt-step-t,
 .pt-step-d {
-  font-family: "Hanken Grotesk", system-ui, sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
 }
 
 /* Display / headings + the big stat & step numerals → Newsreader serif, matching
@@ -30,7 +30,7 @@
 .pt-head h2,
 .pt-voices-title,
 .pt-stat-n {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif !important;
+  font-family: "Poppins", sans-serif !important;
 }
 
 .partner { position: relative; }

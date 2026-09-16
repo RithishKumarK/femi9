@@ -1,6 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   craft-type.css — SITE-WIDE type re-skin (Newsreader serif + Hanken Grotesk),
-   taken from the "Femi9 Home v2" reference.
+   craft-type.css — SITE-WIDE type re-skin: one family (Poppins) everywhere,
+   with the bold/light contrast that used to come from mixing a serif display
+   face against a sans body face now carried entirely by Poppins' own weight
+   range instead (300 light body → 800 heavy eyebrows).
 
    The storefront has no single content wrapper — the store layout renders the
    background, nav, page, and footer as siblings under <body>, and each page has
@@ -10,27 +12,32 @@
    The ADMIN panel (.adm shell) resets them back so that internal tool is untouched.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 1. Flip the app's display + body faces via the shared tokens. */
+/* 1. Flip the app's display + body faces via the shared tokens. Both point at
+      Poppins now — weight, not face, is what separates display from body. */
 :root {
-  --display: 'Newsreader', Georgia, 'Times New Roman', serif;
-  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --display: 'Poppins', sans-serif;
+  --font-body: 'Poppins', sans-serif;
 }
 body {
   font-family: var(--font-body);
+  font-weight: 300;
 }
 
-/* 2. Admin keeps its original faces (dense internal tool). .adm is the admin
-      shell root; setting font-family here (not just the token) makes descendants
-      inherit the sans face, and the token reset restores its headings. */
+/* 2. Admin keeps its original faces (dense internal tool), untouched by this
+      re-skin. .adm is the admin shell root; setting font-family here (not just
+      the token) makes descendants inherit the sans face, and the token reset
+      restores its headings. */
 .adm {
   --display: 'Instrument Sans', 'Urbanist', system-ui, sans-serif;
   --font-body: 'Urbanist', system-ui, sans-serif;
   font-family: var(--font-body);
+  font-weight: 400;
 }
 
-/* 3. Display headlines → Newsreader. Several storefront places hard-code a sans
-      face (app.css `.display`; blog/product headings, some with !important) and so
-      bypass the token — repaint them. These are storefront-only classes. */
+/* 3. Display headlines → Poppins, bold. Several storefront places hard-code a
+      face (app.css `.display`; blog/product headings, some with !important) and
+      so bypass the token — repaint them, and push them to a heavier weight than
+      body copy so the bold/light contrast still reads without a second face. */
 .display,
 h2.display,
 .blog-hero-title,
@@ -42,42 +49,59 @@ h2.display,
 .pdp-title,
 .pdp-sec-title,
 .pdp-rating-big {
-  font-family: 'Newsreader', Georgia, serif !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
 }
 .display {
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.01em;
 }
 /* Blog/article hard-code sans on `.blog .display` / `.blog .article-title` at
    specificity (0,2,0) !important, which out-ranked the plain overrides above.
-   Match that specificity (and load later) so the serif wins. */
+   Match that specificity (and load later) so the bold weight wins. */
 .blog .display,
 .blog .article-title,
 .article .display,
 .article .article-title {
-  font-family: 'Newsreader', Georgia, serif !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
 }
 .blog-hero-sub {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
 }
 /* keep the admin panel's own `.display`, if any, on its sans face */
 .adm .display {
   font-family: var(--display) !important;
+  font-weight: 600 !important;
 }
 
-/* 4. Sub / card titles stay sans, so the serif stays reserved for true display. */
+/* 4. Headings step down in weight as they get smaller — h1/h2 (base.css) are
+      bold at 700, h3/h4 land at medium 500 so display stays reserved for true
+      section titles, and body copy is light 300. */
+h1,
+h2 {
+  font-weight: 700;
+}
 h3,
 h4 {
   font-family: var(--font-body);
+  font-weight: 500;
 }
 .bcard-body h3 {
   font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+}
+p,
+li {
+  font-weight: 300;
 }
 
-/* 5. Eyebrows — gold, UPPERCASE, wide tracking, heavy (the reference `.ey`). */
+/* 5. Eyebrows — gold, UPPERCASE, wide tracking, heaviest weight on the page
+      (the reference `.ey`). */
 .eyebrow,
 .fl-kicker {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 800;
   letter-spacing: 0.2em;
   text-transform: uppercase;

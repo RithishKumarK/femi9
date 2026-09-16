@@ -28,7 +28,7 @@
 }
 
 .kb-heading {
-  font-family: 'Newsreader', Georgia, serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 400;
   font-size: clamp(2rem, 4.4vw, 3.1rem);
   line-height: 1.1;
@@ -102,7 +102,7 @@
 }
 
 .kb-item-title {
-  font-family: 'Newsreader', Georgia, serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 400;
   font-size: clamp(1.15rem, 1.8vw, 1.5rem);
   line-height: 1.2;

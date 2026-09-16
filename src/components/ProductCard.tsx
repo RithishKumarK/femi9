@@ -26,6 +26,10 @@ interface Props {
    * always-visible Buy Now it has always had.
    */
   quickAddOnHover?: boolean
+  /** /shop's editorial grid only: renders the product name above the photo
+   *  instead of below it. Off by default so every other grid (home, related
+   *  products) keeps its original name-under-image order. */
+  nameAboveImage?: boolean
 }
 
 /** Rendered if the product photo 404s, so the card shows a pack instead of the
@@ -36,6 +40,7 @@ export const ProductCard = memo(function ProductCard({
   product,
   showInsideOnHover = false,
   quickAddOnHover = false,
+  nameAboveImage = false,
 }: Props) {
   const { add } = useCart()
   const [pulsing, pulse] = useAddPulse()
@@ -69,6 +74,11 @@ export const ProductCard = memo(function ProductCard({
 
   return (
     <article className="card">
+      {nameAboveImage && (
+        <Link to={`/product/${id}`} className="card-name-top">
+          <h3>{name}</h3>
+        </Link>
+      )}
       {/* The media link and the hover CTA are SIBLINGS inside this wrapper, not
           nested. A <button> inside an <a> is invalid HTML, and the browser would
           have to guess which of the two a click meant — so the wrapper owns the
@@ -128,7 +138,9 @@ export const ProductCard = memo(function ProductCard({
       </div>
       <div className="card-body">
         <span className="card-flow">{flow}</span>
-        <Link to={`/product/${id}`} style={{ color: 'inherit' }}><h3>{name}</h3></Link>
+        {!nameAboveImage && (
+          <Link to={`/product/${id}`} style={{ color: 'inherit' }}><h3>{name}</h3></Link>
+        )}
         <p className="card-desc">{desc}</p>
         {/* `--quick` tells the stylesheet this card has a hover overlay, so the
             Buy Now below is hidden on hover-capable pointers and kept on touch —

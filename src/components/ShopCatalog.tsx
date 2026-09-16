@@ -447,7 +447,13 @@ export function ShopCatalog({ products }: { products: ProductWithVariants[] }) {
         ) : (
           <div className="grid-products">
             {visible.map(({ product }) => (
-              <ProductCard key={product.id} product={product} showInsideOnHover quickAddOnHover />
+              <ProductCard
+                key={product.id}
+                product={product}
+                showInsideOnHover
+                quickAddOnHover
+                nameAboveImage
+              />
             ))}
           </div>
         )}

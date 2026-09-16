@@ -17,23 +17,24 @@
 
 /* ── Base: body/UI face + ink ──────────────────────────────────────────────── */
 .figma-landing {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   color: #4b3e63;
 }
 
-/* ── Display headlines → Newsreader serif ──────────────────────────────────────
+/* ── Display headlines → Poppins, bold ─────────────────────────────────────────
    Same sizes as the base (design unchanged); only the face + weight change.
-   Newsreader reads elegantly at a light-to-medium weight for large display. */
+   Poppins carries the "display" feel at a heavy weight now that a second serif
+   face is not doing the contrast work. */
 .figma-landing h1,
 .figma-landing h2 {
-  font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
-  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
   letter-spacing: -0.005em;
 }
 .figma-landing .fl-hero h1,
 .figma-landing .fl-hero h2 {
-  font-family: 'Newsreader', Georgia, serif;
-  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
   letter-spacing: -0.01em;
   /* Size the display up so the left column fills the tall hero instead of
      floating in empty space (responsive: small on phones, large on desktop). */
@@ -73,29 +74,29 @@
 }
 .figma-landing .fl-heading h2,
 .figma-landing .fl-about__copy h2 {
-  font-family: 'Newsreader', Georgia, serif;
-  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
 }
 /* Journal + partner headings carry their own font (partner uses !important). */
 .figma-landing .fl-journal .fl-heading h2 {
-  font-family: 'Newsreader', Georgia, serif;
-  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
 }
 .figma-landing .fl-partner__copy h2 {
-  font-family: 'Newsreader', Georgia, serif !important;
-  font-weight: 400 !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
 }
 /* Cycle-tracker section title ("Know Your Cycle…") pins Instrument Sans via a
    `font:` shorthand !important at (0,2,1); this (0,3,1) !important, loaded last,
    flips it to the display serif like every other section heading. */
 .figma-landing .fl-cycle .cyc-intro h2 {
-  font-family: 'Newsreader', Georgia, serif !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 
 /* ── Eyebrows → Hanken 800 · .2em · UPPERCASE · gold-deep ──────────────────────
    The reference's `.ey`. Base is `font:600 20px/1 "Instrument Sans"` in gold. */
 .figma-landing .fl-kicker {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.2em;
@@ -114,18 +115,21 @@
 /* ── Body / sub-copy → Hanken, muted taken from the reference ─────────────────
    Override the spots that pin their own face (Urbanist / Instrument Sans). */
 .figma-landing .fl-heading > div:first-child > p:last-child {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
   color: #877d9e;
 }
 .figma-landing .fl-heading--light > div:first-child > p:last-child {
   color: #efedf7;
 }
 .figma-landing .fl-journal .fl-heading > div:first-child > p:last-child {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
   color: #877d9e;
 }
 .figma-landing .fl-about__copy > p:not(.fl-kicker) {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
   color: #877d9e;
 }
 
@@ -133,18 +137,18 @@
 .figma-landing .fl-blog h3,
 .figma-landing .fl-benefit h3,
 .figma-landing .fl-review h3 {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
 }
 
 /* ── Buttons → Hanken semibold ───────────────────────────────────────────────
    Partner buttons force Instrument Sans with !important, so match it. */
 .figma-landing .fl-btn {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
 }
 .figma-landing .fl-partner__actions .fl-btn {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
   font-weight: 600 !important;
 }
 
@@ -152,15 +156,15 @@
    Sub-copy + small labels → Hanken; the big stat numbers → Newsreader, echoing
    the reference's serif display numerals (.idx). */
 .figma-landing .fl-partner {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 .figma-landing .fl-partner__copy > p,
 .figma-landing .fl-partner__stats small {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 .figma-landing .fl-partner__stats strong {
-  font-family: 'Newsreader', Georgia, serif !important;
-  font-weight: 500 !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
 }
 
 /* ── Global chrome (nav + footer) ─────────────────────────────────────────────
@@ -173,7 +177,7 @@
 .nav-signout,
 .cart-btn,
 .burger {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .footer,
 .footer p,
@@ -185,9 +189,9 @@
 .nl-form input,
 .nl-submit,
 .footer-bottom {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 /* Footer column headings: quiet uppercase labels, not serif display. */
 .footer-col h4 {
-  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
 }

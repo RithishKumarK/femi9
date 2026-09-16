@@ -165,8 +165,8 @@
 .pdp-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .pdp-thumb.on { border-color: var(--forest-2); transform: scale(1.03); }
 .pdp-flow { font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: #494286; font-weight: 600; display: inline-block; margin-bottom: 12px; }
-.pdp-info h1 { font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif; font-size: clamp(1.8rem,3vw,2.5rem); font-weight: 700; color: var(--navy); letter-spacing: -.01em; margin: 0 0 12px; }
-.display, h2.display { font-family: "Instrument Sans", "Urbanist", system-ui, sans-serif; font-weight: 600; letter-spacing: -.01em; }
+.pdp-info h1 { font-family: "Poppins", sans-serif; font-size: clamp(1.8rem,3vw,2.5rem); font-weight: 700; color: var(--navy); letter-spacing: -.01em; margin: 0 0 12px; }
+.display, h2.display { font-family: "Poppins", sans-serif; font-weight: 600; letter-spacing: -.01em; }
 .pdp-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .stars { display: inline-flex; gap: 2px; color: var(--yellow); }
 .stars svg { width: 17px; height: 17px; }
@@ -180,7 +180,7 @@
 /* eyebrow / kicker label */
 .eyebrow {
   display: inline-flex; align-items: center; gap: .6em;
-  font-family: "Instrument Sans", "Urbanist", sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: .85rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
   color: #E2A233;
 }
@@ -521,7 +521,7 @@
   --teal-tint: #E3F2EE;
   --text: #241738;
   --text-soft: #786E8C;
-  --font-main: "Plus Jakarta Sans", "Instrument Sans", system-ui, sans-serif;
+  --font-main: 'Poppins', sans-serif;
 }
 
 /* ---------- PDP Page Structure ---------- */
@@ -738,7 +738,7 @@
 }
 
 .pdp-title {
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 32px;
   font-weight: 600;
   line-height: 1.16;
@@ -1874,7 +1874,7 @@
 }
 
 .pdp-sec-title {
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   /* Was a flat 2.2rem (35px), which out-sized the product H1's clamped 28px cap
      on every phone and wrapped "Frequently Bought Together" to three lines in a
      284px column. The clamp max is the former value, so the desktop artboard is
@@ -2008,7 +2008,7 @@
 }
 
 .pdp-review-title {
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 1.12rem;
   font-weight: 600;
   color: var(--ink, #120f2e);
@@ -2092,7 +2092,7 @@
 }
 
 .pdp-rating-big {
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 3.4rem;
   font-weight: 700;
   color: var(--ink, #120f2e);
@@ -2240,7 +2240,7 @@
 }
 
 .related-title {
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 1.02rem;
   font-weight: 600;
   color: var(--ink, #120f2e);

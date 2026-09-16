@@ -854,7 +854,7 @@ export function ProductDetail({ product, extra, reviews, relatedProducts, sizeOp
               </div>
 
               {/* Quantity Stepper & Add to Bag */}
-              <div className="cta-row">
+              <div className="cta-row" id="add-to-cart">
                 <div className="qty-stepper">
                   <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease">&minus;</button>
                   <span>{qty}</span>

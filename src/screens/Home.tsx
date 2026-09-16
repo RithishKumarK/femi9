@@ -153,7 +153,12 @@ function Hero() {
     }
   }, [])
 
-  const buyNow = () => document.querySelector('#products')?.scrollIntoView({ behavior: 'smooth' })
+  // Sends the hero CTA straight to the bestseller's PDP, landing on its actual
+  // Add to bag button (`#add-to-cart` in ProductDetail.tsx) rather than just
+  // scrolling to the on-page catalog grid.
+  const buyNow = () => {
+    window.location.href = '/product/p330dw#add-to-cart'
+  }
 
   const imgRef = useRef<HTMLImageElement>(null)
 

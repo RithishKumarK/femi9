@@ -22,7 +22,7 @@
 .fl-btn,
 .btn {
   border-radius: 999px !important;
-  font-family: 'Hanken Grotesk', system-ui, sans-serif !important;
+  font-family: 'Poppins', sans-serif !important;
   font-weight: 700;
   transition: transform 0.3s var(--cr-be), box-shadow 0.3s var(--cr-be),
     background 0.35s var(--cr-be), background-position 0.8s var(--cr-be),

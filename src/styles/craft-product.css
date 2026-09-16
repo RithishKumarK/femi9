@@ -269,11 +269,11 @@
    pinned rule overrides it — those are re-pointed in the typography block. */
 .pdp-page {
   background-color: #ffffff !important;
-  font-family: "Hanken Grotesk", system-ui, sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   /* Re-point the page's body-font token so the handful of elements that pin
      `var(--font-main)` directly (e.g. .crumbs breadcrumb) resolve to Hanken too,
      instead of the old Plus Jakarta Sans — they don't inherit the rule above. */
-  --font-main: "Hanken Grotesk", system-ui, sans-serif;
+  --font-main: "Poppins", sans-serif;
 }
 
 /* Display headings + big numerals → Newsreader serif. */
@@ -285,13 +285,13 @@
 .pdp-page .pdp-sec-title,
 .pdp-page .pdp-now-price,
 .pdp-page .pdp-rating-big {
-  font-family: "Newsreader", Georgia, "Times New Roman", serif !important;
+  font-family: "Poppins", sans-serif !important;
 }
 
 /* Related-card title in the "Frequently bought together" strip — pinned to
    Instrument Sans; card titles are the body sans in this system, so → Hanken. */
 .pdp-page .related-title {
-  font-family: "Hanken Grotesk", system-ui, sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 600;
 }
 

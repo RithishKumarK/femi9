@@ -6,8 +6,8 @@
    ============================================================ */
 
 :root{
-  --display:    "Instrument Sans", "Urbanist", system-ui, sans-serif;
-  --font-body:  "Urbanist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display:    "Poppins", sans-serif;
+  --font-body:  "Poppins", sans-serif;
 
   /* surfaces (soft lavender + pale gold) */
   --cream:      #FBF9FF;
