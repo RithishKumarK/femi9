@@ -25,12 +25,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@femi9/db": [
-        "./stubs/db/index.ts"
-      ],
-      "@femi9/core/*": [
-        "./stubs/core/*"
       ]
     }
   },

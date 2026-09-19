@@ -1,0 +1,1484 @@
+// Femi9 production schema — implements PRD §6 (Data model).
+// Provider: PostgreSQL. ORM: Prisma. Ids are cuid strings.
+//
+// Grouped: Catalog · Identity/Auth · Commerce · Loyalty & programs ·
+// Community · Cycle & content · Platform settings.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────── Enums ───────────────────────────────
+
+enum Role {
+  customer
+  affiliate
+  partner
+  staff
+  admin
+}
+
+enum ProductType {
+  pad
+  panty
+  // Lumi9. The enum is shared because the schema is: one definition, one client
+  // generator, a database schema per brand. A brand simply never uses the other
+  // brand's values.
+  diaper
+}
+
+enum ProductStatus {
+  active
+  draft
+  archived
+}
+
+enum VariantKind {
+  pack
+  size
+}
+
+enum OrderStatus {
+  pending
+  paid
+  processing
+  shipped
+  delivered
+  cancelled
+  refunded
+}
+
+enum PaymentStatus {
+  created
+  authorized
+  captured
+  failed
+  refunded
+}
+
+enum CouponType {
+  flat
+  pct
+}
+
+enum SubscriptionStatus {
+  // Created locally, mandate NOT yet approved by the customer's bank/UPI app.
+  // A plan in this state has never been authorised and must never be treated as
+  // live: it is what `createSubscription` writes BEFORE the shopper completes
+  // Razorpay Checkout, and what she is left in if she closes the sheet.
+  pending_mandate
+  active
+  paused
+  // Razorpay exhausted its retries on a failed charge. The mandate still exists
+  // but the gateway has stopped attempting to debit; only the customer fixing
+  // her payment instrument (or a fresh mandate) revives it.
+  halted
+  cancelled
+}
+
+enum AffiliateStatus {
+  pending
+  approved
+  suspended
+}
+
+enum AffiliateEventType {
+  click
+  signup
+  order
+}
+
+enum PayoutStatus {
+  pending
+  paid
+}
+
+enum PartnerStatus {
+  new
+  contacted
+  onboarded
+  rejected
+}
+
+enum ModerationStatus {
+  pending
+  approved
+  hidden
+}
+
+// ────────────────────────────── Catalog ──────────────────────────────
+
+model Product {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  name            String
+  type            ProductType   @default(pad)
+  basePrice       Int // rupees, integer paise-free (matches current data)
+  meta            String // e.g. "9 pads · 330mm"
+  flow            String // e.g. "Heavy · Night + Day"
+  description     String
+  longDescription String?
+  tag             String?
+  tagClass        String?
+  rating          Float         @default(0)
+  reviewCount     Int           @default(0)
+  status          ProductStatus @default(active)
+
+  /// On the landing page's featured rail.
+  ///
+  /// The rail used to be `products.slice(0, 4)` — whatever the catalogue query
+  /// happened to return first, which is creation order. So the one row of cards
+  /// most shoppers ever see was decided by which products were typed in first,
+  /// and there was no way to change it short of re-creating a product.
+  ///
+  /// How many a brand may flag at once is `brandConfig(brand).featuredSlots`,
+  /// NOT a constraint here: Postgres cannot express "at most five rows where
+  /// featured" without a trigger, and the number is a layout decision that
+  /// differs per brand. The cap is enforced in the admin product service, inside
+  /// the transaction that sets the flag, so two admins featuring at the same
+  /// moment cannot both pass the check.
+  ///
+  /// INVARIANT: only an `active` product is ever featured. Archiving or
+  /// un-publishing one clears this — a draft on the landing page would link to a
+  /// 404, and it would hold a slot nobody could see was taken.
+  featured   Boolean   @default(false)
+  /// When it was featured, and therefore its place in the rail (oldest first).
+  ///
+  /// Ordering by `createdAt` instead would mean featuring a new product silently
+  /// reshuffles the four already there; ordering by nothing would leave the row
+  /// order to the planner. NULL exactly when `featured` is false.
+  featuredAt DateTime?
+
+  /// The weight band this size fits, as NUMBERS.
+  ///
+  /// `specs` already carries "7-12 kg" for the size chips, and the size-up tool
+  /// carried its own `SIZE_BOUNDS` array beside it with a comment conceding the
+  /// two "must be kept in step" by hand. They were not: renaming a range in the
+  /// console moved what a parent READ and not what the projector CALCULATED,
+  /// and nothing anywhere reported the divergence.
+  ///
+  /// Parsing the display string at runtime was the other option and is worse —
+  /// it lets a copy edit ("about 7 to 12 kg") silently change the maths.
+  ///
+  /// Nullable because it is meaningless for a Femi9 pad, and because a Lumi9
+  /// product with neither bound set simply drops out of the size projection
+  /// rather than defaulting into a band it was never measured for.
+  minWeightKg Float?
+  maxWeightKg Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants   ProductVariant[]
+  images     ProductImage[]
+  features   ProductFeature[]
+  specs      ProductSpec[]
+  reviews    Review[]
+  wallPosts  WallPost[]
+  zonePrices ZoneProductPrice[]
+
+  @@index([featured, featuredAt])
+}
+
+model ProductVariant {
+  id        String      @id @default(cuid())
+  productId String
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  kind      VariantKind // pack (pads) | size (panties)
+  label     String // "9 pcs" | "M"
+  packCount Int? // pads
+  size      String? // panties
+
+  /// WHAT THE CART CHARGES. Every price a shopper is shown and every rupee
+  /// Razorpay takes resolves through this column — `placeOrder` prices each
+  /// line from it (services/checkout.ts) and `OrderItem` snapshots it.
+  ///
+  /// It is DERIVED now, not typed: the console takes `mrp` and `discountPct`
+  /// and the admin product service computes this from them, inside the same
+  /// transaction that saves them. Nothing else may write it.
+  ///
+  /// That derivation is the whole point. The three worst findings in the launch
+  /// audit shared one shape — the number a customer saw, the number the server
+  /// charged, and the number the business booked were computed in three
+  /// different places — and a "10% off" badge rendered from a constant no
+  /// server code had ever read meant a card saying ₹404 while the gateway took
+  /// ₹449. A discount that is a percentage OF THIS PRODUCT'S OWN MRP, applied
+  /// once, on the server, cannot drift from what is charged.
+  price Int
+
+  /// The undiscounted price — what this pack is worth, and the number struck
+  /// through beside the sale price.
+  ///
+  /// Nullable only because it was added to rows that predate it; the migration
+  /// backfills it to `price`, so an untouched product reads mrp == price with
+  /// discountPct 0 and displays exactly as it did before. The admin service
+  /// treats a null as "same as price" and writes a real value on the next save.
+  mrp         Int?
+  /// Whole percent off `mrp`, 0 when the product is sold at full price. The
+  /// console clamps it to 0-90: a 100% discount is a free order, which is a
+  /// decision nobody makes by typing in a price field.
+  discountPct Int  @default(0)
+
+  sku    String? @unique
+  stock  Int     @default(0)
+  active Boolean @default(true)
+
+  /// Shipping weight of ONE pack, in kilograms — what `shippingForWeight()`
+  /// (services/checkout.ts) sums against cart quantity to price a courier.
+  ///
+  /// Nullable for the same reason `mrp` is: a row from a brand or a seed that
+  /// predates this column has no weight, and `shippingFor` reads that as "no
+  /// weight data for this cart" and falls back to the flat `SHIPPING_FEE`
+  /// rather than pricing a partially-known basket at a wrong slab.
+  weightKg Float?
+
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  subscriptions Subscription[]
+  zonePrices    ZoneVariantPrice[]
+
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  position  Int     @default(0)
+
+  @@index([productId])
+}
+
+model ProductFeature {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  position  Int     @default(0)
+
+  @@index([productId])
+}
+
+model ProductSpec {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  key       String
+  value     String
+  position  Int     @default(0)
+
+  @@index([productId])
+}
+
+model Cadence {
+  id       String  @id @default(cuid())
+  code     String  @unique // "cycle" | "4w" | "6w"
+  label    String
+  sub      String
+  days     Int
+  active   Boolean @default(true)
+  position Int     @default(0)
+
+  subscriptions Subscription[]
+}
+
+// ─────────────────────────── Identity & Auth ──────────────────────────
+// Auth.js (NextAuth) core models, extended with Femi9 fields on User.
+
+model User {
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    DateTime?
+  phone            String?   @unique
+  // Symmetric with emailVerified. An unverified phone on User is worse than no
+  // phone at all — checkout attribution and Thara's anti-self-referral guard both
+  // treat phone as an identity — so only a passed OTP challenge stamps this.
+  phoneVerified    DateTime?
+  image            String?
+  role             Role      @default(customer)
+  tier             String? // "Bloom member"
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  cycleDataConsent Boolean   @default(false)
+
+  accounts      Account[]
+  sessions      Session[]
+  addresses     Address[]
+  carts         Cart[]
+  orders        Order[]
+  subscriptions Subscription[]
+  points        PointsLedger[]
+  coupons       Coupon[]
+  affiliate     Affiliate?
+  periods       PeriodLog[]
+  symptoms      SymptomLog[]
+  reviews       Review[]
+  wallPosts     WallPost[]
+  wallLikes     WallLike[]
+  wallReplies   WallReply[]
+  events        EventLog[]
+  notifications NotificationLog[]
+
+  // Lumi9 only — the parenting tools. Femi9 has no page that writes either.
+  babyProfiles   BabyProfile[]
+  parentingLeads ParentingLead[]
+
+  tharaMembership       TharaMembership?
+  tharaReferralReceived TharaReferral?            @relation("TharaReferralReceived")
+  tharaCreditLedger     TharaCreditLedger[]       @relation("TharaCreditLedgerUser")
+  tharaPointsLedger     TharaRewardPointsLedger[] @relation("TharaPointsLedgerUser")
+  tharaVouchers         TharaVoucher[]            @relation("TharaVoucherUser")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Address {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String
+  name       String
+  line       String
+  city       String
+  state      String?
+  pincode    String?
+  phone      String?
+  isPrimary  Boolean   @default(false)
+  // Soft delete. An address referenced by Order.addressId can never be hard
+  // deleted without breaking that order, so removing it from the address book
+  // stamps this instead; every account read filters on archivedAt IS NULL.
+  archivedAt DateTime?
+
+  orders Order[]
+
+  @@index([userId])
+  @@index([userId, archivedAt])
+}
+
+// ────────────────────────────── Commerce ──────────────────────────────
+
+model Cart {
+  id         String     @id @default(cuid())
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestToken String?    @unique // cookie token for anonymous carts
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  items      CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String         @id @default(cuid())
+  cartId    String
+  cart      Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  qty       Int            @default(1)
+
+  @@unique([cartId, variantId])
+  @@index([cartId])
+}
+
+model Order {
+  id                 String                    @id @default(cuid())
+  orderNo            String                    @unique
+  userId             String?
+  user               User?                     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status             OrderStatus               @default(pending)
+  subtotal           Int
+  discount           Int                       @default(0)
+  shipping           Int                       @default(0)
+  total              Int
+  addressId          String?
+  address            Address?                  @relation(fields: [addressId], references: [id])
+  couponId           String?
+  coupon             Coupon?                   @relation(fields: [couponId], references: [id])
+  affiliateId        String?
+  affiliate          Affiliate?                @relation(fields: [affiliateId], references: [id])
+  tharaQualifyingFor TharaMembership?          @relation("TharaQualifyingOrder")
+  tharaCreditLedger  TharaCreditLedger[]       @relation("TharaCreditLedgerOrder")
+  tharaPointsLedger  TharaRewardPointsLedger[] @relation("TharaPointsLedgerOrder")
+  channel            String                    @default("web") // web | whatsapp
+  placedAt           DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  /// A ONE-TIME address correction, opened by support for this order alone.
+  ///
+  /// A customer cannot edit a placed order's address by default, and should not
+  /// be able to: the address is what the parcel is labelled from, and an order
+  /// already handed to a courier cannot follow a change. But she rings support
+  /// saying she has moved, or — as with the first order this was written for —
+  /// a subscription renewal was charged and shipped to no address at all,
+  /// because `recordSubscriptionCharge` writes `addressId: address?.id ?? null`
+  /// and she had never saved one. There was no way to fix either without an
+  /// admin typing into the database.
+  ///
+  /// Three columns rather than one boolean, because "can she edit it" and "has
+  /// she already" are different questions and support needs both answered:
+  ///   grantedAt — when support opened it. NULL means closed, which is default.
+  ///   grantedBy — which admin opened it. Free text (an email), NOT a relation:
+  ///               admin identity lives in the `platform` schema and a brand's
+  ///               Prisma client cannot reach it, so a foreign key is not
+  ///               expressible here.
+  ///   usedAt    — when she saved. Non-NULL closes the window for good; a
+  ///               second correction needs support to open it again, which is
+  ///               what makes "only one time" enforceable rather than advisory.
+  addressEditGrantedAt DateTime?
+  addressEditGrantedBy String?
+  addressEditUsedAt    DateTime?
+
+  /// The plan this order was generated by, when it was not placed by hand.
+  /// Set both by the legacy cron (`generateDueOrders`) and by a gateway charge
+  /// (`recordSubscriptionCharge`), so "which orders did this subscription
+  /// actually produce" is a query rather than a guess from timestamps.
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  items    OrderItem[]
+  payments Payment[]
+  events   AffiliateEvent[]
+  points   PointsLedger[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([subscriptionId])
+}
+
+model OrderItem {
+  id           String         @id @default(cuid())
+  orderId      String
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId    String
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  productName  String // snapshot at purchase
+  variantLabel String // snapshot at purchase
+  unitPrice    Int // snapshot at purchase
+  qty          Int
+  lineTotal    Int
+
+  @@index([orderId])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String        @default("razorpay")
+  razorpayOrderId   String?
+  razorpayPaymentId String?       @unique
+  amount            Int
+  status            PaymentStatus @default(created)
+  method            String?
+  signatureVerified Boolean       @default(false)
+  /// The gateway's id for the refund that returned this payment, and when it
+  /// went back. `refundPayment` always returned the id and nothing wrote it
+  /// down, so a refunded order could not be tied to anything in the Razorpay
+  /// dashboard. Separate from `createdAt`, which is when the payment INTENT was
+  /// opened at checkout — not when money moved in either direction.
+  razorpayRefundId  String?
+  refundedAt        DateTime?
+  raw               Json?
+  createdAt         DateTime      @default(now())
+
+  @@index([orderId])
+}
+
+model Coupon {
+  id        String     @id @default(cuid())
+  code      String     @unique
+  type      CouponType
+  value     Int
+  minOrder  Int        @default(0)
+  maxUses   Int? // null = unlimited
+  usedCount Int        @default(0)
+  expiresAt DateTime?
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  // A coupon minted by redeeming Bloom points belongs to the customer who paid
+  // for it; null means a public/campaign code anyone may use. SetNull (not
+  // Cascade) so deleting a user never voids an order's coupon row.
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  orders Order[]
+
+  @@index([userId])
+}
+
+model Subscription {
+  id             String             @id @default(cuid())
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  variantId      String
+  variant        ProductVariant     @relation(fields: [variantId], references: [id])
+  qty            Int                @default(1)
+  cadenceId      String
+  cadence        Cadence            @relation(fields: [cadenceId], references: [id])
+  status         SubscriptionStatus @default(active)
+  nextDeliveryAt DateTime
+  savedTotal     Int                @default(0)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  // ── Razorpay-managed mandate (the gateway owns the billing calendar) ──────
+  //
+  // A row with `razorpaySubscriptionId` set is GATEWAY-MANAGED: Razorpay holds
+  // the mandate, decides when to debit, retries failures, and tells us what
+  // happened over the `subscription.*` webhooks. Orders for it are created by
+  // `recordSubscriptionCharge` when the money actually arrives.
+  //
+  // A row with it NULL is LEGACY - the pay-later plans that existed before
+  // mandates, whose orders `generateDueOrders` still generates from cron. The
+  // null-ness IS the discriminator; see services/subscriptions.ts. Keeping both
+  // is what lets this deploy without stranding the subscriptions already live.
+  razorpaySubscriptionId String?   @unique
+  razorpayPlanId         String?
+  razorpayCustomerId     String?
+  /// Rupees Razorpay debits per cycle. FIXED at mandate time - the plan amount
+  /// cannot be changed on an authorised mandate, so a price change means a new
+  /// subscription, not an update. Held here so ops can see what is being taken
+  /// without a gateway round-trip, and so a `subscription.charged` whose amount
+  /// disagrees can be rejected rather than silently booked.
+  chargeAmount           Int?
+  /// When the customer's bank/UPI app approved the mandate.
+  mandateAuthedAt        DateTime?
+  /// Razorpay's own status string, verbatim (`created`, `authenticated`,
+  /// `active`, `pending`, `halted`, `cancelled`, `completed`). Our enum is a
+  /// lossy projection of it; this keeps the untranslated value for support.
+  gatewayStatus          String?
+  /// End of the cycle Razorpay has currently charged for, from the webhook.
+  /// This is the gateway's calendar, not ours - `nextDeliveryAt` is re-synced
+  /// FROM it rather than computed, because under a mandate Razorpay decides
+  /// when the next debit lands and our arithmetic is only ever a guess at it.
+  currentEnd             DateTime?
+  /// Set by `skipNext` on a gateway-managed plan: the moment the resume cron
+  /// should un-pause this subscription. Razorpay has no skip-one-cycle
+  /// primitive, so a skip is a pause plus a scheduled resume.
+  resumeAt               DateTime?
+
+  orders Order[]
+
+  @@index([userId])
+  @@index([status, nextDeliveryAt])
+  @@index([status, resumeAt])
+}
+
+/// A Razorpay Plan we have created, cached so we create each one ONCE.
+///
+/// A plan on Razorpay is just (amount, period, interval) - it carries no
+/// customer and no product. So the natural key is exactly those three values,
+/// and every subscription that bills the same rupees on the same rhythm can
+/// share one. Without this cache a plan would be created on every subscribe
+/// click, leaving thousands of identical plans on the account.
+///
+/// `fingerprint` is that natural key rendered as a string (see
+/// services/subscription-plans.ts). It is unique, and the get-or-create races
+/// on it deliberately: a concurrent creator loses the insert with P2002 and
+/// re-reads the winner's row.
+model RazorpayPlan {
+  id             String   @id @default(cuid())
+  fingerprint    String   @unique
+  razorpayPlanId String   @unique
+  amount         Int // rupees per cycle
+  period         String // "daily" | "weekly" | "monthly" | "yearly"
+  interval       Int
+  createdAt      DateTime @default(now())
+}
+
+// ─────────────────────────── Loyalty & programs ────────────────────────
+
+model PointsLedger {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  delta        Int // +earn / -redeem
+  reason       String
+  orderId      String?
+  order        Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  balanceAfter Int
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model RewardOption {
+  id          String     @id @default(cuid())
+  title       String
+  costPoints  Int
+  couponType  CouponType
+  couponValue Int
+  active      Boolean    @default(true)
+  position    Int        @default(0)
+}
+
+model Affiliate {
+  id           String          @id @default(cuid())
+  userId       String          @unique
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  handle       String
+  platform     String?
+  followerBand String?
+  promoCode    String          @unique
+  status       AffiliateStatus @default(pending)
+  payoutUpi    String?
+  createdAt    DateTime        @default(now())
+
+  events  AffiliateEvent[]
+  payouts AffiliatePayout[]
+  orders  Order[]
+}
+
+model AffiliateEvent {
+  id          String             @id @default(cuid())
+  affiliateId String
+  affiliate   Affiliate          @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  type        AffiliateEventType
+  orderId     String?
+  order       Order?             @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  amount      Int                @default(0)
+  commission  Int                @default(0)
+  createdAt   DateTime           @default(now())
+
+  @@index([affiliateId])
+}
+
+model AffiliatePayout {
+  id          String       @id @default(cuid())
+  affiliateId String
+  affiliate   Affiliate    @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  amount      Int
+  status      PayoutStatus @default(pending)
+  periodStart DateTime
+  periodEnd   DateTime
+  reference   String?
+  paidAt      DateTime?
+  createdAt   DateTime     @default(now())
+
+  @@index([affiliateId])
+}
+
+model PartnerApplication {
+  id        String        @id @default(cuid())
+  name      String
+  phone     String
+  city      String
+  situation String?
+  reason    String?
+  status    PartnerStatus @default(new)
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  @@index([status])
+}
+
+// ────────────────────────────── Community ─────────────────────────────
+
+model WallPost {
+  id          String           @id @default(cuid())
+  userId      String?
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  alias       String?
+  isAnonymous Boolean          @default(false)
+  productId   String?
+  product     Product?         @relation(fields: [productId], references: [id], onDelete: SetNull)
+  rating      Int?
+  body        String
+  tags        String[]
+  status      ModerationStatus @default(pending)
+  likeCount   Int              @default(0)
+  createdAt   DateTime         @default(now())
+
+  likes   WallLike[]
+  replies WallReply[]
+
+  @@index([status])
+}
+
+model WallLike {
+  id        String   @id @default(cuid())
+  postId    String
+  post      WallPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+model WallReply {
+  id        String   @id @default(cuid())
+  postId    String
+  post      WallPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+}
+
+model Review {
+  id          String           @id @default(cuid())
+  productId   String
+  product     Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name        String
+  place       String?
+  rating      Int
+  // Optional one-line headline ("Loved this combo"). Nullable because every row
+  // written before this column existed has none, and the card falls back to the
+  // rating's own wording rather than printing an empty heading.
+  title       String?
+  body        String
+  status      ModerationStatus @default(approved)
+  // Denormalised helpful/unhelpful tallies. Counters rather than a join on
+  // ReviewVote because the product page reads them for every card on every
+  // render and never needs to know WHO voted — only ReviewVote does, and only
+  // to stop one visitor voting twice.
+  helpfulUp   Int              @default(0)
+  helpfulDown Int              @default(0)
+  // Overrides the derived "verified buyer" badge on the storefront. When set,
+  // it wins; when null, the read path falls back to the userId-plus-purchase
+  // heuristic in getProduct. Admin-authored reviews set this to `true` so a
+  // review typed into the console isn't shown as unverified just because it
+  // has no purchase trail. Nullable so nothing needs backfilling.
+  verifiedOverride Boolean?
+  // Photos + short clips a shopper attached to their review. Stored as a JSON
+  // array of `{ url, kind }` — kind is "image" or "video". Uploaded to the
+  // shared uploads bucket before submit; the array carries the final URL, not
+  // the bytes. Kept as one column rather than a separate table because a
+  // review's media is always read with the review, edited never, and both the
+  // storefront and the admin queue want it inline. Null / empty array means
+  // no media, which is how every legacy row behaves.
+  media       Json?
+  createdAt   DateTime         @default(now())
+
+  votes ReviewVote[]
+
+  @@index([productId])
+}
+
+/**
+ * One vote per visitor per review. `voterKey` is a signed-in user id when we
+ * have one and an IP-derived hash otherwise, so the unique constraint is what
+ * enforces "vote once" — a client-side guard alone is a localStorage clear away
+ * from being meaningless.
+ */
+model ReviewVote {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  voterKey  String
+  helpful   Boolean
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, voterKey])
+  @@index([reviewId])
+}
+
+// ─────────────────────────── Cycle & content ──────────────────────────
+
+model PeriodLog {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startDate     DateTime? // legacy plaintext; migration clears after encryption
+  lengthDays    Int? // legacy plaintext; migration clears after encryption
+  encryptedData String? // AES-256-GCM period payload
+  // HMAC-SHA256(CYCLE_DATA_ENCRYPTION_KEY, `${userId}|${YYYY-MM-DD}`) — an HMAC,
+  // never the plaintext day, because a readable start-date column would defeat
+  // the point of encrypting the payload. Two rows with the same start produced
+  // a gap of 0 → avgCycle 0 → NaN across the whole dashboard, so it is @@unique.
+  // Legacy rows keep NULL and Postgres treats NULLs as distinct, so no backfill.
+  startDayHash  String?
+  createdAt     DateTime  @default(now())
+
+  @@unique([userId, startDayHash])
+  @@index([userId])
+}
+
+model SymptomLog {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime? // legacy plaintext; migration clears after encryption
+  symptom       String? // legacy plaintext; migration clears after encryption
+  level         Int? // legacy plaintext; migration clears after encryption
+  encryptedData String? // AES-256-GCM symptom payload
+  createdAt     DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model BlogCategory {
+  id    String @id @default(cuid())
+  name  String @unique
+  color String
+  tint  String
+
+  posts BlogPost[]
+}
+
+model BlogPost {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  title       String
+  categoryId  String
+  category    BlogCategory     @relation(fields: [categoryId], references: [id])
+  excerpt     String
+  author      String
+  readTime    Int              @default(4)
+  tone        String
+  image       String?
+  featured    Boolean          @default(false)
+  status      ModerationStatus @default(approved)
+  body        String[] // legacy paragraphs / '## ' headings / '> ' pull-quotes
+  bodyHtml    String? // rich HTML from Tiptap; when set, storefronts render this
+  //                     instead of splitting `body`. Sanitised on write.
+  publishedAt DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // ── The <head> layer ──────────────────────────────────────────────────────
+  // These drive <title>, OG tags and JSON-LD, never the rendered card, which is
+  // why the original DTO had no column for them. Lumi9's journal shipped them
+  // in a module and could not move to the database without them: an article
+  // that loses its metaTitle, its keywords and its FAQ block on the way into
+  // Postgres is a downgrade, not a migration.
+  //
+  // All nullable / defaulted, so every existing Femi9 row stays valid and the
+  // storefront falls back to `title` and `excerpt` exactly as it did before.
+  metaTitle String?
+  imageAlt  String?
+  // Legacy single-bucket keywords. New posts write empty here and populate
+  // the three typed lists below instead. Read paths merge everything for
+  // the storefront's <meta name="keywords"> tag.
+  keywords  String[]
+  // SEO strategy split: the primary target term(s), secondary supporting
+  // terms, and semantic / topical terms. Default empty so nothing needs
+  // backfilling.
+  keywordsPrimary   String[] @default([])
+  keywordsSecondary String[] @default([])
+  keywordsSemantic  String[] @default([])
+  // The article's own closing call-to-action. Each SEO brief ends on wording
+  // written for that reader; NULL means the page's generic block stands in.
+  cta       String?
+
+  faqs BlogPostFaq[]
+
+  @@index([categoryId])
+}
+
+/// A question and answer shown under an article, and emitted as FAQPage
+/// structured data.
+///
+/// A table rather than a JSON column for the same reason ProductSpec is one:
+/// the console edits these as rows with an order, and `position` is what makes
+/// "move this question up" an UPDATE rather than a read-modify-write of a blob
+/// two editors can clobber.
+///
+/// FAQPage markup whose answers a crawler cannot find in the document is a
+/// manual-action risk, so whatever renders these must keep every answer in the
+/// DOM — see the `<dl>` in /journal/[slug], which is deliberately not the
+/// site's Accordion.
+model BlogPostFaq {
+  id       String   @id @default(cuid())
+  postId   String
+  post     BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  question String
+  answer   String
+  position Int      @default(0)
+
+  @@index([postId])
+}
+
+// Both newsletter forms (footer + journal) showed "you're on the list" while
+// discarding the address. This is where they land now. Deliberately NOT a User —
+// a subscriber has no account and must be removable without touching identity.
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String? // 'footer' | 'journal'
+  createdAt DateTime @default(now())
+}
+
+model EventLog {
+  id        String   @id @default(cuid())
+  type      String // view | add_to_cart | checkout | signup | ...
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+}
+
+model NotificationLog {
+  id        String    @id @default(cuid())
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  channel   String
+  recipient String
+  template  String
+  dedupeKey String    @unique
+  status    String
+  error     String?
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+// ────────────────────────── Platform settings ─────────────────────────
+// Editable business config — replaces hardcoded FREE_SHIP / SUBSCRIBE_PCT etc.
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ────────────────────────── Regional pricing ──────────────────────────
+// A PriceZone is a named pricing bucket (e.g. "Tamil Nadu") that applies a
+// discount off the base price. Regions are attached via ZoneRegion — STATES
+// now, DISTRICTS / PINCODE prefixes later WITHOUT a schema change. Pricing is
+// per-zone and resolved server-side; the isDefault zone is the fallback shown
+// when a visitor's location is unknown.
+//
+// A zone prices in one of two ways, and the second one WINS where it is set:
+//   1. `discountPct` — a blanket percentage off every product in the zone.
+//   2. ZoneProductPrice / ZoneVariantPrice — an EXACT rupee price the admin
+//      typed for one product (its card price) or one variant (what a cart line
+//      is charged). These are the "custom price setter": where a row exists the
+//      percentage is not consulted at all, so a zone can be priced item by item
+//      rather than only marked down as a whole.
+
+enum RegionKind {
+  state
+  district
+  pincode
+}
+
+model PriceZone {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  discountPct Int      @default(0) // 0–100, percent off the base price
+  isDefault   Boolean  @default(false)
+  active      Boolean  @default(true)
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  regions       ZoneRegion[]
+  productPrices ZoneProductPrice[]
+  variantPrices ZoneVariantPrice[]
+}
+
+model ZoneRegion {
+  id     String     @id @default(cuid())
+  zoneId String
+  zone   PriceZone  @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  kind   RegionKind @default(state)
+  value  String // "Tamil Nadu" (state) · "Coimbatore" (district) · "641" (pincode prefix)
+
+  @@unique([kind, value]) // a region maps to at most one zone (no ambiguity)
+  @@index([zoneId])
+}
+
+// An exact price for ONE PRODUCT in one zone — the number on the card and the
+// product page's headline. It does NOT cascade down to the product's variants:
+// a pack of 9 and a pack of 18 are different money, so each variant carries its
+// own row below. Deleting the product or the zone removes the override with it.
+model ZoneProductPrice {
+  id        String    @id @default(cuid())
+  zoneId    String
+  zone      PriceZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  price     Int // whole rupees, as typed by the admin
+
+  @@unique([zoneId, productId]) // one price per product per zone
+  @@index([productId])
+}
+
+// An exact price for ONE VARIANT in one zone. This is the row that decides real
+// money: cart lines, checkout and subscription renewals all price a variant.
+model ZoneVariantPrice {
+  id        String         @id @default(cuid())
+  zoneId    String
+  zone      PriceZone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  price     Int // whole rupees, as typed by the admin
+
+  @@unique([zoneId, variantId]) // one price per variant per zone
+  @@index([variantId])
+}
+
+// An IPv6 prefix that has been OBSERVED to serve one Indian telecom circle.
+//
+// Why this table exists: mobile carriers CGNAT their IPv4, so the address the CDN
+// resolves is a regional gateway and not the shopper — which is why regional
+// pricing misfires on Jio/Airtel and works over WiFi. They do NOT NAT IPv6, and
+// its prefixes are allocated per licensed service area ("telecom circle"), which
+// is drawn on state lines. The prefix therefore still carries roughly the
+// granularity a zone needs.
+//
+// It ships EMPTY on purpose. No registry publishes prefix→circle, so the rows are
+// LEARNED: every order pairs the viewer's IP with a delivery pincode the shopper
+// typed, which is ground truth. `observations` counts the confirmed deliveries
+// behind a row, and src/lib/geo/circles.ts refuses to price from a row until it
+// clears a threshold — one order proves nothing. Guessing prefixes by hand would
+// misprice real shoppers, which is worse than the bug being fixed.
+model IpCircleRange {
+  id     String @id @default(cuid())
+  // Nibble-aligned IPv6 prefix key, e.g. "24052011/32" — hex nibbles, then the
+  // length in bits. Prisma cannot express Postgres `inet` containment, so the
+  // lookup probes a fixed set of lengths and takes the longest hit instead.
+  prefix String @unique
+  // Circle slug from TELECOM_CIRCLES in src/lib/geo/circles.ts ("tamil-nadu").
+  // Several circles span more than one state and yield no state at all.
+  circle String
+  // The carrier this prefix belongs to, when known. Diagnostic only.
+  asn    Int?
+
+  // Confirmed deliveries backing this row, and how much they agree. A prefix
+  // that has shipped to its circle 200 times out of 210 is trustworthy; 3 out of
+  // 5 is noise. `active` lets ops retire a row that has started lying without
+  // deleting the evidence.
+  observations Int     @default(0)
+  conflicts    Int     @default(0)
+  active       Boolean @default(true)
+  // "observed" (learned from orders) | "manual" (an admin typed it).
+  source       String  @default("observed")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([circle])
+  @@index([asn])
+}
+
+// ─────────────────────────── Thara Model ───────────────────────────
+// Sub-project A: identity spine (enrolment + attribution). Sub-projects
+// B–F (personal discount, wallet credit, points, invite email, dashboards)
+// read from these tables; they do not modify them.
+
+enum TharaStatus {
+  purchase_pending
+  active
+  suspended
+  deactivated
+}
+
+model TharaMembership {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status            TharaStatus @default(purchase_pending)
+  enrolledAt        DateTime    @default(now())
+  activatedAt       DateTime?
+  qualifyingOrderId String?     @unique
+  qualifyingOrder   Order?      @relation("TharaQualifyingOrder", fields: [qualifyingOrderId], references: [id])
+
+  referralCode    String   @unique
+  termsAcceptedAt DateTime
+  termsVersion    String
+
+  suspendedAt         DateTime?
+  suspendedReason     String?
+  statusBeforeSuspend TharaStatus?
+  deactivatedAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  referralsMade TharaReferral[] @relation("Referrer")
+
+  @@index([status])
+  @@index([referralCode])
+}
+
+/// A three-month reward cycle (Benefit 3). Points accumulate against the
+/// currently-open cycle; a cron closes it, sums, and issues vouchers.
+enum TharaCycleStatus {
+  open
+  closed
+}
+
+model TharaCycle {
+  id        String           @id @default(cuid())
+  startDate DateTime // inclusive
+  endDate   DateTime // inclusive
+  status    TharaCycleStatus @default(open)
+  closedAt  DateTime?
+  createdAt DateTime         @default(now())
+
+  points   TharaRewardPointsLedger[]
+  vouchers TharaVoucher[]
+
+  @@unique([startDate, endDate])
+  @@index([status])
+}
+
+/// Append-only ledger of Thara reward points (Benefit 3: 1% commission).
+/// Every accrual and reversal is a row. Points sum per (userId, cycleId).
+model TharaRewardPointsLedger {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation("TharaPointsLedgerUser", fields: [userId], references: [id], onDelete: Cascade)
+  cycleId       String
+  cycle         TharaCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  delta         Int // points; +earn / -reversal
+  reason        String // 'referral-points' | 'refund-reversal'
+  sourceOrderId String?
+  sourceOrder   Order?     @relation("TharaPointsLedgerOrder", fields: [sourceOrderId], references: [id], onDelete: SetNull)
+  createdAt     DateTime   @default(now())
+
+  @@index([userId, cycleId])
+  @@index([sourceOrderId])
+}
+
+/// Amazon voucher issued at cycle close. Points × multiplier (default 3) = ₹.
+enum TharaVoucherStatus {
+  available
+  claimed
+  expired
+  cancelled
+}
+
+model TharaVoucher {
+  id            String             @id @default(cuid())
+  userId        String
+  user          User               @relation("TharaVoucherUser", fields: [userId], references: [id], onDelete: Cascade)
+  cycleId       String
+  cycle         TharaCycle         @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  points        Int // snapshot of the total the cycle closed with
+  valuePaise    Int // points × multiplier × 100
+  amazonCode    String?            @unique
+  status        TharaVoucherStatus @default(available)
+  issuedAt      DateTime           @default(now())
+  claimDeadline DateTime // hard expiry
+  claimedAt     DateTime?
+
+  @@unique([userId, cycleId])
+  @@index([status])
+}
+
+/// Hard-bounce / complaint list for Thara invite emails. Populated by the
+/// Resend webhook. Any address in here is refused by sendTharaInvite.
+model TharaSuppressedEmail {
+  email     String   @id
+  reason    String // 'hard_bounce' | 'complaint' | 'manual'
+  createdAt DateTime @default(now())
+}
+
+/// Append-only ledger of Femi9 store credit (Benefit 2: 10% commission).
+/// Every accrual, spend and refund reversal is a row. Balance = SUM(delta).
+model TharaCreditLedger {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation("TharaCreditLedgerUser", fields: [userId], references: [id], onDelete: Cascade)
+  delta         Int // paise; +earn / -spend / +/-reversal
+  reason        String // 'referral-commission' | 'checkout-spend' | 'refund-reversal'
+  sourceOrderId String?
+  sourceOrder   Order?   @relation("TharaCreditLedgerOrder", fields: [sourceOrderId], references: [id], onDelete: SetNull)
+  balanceAfter  Int // snapshot for auditability
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([sourceOrderId])
+}
+
+model TharaReferral {
+  id         String          @id @default(cuid())
+  referrerId String
+  referrer   TharaMembership @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+
+  referredUserId String @unique
+  referred       User   @relation("TharaReferralReceived", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  attributedAt DateTime  @default(now())
+  lockedAt     DateTime?
+
+  invitedByEmail String?
+  invitedByLink  Boolean @default(false)
+  ipAtSignup     String?
+  uaAtSignup     String?
+
+  createdAt DateTime @default(now())
+
+  @@index([referrerId])
+}
+
+// ────────────────────────── Parenting tools ───────────────────────────
+// Lumi9's /parenting-tools surface. Femi9 has no equivalent and never uses
+// these tables — the schema is shared, the ROWS are not, and a brand simply
+// never writes to a model it has no page for (the same stance ProductType's
+// unused enum values already take).
+//
+// The whole surface used to live in the browser: one localStorage blob and two
+// hardcoded data modules. That was defensible while the tools were a
+// calculator, and it stopped being defensible the moment the page started
+// promising a parent something — an emailed plan, a "3 done / 1 due now"
+// count, a size the console can rename. None of it survived a cleared cache,
+// none of it reached a second device, and nobody at Lumi9 could see or change
+// any of it.
+//
+// The privacy promise is kept where it was made: a SIGNED-OUT parent still
+// stores nothing here. localStorage remains the store for a guest, and these
+// rows exist only for a shopper who has an account to attach them to.
+
+enum BabySex {
+  male
+  female
+}
+
+enum BloodGroup {
+  A_POS  @map("A+")
+  A_NEG  @map("A-")
+  B_POS  @map("B+")
+  B_NEG  @map("B-")
+  AB_POS @map("AB+")
+  AB_NEG @map("AB-")
+  O_POS  @map("O+")
+  O_NEG  @map("O-")
+}
+
+enum VaccineTrack {
+  /// India's Universal Immunization Programme — free at any public health centre.
+  UIP
+  /// Indian Academy of Pediatrics — adds optional vaccines usually given privately.
+  IAP
+}
+
+/// The unit a published schedule STATES a dose's age in.
+///
+/// Deliberately not normalised to days. "9 months" means the 9th of the birth
+/// month, not 274 days after birth, and flattening the three units to one
+/// drifts by days on exactly the doses a parent diarises.
+enum DoseAgeUnit {
+  weeks
+  months
+  years
+}
+
+enum VaccinationStatus {
+  given
+  skipped
+}
+
+/// One baby, belonging to one signed-in parent.
+///
+/// `userId` is UNIQUE: one profile per account, which is what every surface on
+/// the page assumes ("Tell us about your baby", "Aarav's dashboard"). Siblings
+/// are a real future ask and the fix is dropping this constraint plus a primary
+/// picker in the UI — not a `babyId` threaded through code that has no screen
+/// to choose one with today.
+/// One child. A parent has as many rows as they have children.
+///
+/// `userId` was `@unique` — one baby per account, enforced by the database — so
+/// a parent with a second child had to overwrite the first, taking that child's
+/// whole measurement series and vaccination record with them. Dropping the
+/// constraint is what makes a second child possible; the cost is that "this
+/// user's baby" stopped being a single row the database could point at, so
+/// every read is now keyed on the PAIR and `userId` is the authorisation half
+/// of it. A query that finds a child by `id` alone is a cross-account read.
+model BabyProfile {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name             String?
+  /// Stored as a DATE, not a timestamp: a birthday has no time and no zone, and
+  /// a UTC-midnight timestamp read back in IST is the day before.
+  dob              DateTime    @db.Date
+  /// Required. WHO growth tables are sex-specific, so a percentile without it
+  /// is meaningless rather than merely less precise.
+  sex              BabySex
+  /// The LATEST measurement — `BabyMeasurement` holds the history. Denormalised
+  /// because every tool on the page wants "how big is this baby now" and none
+  /// of them wants a series.
+  weightKg         Float?
+  heightCm         Float?
+  /// Below 37 corrects the age used for GROWTH only. Null means term.
+  /// Vaccination dates are never corrected for prematurity.
+  gestationalWeeks Int?
+  /// Informational — shown on the card and in the emailed plan, never used in
+  /// any calculation.
+  bloodGroup       BloodGroup?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  measurements BabyMeasurement[]
+  vaccinations BabyVaccination[]
+
+  @@index([userId])
+}
+
+/// Weight and height over time.
+///
+/// A row is written whenever a parent saves a measurement that differs from the
+/// last one, so the growth tool has a series rather than a single point that
+/// each edit destroys. `takenOn` is a date for the same reason `dob` is.
+model BabyMeasurement {
+  id     String      @id @default(cuid())
+  babyId String
+  baby   BabyProfile @relation(fields: [babyId], references: [id], onDelete: Cascade)
+
+  takenOn  DateTime @db.Date
+  weightKg Float?
+  heightCm Float?
+
+  createdAt DateTime @default(now())
+
+  /// One reading per baby per day — a parent nudging the weight field three
+  /// times in a sitting is one measurement, not three.
+  @@unique([babyId, takenOn])
+  @@index([babyId, takenOn])
+}
+
+/// One dose on a published immunisation schedule.
+///
+/// The schedule is REFERENCE data that a government revises, not a constant —
+/// it was a TypeScript array, so correcting a dose age meant a deploy, and the
+/// IAP track existed as an empty tab nobody could fill. `code` is the stable
+/// key the seed and every `BabyVaccination` row point at.
+model VaccineDose {
+  id   String @id @default(cuid())
+  code String @unique // "penta-1", "mr-2"
+
+  vaccine String // "Pentavalent"
+  dose    String // "1" | "Booster" | "Birth dose"
+
+  /// When it becomes due. For a published RANGE this is the earliest age in it,
+  /// and `note` carries the full window so it is not lost.
+  ageUnit  DoseAgeUnit
+  ageValue Int
+
+  /// A dose can sit on both schedules; UIP's list is a subset of IAP's in
+  /// practice, so this is a set rather than a single track.
+  tracks VaccineTrack[]
+
+  note     String?
+  /// Ordering within the same due age, so the console can group a visit's doses
+  /// the way the published table prints them.
+  position Int     @default(0)
+  active   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  records BabyVaccination[]
+
+  @@index([active, position])
+}
+
+/// A dose a parent has marked given (or deliberately skipped).
+///
+/// Without this the dashboard's "3 done" was inferred purely from the calendar
+/// — it counted doses whose due date had passed, which says nothing about
+/// whether the baby was actually taken. `givenOn` is nullable because `skipped`
+/// has no date.
+model BabyVaccination {
+  id     String      @id @default(cuid())
+  babyId String
+  baby   BabyProfile @relation(fields: [babyId], references: [id], onDelete: Cascade)
+
+  doseId String
+  dose   VaccineDose @relation(fields: [doseId], references: [id], onDelete: Cascade)
+
+  status  VaccinationStatus
+  givenOn DateTime?         @db.Date
+  note    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([babyId, doseId])
+  @@index([babyId])
+}
+
+/// An email address a parent gave the tools to receive their care plan.
+///
+/// The route sent the message and kept nothing, so the one piece of first-party
+/// data the whole surface collects reached the outbox and no further: no list to
+/// follow up, no way to see whether the feature is used, and no record that the
+/// address was given for THIS purpose — which is what makes a later marketing
+/// send defensible or not. `NewsletterSubscriber` deliberately stays separate:
+/// asking for a plan is not subscribing to a newsletter.
+model ParentingLead {
+  id    String @id @default(cuid())
+  email String @unique
+
+  /// The baby details as submitted, so the plan can be re-sent or reviewed
+  /// without asking again. Nullable throughout: this is a lead, not a profile.
+  babyName   String?
+  dob        DateTime?   @db.Date
+  sex        BabySex?
+  bloodGroup BloodGroup?
+
+  /// Which tool page the address came from ("/parenting-tools", "…/growth").
+  source String?
+  /// Set when the parent was signed in. Null for a guest — the address is the
+  /// only identity we have then, which is the whole point of the row.
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  /// Bumped on every re-request, so a returning parent is one row with a count
+  /// rather than a `@unique` violation the route has to swallow.
+  planCount  Int      @default(1)
+  lastSentAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@femi9/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared backend for both brands: services, auth, payments, pricing.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "comment": "This package declares what it IMPORTS, not what its first consumer happened to have installed. Until the Lumi9 image was built, only `jose` was listed here and everything else resolved out of femi9-web's hoisted tree - invisible at the workspace root, where one `npm install` satisfies everyone. `npm ci --workspace lumi9-web` installs only that workspace's closure, and the build died on @aws-sdk/client-dynamodb and maxmind. `next` and `react` are peers so a host app's copy is always the one used; two Reacts in one tree is a class of bug worth never introducing. @sentry/nextjs is an OPTIONAL peer: only femi9-web ships it, logger.ts imports it dynamically, and making it a hard dependency put Sentry's require-in-the-middle instrumentation into every image - where Turbopack externalised it under a generated name the standalone bundle could not resolve, and every route answered 500.",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1098.0",
+    "@aws-sdk/client-sesv2": "^3.1123.0",
+    "@femi9/db": "*",
+    "@femi9/db-platform": "*",
+    "@prisma/client": "^6.19.3",
+    "jose": "^6.2.3",
+    "maxmind": "^5.0.7",
+    "pdf-lib": "^1.17.1",
+    "sanitize-html": "^2.17.7",
+    "server-only": "^0.0.1",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "@sentry/nextjs": ">=10",
+    "next": ">=16",
+    "react": ">=19"
+  },
+  "peerDependenciesMeta": {
+    "@sentry/nextjs": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/sanitize-html": "^2.16.1"
+  }
+}

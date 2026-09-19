@@ -1,0 +1,95 @@
+// Platform identity — who may sign into an admin console, and for which brand.
+//
+// Deliberately its OWN database schema (`platform`), separate from either
+// brand's data. Admin identity is not a Femi9 thing or a Lumi9 thing: one
+// person can hold a role in both, and neither brand's database should be able
+// to read the credentials that guard the other.
+//
+// The generated client goes to a package-local path because the brand client
+// already owns the default output; two generators writing to
+// node_modules/@prisma/client would overwrite each other.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_PLATFORM")
+}
+
+enum Brand {
+  femi9
+  lumi9
+}
+
+enum AdminRole {
+  // Legacy tiered roles, kept for back-compat. `owner` still means full access;
+  // manager/support/readonly still layer linearly. See admin-policy.ts for the
+  // per-module matrix that the new business roles use.
+  owner
+  manager
+  support
+  readonly
+
+  // Business roles, mapped through admin-policy.ts to per-module tiers.
+  super_admin      // same power as owner, explicit name for org-chart clarity
+  finance          // dashboard R · orders R · subs R · customers R · pricing W · coupons W · affiliates W
+  orders_manager   // dashboard R · orders W (incl. refund) · inventory W · products R · subs W · customers R
+  content_manager  // dashboard R · content W · reviews W · community W · parenting W · settings R
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  // scrypt, with its parameters encoded in the string — see @femi9/core/admin-password.
+  passwordHash String
+  name         String
+  active       Boolean   @default(true)
+  mfaSecret    String?
+  lastLoginAt  DateTime?
+  // True when the current passwordHash is a temporary one sent by email (an
+  // invite). The proxy redirects such a session to /change-password on every
+  // request until they set their own — a temp password becomes useless as
+  // soon as it is used once. Cleared by the change-password endpoint.
+  mustChangePassword Boolean @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  memberships AdminBrandRole[]
+  auditLog    AdminAuditLog[]
+}
+
+// A person's role IN ONE BRAND. Membership is the authorisation: the brand
+// toggle on the login form only says which console is being asked for, and a
+// row here is what decides whether they get it. No row means no access, and the
+// sign-in response must not reveal the difference.
+model AdminBrandRole {
+  id          String    @id @default(cuid())
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  brand       Brand
+  role        AdminRole @default(readonly)
+  createdAt   DateTime  @default(now())
+
+  @@unique([adminUserId, brand])
+  @@index([brand])
+}
+
+// Who did what, in which brand's console. Kept when the admin is deleted —
+// an audit trail that disappears with the account is not an audit trail.
+model AdminAuditLog {
+  id          String     @id @default(cuid())
+  adminUserId String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  brand       Brand
+  action      String
+  target      String?
+  meta        Json?
+  ip          String?
+  at          DateTime   @default(now())
+
+  @@index([brand, at])
+  @@index([adminUserId, at])
+}

@@ -17,13 +17,12 @@ const productionCsp = [
 ].join('; ')
 
 /**
- * True on Vercel. This repo is the STANDALONE PREVIEW copy of the app: it was
- * separated from the femi9-platform monorepo and runs against the fixture stubs
- * in `stubs/` instead of `packages/core` + Postgres (see stubs/README.md).
- *
- * Two settings below exist for the ECS/Docker deploy and are actively wrong on
- * Vercel, so they are switched off there rather than deleted — the Docker path
- * still needs them if this tree is ever merged back.
+ * True on Vercel. `packages/core` + `packages/db` + `packages/db-platform`
+ * (workspace packages, cherry-picked from the femi9-platform monorepo) live
+ * beside this app under `packages/`, providing the real Prisma-backed
+ * services. `outputFileTracingRoot`/`output: 'standalone'` below still exist
+ * for the ECS/Docker deploy and are actively wrong on Vercel, so they stay
+ * switched off there.
  */
 const onVercel = process.env.VERCEL === '1'
 
@@ -32,17 +31,6 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
-  // ── Preview build only ────────────────────────────────────────────────
-  // The stubs in `stubs/` reproduce each missing module's RUNTIME behaviour
-  // faithfully (the storefront, the cart and the journal all work), but not its
-  // full type surface: the signed-in screens read DTOs shaped by ~60 Prisma
-  // models that no longer exist here, so `tsc` reports ~320 errors in code that
-  // is unreachable while signed out. Typechecking is therefore off for the
-  // BUILD only — `npm run typecheck` still runs it and still reports them.
-  //
-  // This must be deleted along with `stubs/` the moment the real packages are
-  // available. It is a preview affordance, not a standing decision.
-  typescript: { ignoreBuildErrors: true },
   // Trace from the WORKSPACE root, not this app. npm workspaces hoist most of
   // the dependency tree to `<repo>/node_modules`, so a trace rooted at the app
   // would miss those files and the standalone bundle would boot with modules
@@ -53,12 +41,10 @@ const nextConfig = {
   // would point outside it and prune files the server needs.
   ...(onVercel ? {} : { outputFileTracingRoot: path.join(import.meta.dirname, '..', '..') }),
   // The three.js / R3F stack ships ESM that Next needs to transpile.
-  // @femi9/db and @femi9/core used to be listed here as workspace packages
-  // published as TypeScript source. In this standalone copy they are not
-  // packages at all — they resolve through `paths` in tsconfig.json to local
-  // files under `stubs/`, which the compiler already handles — and naming a
-  // package that is not installed here would be misleading.
-  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
+  // @femi9/db and @femi9/core are workspace packages published as TypeScript
+  // source (see packages/core/package.json, packages/db/package.json) — Next
+  // needs to transpile them the same way it does the three.js stack.
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@femi9/db', '@femi9/core'],
 
   // The ops console moved to its own app. Old bookmarks and any stray /admin
   // link should land there rather than 404. Only wired when the console's URL
